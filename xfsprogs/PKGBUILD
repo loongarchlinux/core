@@ -18,7 +18,7 @@ md5sums=('SKIP')
 build() {
   cd ${pkgname}-dev
   make configure
-  export OPTIMIZER="-march=${CARCH/_/-} -O1"
+  export OPTIMIZER="-march=`uname -m` -O1"
   export DEBUG=-DNDEBUG
   ./configure --prefix=/usr --sbindir=/usr/bin --with-systemd-unit-dir=/usr/lib/systemd/system
   make

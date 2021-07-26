@@ -7,7 +7,7 @@ pkgname=(util-linux util-linux-libs)
 _pkgmajor=2.38
 _realver=${_pkgmajor}.1
 pkgver=${_realver/-/}
-pkgrel=1
+pkgrel=2
 pkgdesc='Miscellaneous system utilities for Linux'
 url='https://github.com/karelzak/util-linux'
 arch=('loong64' 'x86_64')
@@ -43,6 +43,7 @@ build() {
     --localstatedir=/var \
     --enable-usrdir-path \
     --enable-fs-paths-default=/usr/bin:/usr/local/bin \
+    --disable-raw \
     --enable-vipw \
     --enable-newgrp \
     --enable-chfn-chsh \

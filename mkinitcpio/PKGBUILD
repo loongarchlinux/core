@@ -23,18 +23,26 @@ provides=('initramfs')
 backup=('etc/mkinitcpio.conf')
 source=("https://sources.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz"{,.sig}
         '0001-functions-fix-overwriting-of-symlinks-with-regular-f.patch')
+        "mkinitcpio-la64.patch"
+        "mkinitcpio-zboot.patch")
 install=mkinitcpio.install
 sha512sums=('cf8ab66d4609911ca6a1d2af1bfcf320eed99d29657c0ccfeca2fdc8ea00cfb6575e55645424de13fcf37aa12a39ac7b43a330c716e73e9c16a75178738ebe70'
             'SKIP'
-            'a43e66101edc301ae893a25eee6caa83c56a790cbac1685697fb999008c8210e46ca49e0700242f8321731264084462641285954db55d3daa2c7e8b62d1cc66c')
+            'a43e66101edc301ae893a25eee6caa83c56a790cbac1685697fb999008c8210e46ca49e0700242f8321731264084462641285954db55d3daa2c7e8b62d1cc66c'
+            'e521ad748fc73bd788e1fcf52ee11fd3c87e88dfa44072698b3f7925bd5fc9975e18b15373f6926ae5aa59ead378d2633a9967a71db1588e69754b939e56223c'
+            '0b7c01a1feb32e1dcd4bc83036767e45f3953635ee0417fb1048c919912448769acead7cfc6e64fb7bbd84e4951be1acae9c02786cb685b3a756676165779fec')
 b2sums=('06a6c6a0951b9b6161e2db01e2956d87da303b2ec029bdd183efed3b074b176a9f107e9a723fc6a7fa157ecd703d7627d8aaa0b9290022a09e30daa46784841c'
         'SKIP'
-        'a2ed9e8ff4b6fab1d6f6c1dae4dcf890b4434cb31ebdfe73ea54fd4af499849e2b98e565915cc331bd97f15f21d9147ee0499cf75b516562bfd7f1793e838e99')
+        'a2ed9e8ff4b6fab1d6f6c1dae4dcf890b4434cb31ebdfe73ea54fd4af499849e2b98e565915cc331bd97f15f21d9147ee0499cf75b516562bfd7f1793e838e99'
+        '52e6b1b516fb49faeadb0c3b1bf7adb55b276b52097bfb3b8638bcea1a33a4dbf10ccbb266747275285354e0bc766597874b4c0c85f9fbd3c326f459970a8500'
+        '0fd2de095e52f9898d7eeeee580430afc0cfe9c0cad3e96f31e7f3504ceb9e9865f2410f9e0c1dfd5f213ef06769f97fae294dd776cb157a4e16693cd63024cc')
 validpgpkeys=('ECCAC84C1BA08A6CC8E63FBBF22FB1D78A77AEAB'    # Giancarlo Razzolini
               'C100346676634E80C940FB9E9C02FF419FECBE16')   # Morten Linderud
 
 prepare() {
   patch -Np1 -d "$pkgname-$pkgver" < '0001-functions-fix-overwriting-of-symlinks-with-regular-f.patch'
+  patch -p1 -d "$pkgname-$pkgver" -i $srcdir/mkinitcpio-la64.patch
+  patch -p1 -d "$pkgname-$pkgver" -i $srcdir/mkinitcpio-zboot.patch
 }
 
 check() {

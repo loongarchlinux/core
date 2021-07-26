@@ -5,7 +5,7 @@ pkgname=('systemd' 'systemd-libs' 'systemd-resolvconf' 'systemd-sysvcompat')
 _tag='18e68d4fa8109b60e77a7703656c701a14944730' # git rev-parse v${_tag_name}
 _tag_name=252.4
 pkgver="${_tag_name/-/}"
-pkgrel=2
+pkgrel=3
 arch=('loong64' 'x86_64')
 url='https://www.github.com/systemd/systemd'
 makedepends=('acl' 'cryptsetup' 'docbook-xsl' 'gperf' 'lz4' 'xz' 'pam' 'libelf'
@@ -39,7 +39,10 @@ source=("git+https://github.com/systemd/systemd-stable#tag=${_tag}?signed"
         '30-systemd-sysctl.hook'
         '30-systemd-tmpfiles.hook'
         '30-systemd-udev-reload.hook'
-        '30-systemd-update.hook')
+        '30-systemd-update.hook'
+        'v252-la64.patch'
+        'reduce-default-service-timeout-to-15s.patch'
+        )
 sha512sums=('SKIP'
             'SKIP'
             '3ccf783c28f7a1c857120abac4002ca91ae1f92205dcd5a84aff515d57e706a3f9240d75a0a67cff5085716885e06e62597baa86897f298662ec36a940cf410e'
@@ -59,7 +62,9 @@ sha512sums=('SKIP'
             '9426829605bbb9e65002437e02ed54e35c20fdf94706770a3dc1049da634147906d6b98bf7f5e7516c84068396a12c6feaf72f92b51bdf19715e0f64620319de'
             'da7a97d5d3701c70dd5388b0440da39006ee4991ce174777931fea2aa8c90846a622b2b911f02ae4d5fffb92680d9a7e211c308f0f99c04896278e2ee0d9a4dc'
             'a50d202a9c2e91a4450b45c227b295e1840cc99a5e545715d69c8af789ea3dd95a03a30f050d52855cabdc9183d4688c1b534eaa755ebe93616f9d192a855ee3'
-            '825b9dd0167c072ba62cabe0677e7cd20f2b4b850328022540f122689d8b25315005fa98ce867cf6e7460b2b26df16b88bb3b5c9ebf721746dce4e2271af7b97')
+            '825b9dd0167c072ba62cabe0677e7cd20f2b4b850328022540f122689d8b25315005fa98ce867cf6e7460b2b26df16b88bb3b5c9ebf721746dce4e2271af7b97'
+            'a2bf16f8011a9d3accfead426ee08ca1b4486aca031d4aefb7cd6d61215d2a649486e4d4deda1699c520fa7e0fa226d4b146d220719e96d93f529204001f8613'
+            '7679219138f640f4d4f11e1596aec7601c1a2fbaf0d6339eef2275beb37260429b0fc26840a712224cadf9284794454eaf067d5a1ce6d8a28bbfdc8b14e59d4a')
 
 _backports=(
   # rules: add missing line continuation
@@ -91,6 +96,10 @@ prepare() {
 
   # Replace cdrom/dialout/tape groups with optical/uucp/storage
   patch -Np1 -i ../0001-Use-Arch-Linux-device-access-groups.patch
+#  patch -Np1 -i ../v251-loongarch64.patch
+#  patch -Np1 -i ../v251-la64-seccomp.patch
+  patch -Np1 -i ../v252-la64.patch
+  patch -Np1 -i ../reduce-default-service-timeout-to-15s.patch
 }
 
 build() {
@@ -124,7 +133,7 @@ build() {
 
     # We disable DNSSEC by default, it still causes trouble:
     # https://github.com/systemd/systemd/issues/10579
-    
+
     -Ddbuspolicydir=/usr/share/dbus-1/system.d
     -Ddefault-dnssec=no
     -Ddefault-hierarchy=unified
@@ -144,7 +153,7 @@ build() {
     -Dsbat-distro-summary='Arch Linux'
     -Dsbat-distro-pkgname="${pkgname}"
     -Dsbat-distro-version="${pkgver}"
-    -Dsbat-distro-url="https://archlinux.org/packages/core/x86_64/${pkgname}/"
+    -Dsbat-distro-url="https://archlinux.org/packages/core/loong64/${pkgname}/"
   )
 
   arch-meson "$pkgbase-stable" build "${_meson_options[@]}"

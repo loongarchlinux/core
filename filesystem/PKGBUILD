@@ -99,7 +99,7 @@ package() {
 
   # add lib symlinks
   ln -s usr/lib lib
-  [[ $CARCH = 'x86_64' ]] && {
+  [[ $CARCH = 'x86_64' || $CARCH = 'loong64' ]] && {
     ln -s usr/lib lib64
     ln -s lib usr/lib64
   }
