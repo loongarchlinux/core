@@ -1,0 +1,55 @@
+commit	b8d99a618baffb4fc03cda4c40e29778b6d77ad4	[log] [tgz]
+author	Karel Zak <kzak@redhat.com>	Wed Jul 14 17:25:57 2021 +0200
+committer	Karel Zak <kzak@redhat.com>	Wed Jul 14 17:25:57 2021 +0200
+tree	803db844a8491bc3482fd63259b81c11b79635e0
+parent	50a3c3bd28047dbcfdda3b4da99110279eb76ac4 [diff]
+login: fix close_range() use
+
+This new syscall comes with three arguments (see kernel commit
+278a5fbaed89dacd04e9d052f4594ffd0e0585de). Not sure why util-linux
+assume only two.
+
+Addresses: https://bugzilla.redhat.com/show_bug.cgi?id=1981729
+Signed-off-by: Karel Zak <kzak@redhat.com>
+diff --git a/include/fileutils.h b/include/fileutils.h
+index ad54b95..f86426b 100644
+--- a/include/fileutils.h
++++ b/include/fileutils.h
+@@ -82,9 +82,9 @@
+ # if defined(SYS_close_range)
+ #  include <sys/types.h>
+ #  ifndef HAVE_CLOSE_RANGE
+-static inline int close_range(unsigned int first, unsigned int last)
++static inline int close_range(unsigned int first, unsigned int last, int flags)
+ {
+-	return syscall(SYS_close_range, first, last);
++	return syscall(SYS_close_range, first, last, flags);
+ }
+ #  endif
+ #  define HAVE_CLOSE_RANGE 1
+diff --git a/lib/fileutils.c b/lib/fileutils.c
+index 846b718..a979b03 100644
+--- a/lib/fileutils.c
++++ b/lib/fileutils.c
+@@ -189,7 +189,7 @@
+ 		ignore_result( dup(STDIN_FILENO) );
+ 
+ # ifdef HAVE_CLOSE_RANGE
+-		close_range(STDERR_FILENO + 1, ~0U);
++		close_range(STDERR_FILENO + 1, ~0U, 0);
+ # else
+ 		ul_close_all_fds(STDERR_FILENO + 1, ~0U);
+ # endif
+diff --git a/login-utils/login.c b/login-utils/login.c
+index 48e3fa2..d926466 100644
+--- a/login-utils/login.c
++++ b/login-utils/login.c
+@@ -1357,7 +1357,7 @@
+ #endif
+ 	}
+ #ifdef HAVE_CLOSE_RANGE
+-	close_range(STDERR_FILENO + 1, ~0U);
++	close_range(STDERR_FILENO + 1, ~0U, 0);
+ #else
+ 	ul_close_all_fds(STDERR_FILENO + 1, ~0U);
+ #endif

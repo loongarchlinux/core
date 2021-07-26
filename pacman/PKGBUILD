@@ -3,7 +3,7 @@
 
 pkgname=pacman
 pkgver=6.0.1
-pkgrel=3
+pkgrel=4
 pkgdesc="A library-based package manager with dependency support"
 arch=('loongarch64' 'x86_64')
 url="https://www.archlinux.org/pacman/"
@@ -23,17 +23,21 @@ validpgpkeys=('6645B0A8C7005E78DB1D7864F99FFE0FEAE999BD'  # Allan McRae <allan@a
 source=(https://sources.archlinux.org/other/pacman/$pkgname-$pkgver.tar.xz{,.sig}
         add-flto-to-LDFLAGS-for-clang.patch
         pacman.conf
-        makepkg.conf)
+        makepkg.x86_64.conf
+        makepkg.loongarch64.conf
+        makepkg-loongarch64.patch)
 sha256sums=('0db61456e56aa49e260e891c0b025be210319e62b15521f29d3e93b00d3bf731'
             'SKIP'
             '82ff91b85f4c6ceba19f9330437e2a22aabc966c2b9e2a20a53857f98a42c223'
             '606e55f06c297d2b508bc4438890b229a1abaa68b0374a2d7f94c8e7be6792d7'
-            '8bf61d04aa67979e58bada8538f62b4b37a58bab1aabe97d6b148da0f4c920d9')
-
+            '8bf61d04aa67979e58bada8538f62b4b37a58bab1aabe97d6b148da0f4c920d9'
+            'b0166a83278a882e1235fd4e3e0c9fb1892cea8e6cdf7b19579aacf5360d1446'
+            'cc28f2e803d39f7b4789471aebf8b6b2b4780f79b4f3b8453e5abcc3772dda98')
 
 prepare() {
   cd "$pkgname-$pkgver"
   patch -Np1 -i ../add-flto-to-LDFLAGS-for-clang.patch
+  patch -p1 -i "$srcdir"/makepkg-loongarch64.patch
 }
 
 build() {
@@ -64,5 +68,5 @@ package() {
   # install Arch specific stuff
   install -dm755 "$pkgdir/etc"
   install -m644 "$srcdir/pacman.conf" "$pkgdir/etc"
-  install -m644 "$srcdir/makepkg.conf" "$pkgdir/etc"
+  install -m644 "$srcdir/makepkg.${CARCH}.conf" "$pkgdir/etc/makepkg.conf"
 }

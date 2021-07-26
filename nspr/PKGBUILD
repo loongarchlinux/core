@@ -12,8 +12,10 @@ license=(MPL GPL)
 depends=(glibc sh)
 makedepends=(zip mercurial)
 _revision=5f753966dc01e1872eb4fee6e7b6d0a4fd3daad2
-source=("hg+https://hg.mozilla.org/projects/nspr#revision=$_revision")
-sha256sums=('SKIP')
+source=("hg+https://hg.mozilla.org/projects/nspr#revision=$_revision"
+	    nspr-la64-4.29.patch)
+sha256sums=('SKIP'
+            '85ce42f59c6e4c14374dfb8707f5d3e543e639bc9daa76f9cbfb9520ab3c88b7')
 
 pkgver() {
   cd nspr
@@ -22,6 +24,7 @@ pkgver() {
 
 prepare() {
   cd nspr
+  patch -p2 -i $srcdir/nspr-la64-4.29.patch
 }
 
 build() {

@@ -11,15 +11,18 @@ license=('GPL')
 depends=('util-linux')
 source=("http://jfs.sourceforge.net/project/pub/${pkgname}-${pkgver}.tar.gz"
         'inttypes.patch'
-        'sysmacros.patch')
+        'sysmacros.patch'
+        'fix-format-error.patch')
 sha256sums=('244a15f64015ce3ea17e49bdf6e1a0fb4f9af92b82fa9e05aa64cb30b5f07a4d'
             '15ea88350c240b23fe322d4adafbb79c8473b9850495d61efafc7bf68be391b3'
-            'fd1a4e794a3bf2ebdb4b81f582e147655d70aadd59689aacea0ccc32c6381a28')
+            'fd1a4e794a3bf2ebdb4b81f582e147655d70aadd59689aacea0ccc32c6381a28'
+            'd20fcb858c3c06c0b84ba26d507b1e97e7ed5348a9c8aa7c9e5f297481b60e6e')
 
 prepare() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
 	patch -p1 -i ../inttypes.patch
 	patch -p1 -i ../sysmacros.patch
+    patch -p1 -i ../fix-format-error.patch
 }
 
 build() {

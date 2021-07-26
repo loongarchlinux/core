@@ -21,7 +21,8 @@ source=("https://www.kernel.org/pub/linux/utils/util-linux/v${_pkgmajor}/${pkgba
         'util-linux.sysusers'
         '60-rfkill.rules'
         'rfkill-unblock_.service'
-        'rfkill-block_.service')
+        'rfkill-block_.service'
+        'fix-close-range.patch')
 sha256sums=('634e6916ad913366c3536b6468e7844769549b99a7b2bf80314de78ab5655b83'
             'SKIP'
             '53395b7e434b32e6fee25f1b6fa59330ab72c1a2f99a17c3d3fd92473379fd9a'
@@ -32,7 +33,12 @@ sha256sums=('634e6916ad913366c3536b6468e7844769549b99a7b2bf80314de78ab5655b83'
             '10b0505351263a099163c0d928132706e501dd0a008dac2835b052167b14abe3'
             '7423aaaa09fee7f47baa83df9ea6fef525ff9aec395c8cbd9fe848ceb2643f37'
             '8ccec10a22523f6b9d55e0d6cbf91905a39881446710aa083e935e8073323376'
-            'a22e0a037e702170c7d88460cc9c9c2ab1d3e5c54a6985cd4a164ea7beff1b36')
+            'a22e0a037e702170c7d88460cc9c9c2ab1d3e5c54a6985cd4a164ea7beff1b36'
+            '4402b7e98302265de819f9c1220658bdc538bffe1aa5abc5dd08847b723fef1e')
+prepare() {
+	cd "$pkgname-$pkgver"
+	patch -p1 -i "$srcdir/fix-close-range.patch"
+}
 
 prepare() {
   cd "${pkgbase}-${_realver}"
@@ -51,7 +57,7 @@ build() {
     --localstatedir=/var \
     --enable-usrdir-path \
     --enable-fs-paths-default=/usr/bin:/usr/local/bin \
-    --enable-raw \
+    --disable-raw \
     --enable-vipw \
     --enable-newgrp \
     --enable-chfn-chsh \

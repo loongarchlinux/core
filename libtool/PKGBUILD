@@ -8,7 +8,7 @@
 
 pkgname=libtool
 pkgver=2.4.6+59+gb55b1cc8
-pkgrel=2
+pkgrel=3
 _gccver=11.2.0
 pkgdesc='A generic library support script'
 arch=(loongarch64 x86_64)
@@ -16,7 +16,7 @@ url='https://www.gnu.org/software/libtool'
 license=(GPL)
 groups=(base-devel)
 depends=(sh tar glibc)
-makedepends=("gcc>=$_gccver" git help2man)
+makedepends=("gcc" git help2man)
 checkdepends=(gcc-fortran)
 provides=("libltdl=$pkgver" "libtool-multilib=$pkgver")
 conflicts=(libltdl libtool-multilib)

@@ -7,7 +7,7 @@ pkgname=('systemd' 'systemd-libs' 'systemd-resolvconf' 'systemd-sysvcompat')
 _tag='d066a4f747b225d47c5f5c97a8843d30878995b8' # git rev-parse v${_tag_name}
 _tag_name=250.3
 pkgver="${_tag_name/-/}"
-pkgrel=4
+pkgrel=6
 arch=('loongarch64' 'x86_64')
 url='https://www.github.com/systemd/systemd'
 makedepends=('acl' 'cryptsetup' 'docbook-xsl' 'gperf' 'lz4' 'xz' 'pam' 'libelf'
@@ -16,7 +16,7 @@ makedepends=('acl' 'cryptsetup' 'docbook-xsl' 'gperf' 'lz4' 'xz' 'pam' 'libelf'
              'python-jinja' 'python-lxml' 'quota-tools' 'shadow' 'gnu-efi-libs' 'git'
              'meson' 'libseccomp' 'pcre2' 'audit' 'kexec-tools' 'libxkbcommon'
              'bash-completion' 'p11-kit' 'systemd' 'libfido2' 'tpm2-tss' 'rsync')
-options=('debug' 'strip')
+options=('debug' 'strip' '!lto')
 validpgpkeys=('63CDA1E5D3FC22B998D20DD6327F26951A015CC4'  # Lennart Poettering <lennart@poettering.net>
               'A9EA9081724FFAE0484C35A1A81CEA22BC8C7E2E'  # Luca Boccassi <luca.boccassi@gmail.com>
               '5C251B5FC54EB2F80F407AAAC54CA336CFEB557E') # Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl>
@@ -39,7 +39,9 @@ source=("git+https://github.com/systemd/systemd-stable#tag=${_tag}?signed"
         '30-systemd-sysctl.hook'
         '30-systemd-tmpfiles.hook'
         '30-systemd-udev-reload.hook'
-        '30-systemd-update.hook')
+        '30-systemd-update.hook'
+        'v250-loongarch64.patch'
+        'bbe53713455be38c0a587626439fd171f28c77fc.patch')
 sha512sums=('SKIP'
             'SKIP'
             'cc0c2ffb5f7c3a7176cd68f3dddd85ca000dcc4cdf3044746a20147234adb6811800fd28a4713faa6a59bf8c02be9fd43c2d6aa6695fd1dbf03ae773a91d090c'
@@ -59,7 +61,9 @@ sha512sums=('SKIP'
             '9426829605bbb9e65002437e02ed54e35c20fdf94706770a3dc1049da634147906d6b98bf7f5e7516c84068396a12c6feaf72f92b51bdf19715e0f64620319de'
             'da7a97d5d3701c70dd5388b0440da39006ee4991ce174777931fea2aa8c90846a622b2b911f02ae4d5fffb92680d9a7e211c308f0f99c04896278e2ee0d9a4dc'
             'a50d202a9c2e91a4450b45c227b295e1840cc99a5e545715d69c8af789ea3dd95a03a30f050d52855cabdc9183d4688c1b534eaa755ebe93616f9d192a855ee3'
-            '825b9dd0167c072ba62cabe0677e7cd20f2b4b850328022540f122689d8b25315005fa98ce867cf6e7460b2b26df16b88bb3b5c9ebf721746dce4e2271af7b97')
+            '825b9dd0167c072ba62cabe0677e7cd20f2b4b850328022540f122689d8b25315005fa98ce867cf6e7460b2b26df16b88bb3b5c9ebf721746dce4e2271af7b97'
+            '4ff0d4f55b14c2695ccf5131b14e1ca54da330f27c12d7a6a8c5e7ebe7563409f419526e7354973ee6b565af3bd071ca38d9a2b7b04a094b07baee4ae3754a91'
+            'bed19e8fd3ee77dcebe5776fe3dc2836ee9a70c23fe23b04b8b6cf34229e9386418d2b79151b6eb893fb1d4f35151f33b3ca25dc000a4ea1046a50d650b8573d')
 
 _backports=(
   # bus: Use OrderedSet for introspection
@@ -87,6 +91,8 @@ prepare() {
 
   # Replace cdrom/dialout/tape groups with optical/uucp/storage
   patch -Np1 -i ../0001-Use-Arch-Linux-device-access-groups.patch
+  patch -Np1 -i ../v250-loongarch64.patch
+  patch -Np1 -i ../bbe53713455be38c0a587626439fd171f28c77fc.patch
 }
 
 build() {
@@ -140,7 +146,7 @@ build() {
     -Dsbat-distro-summary='Arch Linux'
     -Dsbat-distro-pkgname="${pkgname}"
     -Dsbat-distro-version="${pkgver}"
-    -Dsbat-distro-url="https://archlinux.org/packages/core/x86_64/${pkgname}/"
+    -Dsbat-distro-url="https://archlinux.org/packages/core/loongarch64/${pkgname}/"
   )
 
   arch-meson "$pkgbase-stable" build "${_meson_options[@]}"
