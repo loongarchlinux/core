@@ -4,8 +4,8 @@
 # Contributor: Thomas Bächler <thomas@archlinux.org>
 
 pkgname=mkinitcpio-busybox
-pkgver=1.31.1
-pkgrel=2
+pkgver=1.33.1
+pkgrel=1
 pkgdesc='Base initramfs tools'
 arch=(loongarch64 x86_64)
 url="https://www.busybox.net/"
@@ -14,9 +14,9 @@ depends=(glibc libxcrypt)
 options=(!buildflags)
 source=(https://busybox.net/downloads/busybox-$pkgver.tar.bz2{,.sig}
         config)
-sha256sums=('d0f940a72f648943c1f2211e0e3117387c31d765137d92bd8284a3fb9752a998'
+sha256sums=('12cec6bd2b16d8a9446dd16130f2b92982f1819f6e1c5f5887b6db03f5660d28'
             'SKIP'
-            '2d724738dfb062b8676a8df0488a5e288fc7ceb305633fa6b8d672a722837e81')
+            '8ec3581a99a0e28e3b08ae64f3187f6b28ceeacef34c6c98ec74bd07b4703c2e')
 validpgpkeys=('C9E9416F76E610DBD09D040F47B70C55ACC9965B') # Denis Vlasenko <vda.linux@googlemail.com>
 
 prepare() {

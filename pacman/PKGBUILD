@@ -1,10 +1,9 @@
 # vim: set ts=2 sw=2 et:
-# Maintainer: Dan McGee <dan@archlinux.org>
-# Maintainer: Dave Reisner <dreisner@archlinux.org>
+# Maintainer: 
 
 pkgname=pacman
-pkgver=5.2.2
-pkgrel=1
+pkgver=6.0.0
+pkgrel=3
 pkgdesc="A library-based package manager with dependency support"
 arch=('loongarch64' 'x86_64')
 url="https://www.archlinux.org/pacman/"
@@ -12,7 +11,7 @@ license=('GPL')
 groups=('base-devel')
 depends=('bash' 'glibc' 'libarchive' 'curl'
          'gpgme' 'pacman-mirrorlist' 'archlinux-keyring')
-makedepends=('asciidoc')
+makedepends=('meson' 'asciidoc' 'doxygen')
 checkdepends=('python' 'fakechroot')
 optdepends=('perl-locale-gettext: translation support in makepkg-template')
 provides=('libalpm.so')
@@ -21,33 +20,49 @@ backup=(etc/pacman.conf
 options=('strip' 'debug')
 validpgpkeys=('6645B0A8C7005E78DB1D7864F99FFE0FEAE999BD'  # Allan McRae <allan@archlinux.org>
               'B8151B117037781095514CA7BBDFFC92306B1121') # Andrew Gregory (pacman) <andrew@archlinux.org>
-source=(https://sources.archlinux.org/other/pacman/$pkgname-$pkgver.tar.gz{,.sig}
+source=(https://sources.archlinux.org/other/pacman/$pkgname-$pkgver.tar.xz{,.sig}
+        pacman-6.0.0-fix-404-download.patch::https://git.archlinux.org/pacman.git/patch/?id=3401f9e142ac4c701cd98c52618cb13164f2146b
+        pacman-6.0.0-fix-key-import-double-free.patch::https://git.archlinux.org/pacman.git/patch/?id=542910d684191eb7f25ddc5d3d8fe3060028a267
         pacman.conf
         makepkg.conf)
-sha256sums=('bb201a9f2fb53c28d011f661d50028efce6eef2c1d2a36728bdd0130189349a0'
+sha256sums=('004448085a7747bdc7a0a4dd5d1fb7556c6b890111a06e029ab088f9905d4808'
             'SKIP'
-            '3353f363088c73f1f86a890547c0f87c7473e5caf43bbbc768c2e9a7397f2aa2'
-            '9c769f13c09a6f24c393a9762474eded2f269d8966e7764d9160d62232a7919b')
+            'fe7e037e1b84bfa5bc401650d148c2a2e87d827705a6ec18a596ff5eea3cc0fd'
+            'a51b57dd47818d97e29ac0b8604b4b409916bbe6029adfbb03ac7e7c2b2a0819'
+            '606e55f06c297d2b508bc4438890b229a1abaa68b0374a2d7f94c8e7be6792d7'
+            '89d1dd7e7064243754efc1993a8843a400afd5d7c15070787985376ec346d6d9')
 
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  patch -p1 -i "$srcdir"/pacman-6.0.0-fix-404-download.patch
+  patch -p1 -i "$srcdir"/pacman-6.0.0-fix-key-import-double-free.patch
+}
 
 build() {
   cd "$pkgname-$pkgver"
 
-  ./configure --prefix=/usr --sysconfdir=/etc \
-    --localstatedir=/var --enable-doc \
-    --with-scriptlet-shell=/usr/bin/bash \
-    --with-ldconfig=/usr/bin/ldconfig
-  make V=1
+  meson --prefix=/usr \
+        --buildtype=plain \
+        -Ddoc=enabled \
+        -Ddoxygen=enabled \
+        -Dscriptlet-shell=/usr/bin/bash \
+        -Dldconfig=/usr/bin/ldconfig \
+        build
+
+  meson compile -C build
 }
 
 check() {
-  make -C "$pkgname-$pkgver" check
+  cd "$pkgname-$pkgver"
+
+  meson test -C build
 }
 
 package() {
   cd "$pkgname-$pkgver"
 
-  make DESTDIR="$pkgdir" install
+  DESTDIR="$pkgdir" meson install -C build
 
   # install Arch specific stuff
   install -dm755 "$pkgdir/etc"

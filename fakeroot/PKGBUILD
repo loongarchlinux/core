@@ -3,25 +3,32 @@
 # Contributor: Jochem Kossen <j.kossen@home.nl>
 
 pkgname=fakeroot
-pkgver=1.24
+pkgver=1.25.3
 pkgrel=2
 pkgdesc='Tool for simulating superuser privileges'
-arch=(loongarch64 x86_64)
-license=(GPL)
-url='https://packages.debian.org/fakeroot'
-groups=(base-devel)
+arch=('loongarch64' 'x86_64')
+license=('GPL')
+url='https://tracker.debian.org/pkg/fakeroot'
+groups=('base-devel')
 install=fakeroot.install
-depends=(glibc filesystem sed util-linux sh)
-makedepends=(po4a)
-checkdepends=(sharutils)
+depends=('glibc' 'filesystem' 'sed' 'util-linux' 'sh')
+makedepends=('systemd' 'po4a')
+checkdepends=('sharutils')
 source=("https://deb.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.orig.tar.gz"
-        'silence-dlerror.patch')
-sha256sums=('2e045b3160370b8ab4d44d1f8d267e5d1d555f1bb522d650e7167b09477266ed'
-            '347f6496c93ed0d91dcb554db92602b50520a16308e3b8bc33822bd69966267b')
+        fakeroot-1.25.3-glibc-2.33-fix-1.patch
+        fakeroot-1.25.3-glibc-2.33-fix-2.patch
+        fakeroot-1.25.3-glibc-2.33-fix-3.patch)
+sha256sums=('8e903683357f7f5bcc31b879fd743391ad47691d4be33d24a76be3b6c21e956c'
+            '7b1ea49a4123a6d95329b370cc9edb51dc0c292ee3eeaa034757b555607026ea'
+            '1d2b3c9de24a4249f71e4ed1465ccac462c4ae36bd0a72c796cbfc51fb88a5e6'
+            '669dc27fc4a63d265adffbd7fe04521d9e91f46fdba5465c55c6b2d281aae0dc')
 
 prepare() {
   cd $pkgname-$pkgver
-  patch -p1 -i "$srcdir"/silence-dlerror.patch
+
+  patch -p1 -i $srcdir/fakeroot-1.25.3-glibc-2.33-fix-1.patch
+  patch -p1 -i $srcdir/fakeroot-1.25.3-glibc-2.33-fix-2.patch
+  patch -p1 -i $srcdir/fakeroot-1.25.3-glibc-2.33-fix-3.patch
 
   ./bootstrap
 }
@@ -49,9 +56,9 @@ package() {
   cd $pkgname-$pkgver
   make DESTDIR="$pkgdir" install
 
-  install -dm755 "$pkgdir/etc/ld.so.conf.d/"
+  install -dm0755 "$pkgdir/etc/ld.so.conf.d/"
   echo '/usr/lib/libfakeroot' > "$pkgdir/etc/ld.so.conf.d/fakeroot.conf"
 
   # install README for sysv/tcp usage
-  install -Dm644 README "$pkgdir/usr/share/doc/$pkgname/README"
+  install -Dm0644 README "$pkgdir/usr/share/doc/$pkgname/README"
 }

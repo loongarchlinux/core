@@ -1,7 +1,7 @@
 # Maintainer: Jouke Witteveen <j.witteveen@gmail.com>
 
 pkgname=netctl
-pkgver=1.23
+pkgver=1.25
 pkgrel=1
 pkgdesc='Profile based systemd network management'
 url='https://projects.archlinux.org/netctl.git/'
@@ -21,8 +21,8 @@ optdepends=('dialog: for the menu based wifi assistant'
 install=netctl.install
 source=(https://sources.archlinux.org/other/packages/netctl/netctl-${pkgver}.tar.xz{,.sig})
 arch=('any')
-md5sums=('d7f0f494de2a462cdb026befc823d4fa'
-         'de5d286687fcbe324327a39c03b33cfd')
+md5sums=('36e076b3127146b7ff1caacf6ccb5246'
+         '61a044c650887702414eab1400d894f4')
 validpgpkeys=('CFA6AF15E5C74149FC1D8C086D1655C14CE1C13E')  # Florian Pritz
 
 package() {

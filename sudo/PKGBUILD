@@ -3,15 +3,15 @@
 # Contributor: Tom Newsom <Jeepster@gmx.co.uk>
 
 pkgname=sudo
-_sudover=1.9.3p1
-pkgver=${_sudover/p/.p}
+_sudover=1.9.7p1
 pkgrel=1
+pkgver=${_sudover/p/.p}
 pkgdesc="Give certain users the ability to run some commands as root"
 arch=('loongarch64' 'x86_64')
 url="https://www.sudo.ws/sudo/"
 license=('custom')
 groups=('base-devel')
-depends=('glibc' 'libgcrypt' 'pam' 'libldap')
+depends=('glibc' 'openssl' 'pam' 'libldap' 'zlib')
 backup=('etc/pam.d/sudo'
         'etc/sudo.conf'
         'etc/sudo_logsrvd.conf'
@@ -20,7 +20,7 @@ install=$pkgname.install
 source=(https://www.sudo.ws/sudo/dist/$pkgname-$_sudover.tar.gz{,.sig}
         sudo_logsrvd.service
         sudo.pam)
-sha256sums=('dcb9de53e45e1c39042074b847f5e0d8ae1890725dd6a9d9101a81569e6eb49e'
+sha256sums=('391431f454e55121b60c6ded0fcf30ddb80d623d7d16a6d1907cfa6a0b91d8cf'
             'SKIP'
             '8b91733b73171827c360a3e01f4692772b78e62ceca0cf0fd4b770aba35081a1'
             'd1738818070684a5d2c9b26224906aad69a4fea77aabd960fc2675aee2df1fa2')
@@ -40,7 +40,6 @@ build() {
     --with-rundir=/run/sudo \
     --with-vardir=/var/db/sudo \
     --with-logfac=auth \
-    --enable-gcrypt \
     --enable-tmpfiles.d \
     --with-pam \
     --with-sssd \

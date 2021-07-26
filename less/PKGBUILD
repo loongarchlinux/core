@@ -3,22 +3,23 @@
 # Contributor: judd <jvinet@zeroflux.org>
 
 pkgname=less
-pkgver=551
-pkgrel=3
+pkgver=581.2
+pkgrel=1
+epoch=1
 pkgdesc='A terminal based program for viewing text files'
 license=('GPL3')
 arch=('loongarch64' 'x86_64')
-url='http://www.greenwoodsoftware.com/less'
-depends=('glibc' 'ncurses' 'pcre')
+url='https://www.greenwoodsoftware.com/less/'
+depends=('glibc' 'ncurses' 'pcre2')
 validpgpkeys=('AE27252BD6846E7D6EAE1DD6F153A7C833235259') # Mark Nudelman
-source=("http://www.greenwoodsoftware.com/$pkgname/$pkgname-$pkgver.tar.gz"
-        "$pkgname-$pkgver.tar.gz::http://www.greenwoodsoftware.com/$pkgname/$pkgname-$pkgver.sig")
-md5sums=('4ad4408b06d7a6626a055cb453f36819'
-         '4ad4408b06d7a6626a055cb453f36819')
+source=("https://www.greenwoodsoftware.com/$pkgname/$pkgname-$pkgver.tar.gz"
+        "$pkgname-$pkgver.tar.gz.sig::https://www.greenwoodsoftware.com/$pkgname/$pkgname-$pkgver.sig")
+sha256sums=('ce34b47caf20a99740672bf560fc48d5d663c5e78e67bc254e616b9537d5d83b'
+            'SKIP')
 
 build() {
   cd $pkgname-$pkgver
-  sh configure --prefix=/usr --sysconfdir=/etc --with-regex=pcre
+  sh configure --prefix=/usr --sysconfdir=/etc --with-regex=pcre2
   make
 }
 
