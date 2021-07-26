@@ -14,8 +14,17 @@ install=fakeroot.install
 depends=('glibc' 'filesystem' 'sed' 'util-linux' 'sh')
 makedepends=('systemd' 'po4a')
 checkdepends=('sharutils')
-source=("https://deb.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.orig.tar.gz")
-sha256sums=('32ebb1f421aca0db7141c32a8c104eb95d2b45c393058b9435fbf903dd2b6a75')
+source=("https://deb.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.orig.tar.gz"
+        fakeroot-1.28-glibc-2.35-fix.patch)
+sha256sums=('32ebb1f421aca0db7141c32a8c104eb95d2b45c393058b9435fbf903dd2b6a75'
+            '1143011fd7922e5ef529106b72986001a4be91b11ec9b2ae50df364eb473bfc3')
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  patch -p1 -i $srcdir/fakeroot-1.28-glibc-2.35-fix.patch
+  ./bootstrap
+}
 
 build() {
   cd $pkgname-$pkgver

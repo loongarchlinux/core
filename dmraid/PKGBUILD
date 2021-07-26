@@ -31,6 +31,8 @@ prepare() {
 }
 
 build() {
+  CFLAGS=${CFLAGS/-Wformat -Werror=format-security/}
+  CXXFLAGS=${CXXFLAGS/-Wformat -Werror=format-security/}
   cd "$pkgname/1.0.0.rc16-3/$pkgname"
   ./configure --enable-led --enable-intel_led
   make -j1

@@ -13,9 +13,16 @@ provides=('libcrypt.so')
 options=('debug')
 install=libxcrypt.install
 validpgpkeys=('678CE3FEE430311596DB8C16F52E98007594C21D') # Björn 'besser82' Esser
-source=("${url}/releases/download/v${pkgver}/${pkgbase}-${pkgver}.tar.xz"{,.asc})
+source=("${url}/releases/download/v${pkgver}/${pkgbase}-${pkgver}.tar.xz"{,.asc}
+		libxcrypt-la64.patch)
 sha256sums=('e87acf9c652c573a4713d5582159f98f305d56ed5f754ce64f57d4194d6b3a6f'
-            'SKIP')
+            'SKIP'
+            'a6afa6ca8328c031f99d2e49da92b2187a4accddf4519bc7c5e02f80cc5713ca')
+
+prepare() {
+  cd "$pkgbase-$pkgver"
+  patch -p1 -i "$srcdir/libxcrypt-la64.patch"
+}
 
 build() {
   mkdir build-libxcrypt build-libxcrypt-compat
