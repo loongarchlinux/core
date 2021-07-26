@@ -22,6 +22,10 @@ sha512sums=('1fd2a20aef48369d1f06e2bb74584877b8ad0eb529320b976264ec2db87420bae24
 #validpgpkeys+=('4569BBC09DA846FC91CBD21CE1BBA44593CF2AE0') # "Steven R. Loomis (codesign-qormi) <srloomis@us.ibm.com>"
 validpgpkeys=('0E51E7F06EF719FBD072782A5F56E5AFA63CCD33') #"Craig Cornelius (For use with ICU releases) <ccornelius@google.com>"
 
+prepare() {
+  cd icu/source
+}
+
 build() {
   cd icu/source
   ./configure --prefix=/usr \

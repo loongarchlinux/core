@@ -7,8 +7,8 @@
 
 pkgname=binutils
 pkgver=2.39
-_commit=9e855cffa1fda44629e7f9b76dfa3e5a51a440e9
-pkgrel=3
+_rdate=20220905
+pkgrel=1
 pkgdesc='A set of programs to assemble and manipulate binary and object files'
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/binutils/'
@@ -21,9 +21,11 @@ optdepends=('debuginfod: for debuginfod server/client functionality')
 conflicts=(binutils-multilib)
 replaces=(binutils-multilib)
 options=(staticlibs !distcc !ccache debug)
-source=(git+https://sourceware.org/git/binutils-gdb.git#commit=${_commit}
+source=(https://github.com/yetist/binutils-gdb/releases/download/v${_rdate}/${pkgname}-${pkgver}-${_rdate}.tar.xz
+        debug_loclists.patch
         gold-warn-unsupported.patch)
-sha256sums=('SKIP'
+sha256sums=('7e067d51bd6eadc518e9f5e7556fff15d6b84e4d4a8e8b8c2487e82a1f710dfa'
+            'fda14fc4879dba6e7822065e7c938a848ace3ee8f8984f4227aba0fb26912bb4'
             '2d430b66f84a19c154725ec535280c493be1d34f1a90f95208dce02fecd0e4e4')
 validpgpkeys=(3A24BC1E8FB409FA9F14371813FCEF89DD9E3C4F)
 
@@ -53,7 +55,7 @@ build() {
     --enable-cet \
     --enable-default-execstack=no \
     --enable-deterministic-archives \
-    --enable-gold \
+    --disable-gold \
     --enable-install-libiberty \
     --enable-jansson \
     --enable-ld=default \
@@ -61,7 +63,6 @@ build() {
     --enable-plugins \
     --enable-relro \
     --enable-shared \
-    --enable-targets=x86_64-pep,bpf-unknown-none \
     --enable-threads \
     --disable-gdb \
     --disable-gdbserver \

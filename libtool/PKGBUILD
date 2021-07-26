@@ -16,7 +16,7 @@ url='https://www.gnu.org/software/libtool'
 license=(GPL)
 groups=(base-devel)
 depends=(sh tar glibc)
-makedepends=("gcc>=$_gccver" git help2man)
+makedepends=("gcc" git help2man)
 checkdepends=(gcc-fortran)
 provides=("libltdl=$pkgver" "libtool-multilib=$pkgver")
 conflicts=(libltdl libtool-multilib)

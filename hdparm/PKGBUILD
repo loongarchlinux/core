@@ -7,6 +7,7 @@ pkgdesc="A shell utility for manipulating Linux IDE drive/driver parameters"
 arch=(loong64 x86_64)
 depends=('glibc')
 source=(https://downloads.sourceforge.net/sourceforge/hdparm/${pkgname}-${pkgver}.tar.gz
+        https://gitweb.gentoo.org/repo/gentoo.git/plain/sys-apps/hdparm/files/hdparm-9.64-glibc-2.36.patch
         pass-ldflags.patch)
 license=('BSD')
 url="https://sourceforge.net/projects/hdparm/"
@@ -17,6 +18,7 @@ prepare() {
   cd ${pkgname}-${pkgver}
   # Enable FULL RELRO
   patch -Np1 -i "$srcdir"/pass-ldflags.patch
+  patch -Np1 -i $srcdir/hdparm-9.64-glibc-2.36.patch
 }
 
 build() {
@@ -38,3 +40,6 @@ package() {
   #install license file
   install -D -m 644 LICENSE.TXT "$pkgdir"/usr/share/licenses/hdparm/LICENSE.TXT
 }
+sha512sums=('c561825143d8872cc2940bd6ba72162f91792bd63b6a8511058e79cc96feb6a4a9d22275581ef2eefab64a4035587b3a63175ccc58fa46f1059b4680d9d58ec4'
+            '628052e920c14902db3013d4c7172bfd2970b3fd102f4433d964a37386d8a53ffd58884de4f71f6347f0a287fa005ac8305026650724959b54cac571e113e27a'
+            '4103276304a858a9540ce173f22c5eb64cadac36b5cd38d9396d63fa721a579e16d4d0f84e3c627d0620c42815c437abf14c9657fdb1a28e8263a52a0bb26c4f')

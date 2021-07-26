@@ -3,7 +3,7 @@
 
 pkgname=pacman
 pkgver=6.0.1
-pkgrel=7
+pkgrel=5
 pkgdesc="A library-based package manager with dependency support"
 arch=('loong64' 'x86_64')
 url="https://www.archlinux.org/pacman/"
@@ -27,7 +27,11 @@ source=(https://sources.archlinux.org/other/pacman/$pkgname-$pkgver.tar.xz{,.sig
         libmakepkg-add-extra-buildflags-only-when-buildflags.patch
         make-link-time-optimization-flags-configurable.patch
         pacman.conf
-        makepkg.conf)
+        makepkg.x86_64.conf
+        makepkg.loong64.conf
+        makepkg-loongarch64.patch
+        pacman-use-loong64.patch
+        pacman-compatible-loongarch64.patch)
 sha256sums=('0db61456e56aa49e260e891c0b025be210319e62b15521f29d3e93b00d3bf731'
             'SKIP'
             '8ab5b1338874d7d58e11c5d1185ea3454fcc89755f9c18faf87ff348ad1ed16c'
@@ -36,8 +40,11 @@ sha256sums=('0db61456e56aa49e260e891c0b025be210319e62b15521f29d3e93b00d3bf731'
             '7d0aee976c9c71fcf7c96ef1d99aa76efe47d8c1f4451842d6d159ec7deb4278'
             '5b43e26a76be3ed10a69d4bfb2be48db8cce359baf46583411c7f124737ebe6a'
             '606e55f06c297d2b508bc4438890b229a1abaa68b0374a2d7f94c8e7be6792d7'
-            '072020e34f2c55b94a9a486829a7eadab0a830ddb4d8e759b0c4e6cf1bde73a6')
-
+            '072020e34f2c55b94a9a486829a7eadab0a830ddb4d8e759b0c4e6cf1bde73a6'
+            'b3f2ad3f9c95eb4abca7e350ef19e78a7e6cf7aa5018ded3c1bf702897277499'
+            'cc28f2e803d39f7b4789471aebf8b6b2b4780f79b4f3b8453e5abcc3772dda98'
+            '8a0ca1f6187ad21bcbfa143668dc47fe5582b610a5020ed590fb33cc2969c05b'
+            '5efd5a61441764f781fd3a9aae43394418778b3d6fb7baed3f77ab844e15ff5e')
 
 prepare() {
   cd "$pkgname-$pkgver"
@@ -46,6 +53,9 @@ prepare() {
   patch -Np1 -i ../libmakepkg-add-extra-buildflags-only-when-buildflags.patch
   patch -Np1 -i ../make-link-time-optimization-flags-configurable.patch
   patch -Np1 -i ../fix-wkd-lookup.patch
+  patch -p1 -i "$srcdir"/makepkg-loongarch64.patch
+  patch -p1 -i "$srcdir"/pacman-use-loong64.patch
+  patch -p1 -i "$srcdir"/pacman-compatible-loongarch64.patch
 }
 
 build() {
@@ -76,5 +86,5 @@ package() {
   # install Arch specific stuff
   install -dm755 "$pkgdir/etc"
   install -m644 "$srcdir/pacman.conf" "$pkgdir/etc"
-  install -m644 "$srcdir/makepkg.conf" "$pkgdir/etc"
+  install -m644 "$srcdir/makepkg.${CARCH}.conf" "$pkgdir/etc/makepkg.conf"
 }

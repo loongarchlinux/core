@@ -9,6 +9,7 @@ pkgdesc="Modular initramfs image creation utility"
 arch=('any')
 url='https://github.com/archlinux/mkinitcpio'
 license=('GPL')
+makedepends=(asciidoc)
 depends=('awk' 'mkinitcpio-busybox>=1.19.4-2' 'kmod' 'util-linux>=2.23' 'libarchive' 'coreutils'
          'bash' 'binutils' 'diffutils' 'findutils' 'grep' 'filesystem>=2011.10-1' 'zstd' 'systemd')
 optdepends=('gzip: Use gzip compression for the initramfs image'
@@ -20,20 +21,23 @@ optdepends=('gzip: Use gzip compression for the initramfs image'
 provides=('initramfs')
 backup=('etc/mkinitcpio.conf')
 source=("https://sources.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz"{,.sig}
-       0001-Fix-the-warning-about-missing-modules.builtin.modinf.patch)
+       0001-Fix-the-warning-about-missing-modules.builtin.modinf.patch
+        "mkinitcpio-la64.patch")
 install=mkinitcpio.install
 sha512sums=('4ef87c2e4f579b292c38f9c487e78b3b99f6db77909cab322e860e5ca70aca3747fcfc272e2e15c9a3605c924ab178057b8b23151f98debc5d96e65f3c0c49d5'
             'SKIP'
-            'fd348d6fcff249672b495db50fa67ce06d5d9a0c8f749c8b488bc1e4b43c9b850a5ad87392230fbe8b715422bb14e760bb0ad219cfcf1d7e132c6a7e4dd118a6')
+            'fd348d6fcff249672b495db50fa67ce06d5d9a0c8f749c8b488bc1e4b43c9b850a5ad87392230fbe8b715422bb14e760bb0ad219cfcf1d7e132c6a7e4dd118a6'
+            '196a8c7d1000679c255e4be1eec380af886ade2cd65a0507169e25f751f3eceab47e4688e1c857397d055cceb0dbc325c69e51e5f290999c2c537763abb703c6')
 b2sums=('0113e288906e3b5fa485c29c00e7df60d85addd96718c45531031a686f18c739fa18303b6cac374d35b85edb7b663e221c8dc9158dff08c75858a4ed4dd154bf'
         'SKIP'
-        '5a05cee0382284d6cc0a2033e872b7c4c9f01ddfe6d3550974b5eab9a8a18690d1115b57d8d08153497fed08fd55b69f8b4a4cbcbe67795d615cc06ea7c86618')
+        '5a05cee0382284d6cc0a2033e872b7c4c9f01ddfe6d3550974b5eab9a8a18690d1115b57d8d08153497fed08fd55b69f8b4a4cbcbe67795d615cc06ea7c86618'
+        '7052c26910277aae49dcc26b73dc3d85e9382914060ee649809c9ec20f91414cebd5c07e7acd98fbe21679939293d85d42c217b90a58d1ec91f3117929d4c903')
 validpgpkeys=('ECCAC84C1BA08A6CC8E63FBBF22FB1D78A77AEAB')    # Giancarlo Razzolini
 
 prepare() {
   cd $pkgname-$pkgver
   patch -Np1 < "$srcdir"/0001-Fix-the-warning-about-missing-modules.builtin.modinf.patch  
-   
+  patch -p1 -i $srcdir/mkinitcpio-la64.patch
 }
 
 check() {

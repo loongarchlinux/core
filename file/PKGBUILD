@@ -12,11 +12,13 @@ groups=('base-devel')
 url='https://www.darwinsys.com/file/'
 depends=('glibc' 'zlib' 'xz' 'bzip2' 'libseccomp' 'libseccomp.so')
 provides=('libmagic.so')
-options=('!emptydirs' 'debug')
-source=("https://astron.com/pub/$pkgname/$pkgname-$pkgver.tar.gz"{,.asc})
+options=('!emptydirs')
+source=("https://astron.com/pub/$pkgname/$pkgname-$pkgver.tar.gz"{,.asc}
+        0001-add-support-for-loongarch.patch)
 validpgpkeys=('BE04995BA8F90ED0C0C176C471112AB16CB33B3A') # Christos Zoulas
 sha256sums=('c076fb4d029c74073f15c43361ef572cfb868407d347190ba834af3b1639b0e4'
-            'SKIP')
+            'SKIP'
+            '8838e740364edc9b318e65a348892ccdc943f8271d4f637ddbb4064b685d2987')
 
 prepare() {
   cd $pkgname-$pkgver

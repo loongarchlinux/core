@@ -19,6 +19,7 @@ provides=('btrfs-progs-unstable')
 license=('GPL2')
 validpgpkeys=('F2B41200C54EFB30380C1756C565D5F9D76D583B')
 source=("https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/btrfs-progs-v$pkgver.tar."{sign,xz}
+        'https://gitweb.gentoo.org/repo/gentoo.git/plain/sys-fs/btrfs-progs/files/btrfs-progs-5.18.1-glibc-2.36.patch'
         'initcpio-install-btrfs'
         'initcpio-hook-btrfs'
         'btrfs-scrub@.service'
@@ -27,6 +28,7 @@ install=btrfs-progs.install
 options=(!staticlibs)
 sha256sums=('SKIP'
             '1fbcf06e4b2f80e7a127fd687ed4625a5b74fa674fe212c836ff70e0edfcccf9'
+            'ce9afbcffc294fc6633d7e1e957d0f04036d1ef1392a3c5f9309808f26a6cb7c'
             'bbe60b35d1b1e2efc1308a8f54f1fdc6808240a81c5f5b4d75321b7ee86e41f4'
             '35efeee8590d6d60c711ae9cdc918e4841ab61d10cb02359e65e36ebff95ffc5'
             'eaa7af92d28bfa8940bb551560fd7be777f9f175292eaa72b5f6ef00fb240252'
@@ -47,6 +49,8 @@ prepare() {
 
 build() {
   cd $pkgname-v$pkgver
+  CFLAGS=${CFLAGS/-Werror=format-security/}
+  CXXFLAGS=${CXXFLAGS/-Werror=format-security/}
   ./configure --prefix=/usr --with-crypto=libgcrypt
   make
 }

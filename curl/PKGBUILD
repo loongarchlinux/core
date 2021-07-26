@@ -17,9 +17,11 @@ depends=('ca-certificates' 'brotli' 'libbrotlidec.so' 'krb5' 'libgssapi_krb5.so'
          'libidn2' 'libidn2.so' 'libnghttp2' 'libpsl' 'libpsl.so' 'libssh2' 'libssh2.so'
          'openssl' 'zlib' 'zstd' 'libzstd.so')
 provides=('libcurl.so')
-source=("https://curl.haxx.se/download/${pkgname}-${pkgver}.tar.gz"{,.asc})
+source=("https://curl.haxx.se/download/${pkgname}-${pkgver}.tar.gz"{,.asc}
+        'https://gitweb.gentoo.org/repo/gentoo.git/plain/net-misc/curl/files/curl-7.84.0-include-sched.patch')
 sha512sums=('bbad693bcde9c55e5942499950d76011f53ad43d3270eee2c8db486bcf46f5fc92b32dd8752caf4c5976fe493d083e2d34fa299cb96fb8e76d8f5fcc2cc56a36'
-            'SKIP')
+            'SKIP'
+            '4be64eff67e56c2584f6c9ee0c9c7b7aca55fc15c8d4be6f9f79da9bb3c1bb1532bcb80eb4f87be2db1058dd41a32e366bfe83988d28b4b263fbb6679b5ec806')
 validpgpkeys=('27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2') # Daniel Stenberg
 
 _configure_options=(
@@ -36,6 +38,12 @@ _configure_options=(
   --with-random='/dev/urandom'
   --with-ca-bundle='/etc/ssl/certs/ca-certificates.crt'
 )
+
+prepare() {
+  cd "${srcdir}/${pkgbase}-${pkgver}"
+
+  patch -Np1 < ../curl-7.84.0-include-sched.patch
+}
 
 build() {
   mkdir build-curl{,-compat,-gnutls}

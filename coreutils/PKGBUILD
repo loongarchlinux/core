@@ -27,6 +27,7 @@ prepare() {
     fi
   done
   :
+  autoreconf -vfi
 }
 
 build() {

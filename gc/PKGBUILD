@@ -10,13 +10,16 @@ url="https://www.hboehm.info/gc/"
 license=('GPL')
 depends=('gcc-libs')
 source=(https://github.com/ivmai/bdwgc/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz
-        gc-missing-header.patch::https://github.com/ivmai/bdwgc/commit/c876dc2b.patch)
+        gc-missing-header.patch::https://github.com/ivmai/bdwgc/commit/c876dc2b.patch
+        bdwgc-la64.patch)
 sha512sums=('ff781360bca667f1f95fbfed073e9035f63134cac1bda4f7e4217664a3713c2846f750a3ce92732972c0435c69355b051f6e8eb6f2698b0d48d9107ff960bacf'
-            '489c121556d6a6fa25da8751676d39179643bfd187cb9f216a095ce606a43790e9348b5b2b7dded76650b33df61078c457150776532d08491a7f09e5a57013a8')
+            'fc1bb2c8b412f22d6c861c2f89f8cf8ed3b8f053f935a766aad80ea05016401b72580250f37afd180283090fedc4e6257272c8fab610130d13b67cacbd445142'
+            'b637c0daf8de1dea639b1cf2914ca8aa1172783d95c68bcd664c61af9438130f903b2b2bc68bb4a3d0d07da1044c4a8a5bc283bd8ee38a7fe8eecbce8a0a50fc')
 
 prepare() {
   cd $pkgname-$pkgver
   patch -p1 < ../gc-missing-header.patch # Install missing header
+  patch -p1 < ../bdwgc-la64.patch
   ./autogen.sh
 }
 

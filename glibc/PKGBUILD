@@ -7,16 +7,16 @@
 # NOTE: valgrind requires rebuilt with each major glibc version
 
 pkgbase=glibc
-pkgname=(glibc lib32-glibc)
+pkgname=glibc
 pkgver=2.36
-_commit=e982657073c4db21459ffd9e17bc505b1d64b876
+_pkgdate=20220905
 pkgrel=3
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/libc'
 license=(GPL LGPL)
-makedepends=(git gd lib32-gcc-libs python)
+makedepends=(git gd python)
 options=(debug staticlibs !lto)
-source=(git+https://sourceware.org/git/glibc.git#commit=${_commit}
+source=(https://github.com/yetist/glibc/releases/download/v${_rdate}/glibc-${pkgver}-${_pkgdate}.tar.xz
         locale.gen.txt
         locale-gen
         lib32-glibc.conf
@@ -26,17 +26,16 @@ source=(git+https://sourceware.org/git/glibc.git#commit=${_commit}
 )
 validpgpkeys=(7273542B39962DF7B299931416792B4EA25340F8 # Carlos O'Donell
               BC7C7372637EC10C57D7AA6579C43DFBF1CF2187) # Siddhesh Poyarekar
-b2sums=('SKIP'
-        '46d533d25c7a2ce4ae75d452eee7ebb8e3ce4d191af9be3daa43718b78cb81d33cfd8046a117a15d87de9f5e940448c66005b0490515bf731c9e4691c53908d6'
-        '04fbb3b0b28705f41ccc6c15ed5532faf0105370f22133a2b49867e790df0491f5a1255220ff6ebab91a462f088d0cf299491b3eb8ea53534cb8638a213e46e3'
-        '7c265e6d36a5c0dff127093580827d15519b6c7205c2e1300e82f0fb5b9dd00b6accb40c56581f18179c4fbbc95bd2bf1b900ace867a83accde0969f7b609f8a'
-        'a6a5e2f2a627cc0d13d11a82458cfd0aa75ec1c5a3c7647e5d5a3bb1d4c0770887a3909bfda1236803d5bc9801bfd6251e13483e9adf797e4725332cd0d91a0e'
-        '214e995e84b342fe7b2a7704ce011b7c7fc74c2971f98eeb3b4e677b99c860addc0a7d91b8dc0f0b8be7537782ee331999e02ba48f4ccc1c331b60f27d715678'
-        'edef5f724f68ea95c6b0127bd13a10245f548afc381b2d0a6d1d06ee9f87b7dd89c6becd35d5ae722bf838594eb870a747f67f07f46e7d63f8c8d1a43cce4a52'
-        '5fdd133c367af2f5454ea1eea7907de12166fb95eb59dbe33eae16aa9e26209b6585972bc1c80e36a0af4bfb04296acaf940ee78cd624cdcbab9669dff46c051')
+sha256sums=('6793fa783fed3a518190a1ed246abe0ea70a929b2af823682f4a3cb30383eb7d'
+            'd42648cea552ba5353a32e264686e992263289d5cc86207314dffc54ab514981'
+            '8c5cc09018cbd65e8570430f872e118caa2644e311d6200b7d5f0cba837fbba4'
+            'c27424154a6096ae32c0824b785e05de6acef33d9224fd6147d1936be9b4962b'
+            '774061aff612a377714a509918a9e0e0aafce708b87d2d7e06b1bd1f6542fe70'
+            'cdc234959c6fdb43f000d3bb7d1080b0103f4080f5e67bcfe8ae1aaf477812f0'
+            'f5df8fc95592cce7825744aeb8c9699a5b4b5b7ccf7bcf554355167c3a7e375e')
 
 prepare() {
-  mkdir -p glibc-build lib32-glibc-build
+  mkdir -p glibc-build
 
   [[ -d glibc-$pkgver ]] && ln -s glibc-$pkgver glibc
   cd glibc
@@ -45,12 +44,13 @@ prepare() {
   # Can be removed when eletron{9,11,12} and discord are removed or patched:
   # https://github.com/electron/electron/commit/993ecb5bdd5c57024c8718ca6203a8f924d6d574
   # Patch src: https://patchwork.ozlabs.org/project/glibc/patch/87eebkf8ph.fsf@oldenburg.str.redhat.com/
-  patch -Np1 -i "${srcdir}"/disable-clone3.diff
+  #patch -Np1 -i "${srcdir}"/disable-clone3.diff
 
   # re-enable `--hash-style=both` for building shared objects due to issues with EPIC's EAC
   # which relies on DT_HASH to be present in these libs.
   # reconsider 2023-01
   patch -Np1 -i "${srcdir}"/reenable_DT_HASH.patch
+  cp /usr/share/automake-1.16/install-sh scripts/install-sh
 }
 
 build() {
@@ -61,7 +61,8 @@ build() {
       --enable-bind-now
       --enable-cet
       --enable-kernel=4.4
-      --enable-multi-arch
+      --disable-multi-arch
+      --disable-experimental-malloc
       --enable-stack-protector=strong
       --enable-systemtap
       --disable-profile
@@ -98,29 +99,29 @@ build() {
   # build info pages manually for reproducibility
   make info
 
-  cd "$srcdir/lib32-glibc-build"
-  export CC="gcc -m32 -mstackrealign"
-  export CXX="g++ -m32 -mstackrealign"
-
-  echo "slibdir=/usr/lib32" >> configparms
-  echo "rtlddir=/usr/lib32" >> configparms
-  echo "sbindir=/usr/bin" >> configparms
-  echo "rootsbindir=/usr/bin" >> configparms
-
-  "$srcdir/glibc/configure" \
-      --host=i686-pc-linux-gnu \
-      --libdir=/usr/lib32 \
-      --libexecdir=/usr/lib32 \
-      "${_configure_flags[@]}"
-
-  # build libraries with fortify disabled
-  echo "build-programs=no" >> configparms
-  make -O
-
-  # re-enable fortify for programs
-  sed -i "/build-programs=/s#no#yes#" configparms
-  echo "CFLAGS += -Wp,-D_FORTIFY_SOURCE=2" >> configparms
-  make -O
+#  cd "$srcdir/lib32-glibc-build"
+#  export CC="gcc -m32 -mstackrealign"
+#  export CXX="g++ -m32 -mstackrealign"
+#
+#  echo "slibdir=/usr/lib32" >> configparms
+#  echo "rtlddir=/usr/lib32" >> configparms
+#  echo "sbindir=/usr/bin" >> configparms
+#  echo "rootsbindir=/usr/bin" >> configparms
+#
+#  "$srcdir/glibc/configure" \
+#      --host=i686-pc-linux-gnu \
+#      --libdir=/usr/lib32 \
+#      --libexecdir=/usr/lib32 \
+#      "${_configure_flags[@]}"
+#
+#  # build libraries with fortify disabled
+#  echo "build-programs=no" >> configparms
+#  make -O
+#
+#  # re-enable fortify for programs
+#  sed -i "/build-programs=/s#no#yes#" configparms
+#  echo "CFLAGS += -Wp,-D_FORTIFY_SOURCE=2" >> configparms
+#  make -O
 
   # pregenerate C.UTF-8 locale until it is built into glibc
   # (https://sourceware.org/glibc/wiki/Proposals/C.UTF-8, FS#74864)-

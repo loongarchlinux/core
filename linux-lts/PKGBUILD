@@ -6,6 +6,7 @@ pkgrel=1
 pkgdesc='LTS Linux'
 url="https://www.kernel.org/"
 arch=(loong64 x86_64)
+date=20220421
 license=(GPL2)
 makedepends=(
   bc libelf pahole cpio perl tar xz
@@ -14,7 +15,7 @@ makedepends=(
 options=('!strip')
 _srcname=linux-$pkgver
 source=(
-  https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/${_srcname}.tar.{xz,sign}
+  http://public.loongarch.dev/sources/linux/linux-${pkgver}-${date}.tar.xz/22cbcbb22f4d2c4dc9cf1dce10917c1f/linux-${pkgver}-${date}.tar.xz
   config         # the main kernel config file
   0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch
   0002-PCI-Add-more-NVIDIA-controllers-to-the-MSI-masking-q.patch
@@ -22,6 +23,7 @@ source=(
   0004-Bluetooth-btintel-Fix-bdaddress-comparison-with-garb.patch
   0005-lg-laptop-Recognize-more-models.patch
   0006-Fix-NFSv4-mount-regression.patch
+  config.la64
 )
 validpgpkeys=(
   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
@@ -30,13 +32,14 @@ validpgpkeys=(
 # https://www.kernel.org/pub/linux/kernel/v5.x/sha256sums.asc
 sha256sums=('c6a1d38c6fa3798341372d5cf0088ae806ccdc827e31ecbff8988e097ba5de50'
             'SKIP'
-            '2609c913efdfb43a4f3f8094f08595fc708e8e66c0260964b73433d6d3d4a54a'
-            '7bd64ff894475b3415d792ba8466ba7e8f872af56dbf1aeed0d261fe4008b8b5'
-            '39649dc1dfcb06b411ad124e123769e955a78961b4ea17538c0919a930925549'
-            '56c12551e859cc67520909e64feecbf1b190cee8addef150c5b9d1bb1d40981e'
-            '5c1ee81fdd5818442af6081de987f9c1a9ce3c8d183566b3dfc19a8433aa3dde'
-            '067e8995fcd6f6ed25e0253e9374c0e179a000c154da3e59ce62634945ac5be9'
-            '95dad02b01937681af0a207e22a6bf64c33e067bf7a14cb98262dd8f69194eb8')
+            'c8f239b60405161fdc238ebbfd4cae6f7cdd27b79d71abc12588e83ffa674c7d'
+            '99df282c594cc269d9a5d19bb86ea887892d3654cfc53c4ce94a644cf3278423'
+            'c35018601f04ae81e0a2018a8597595db6ae053158c206845399cdebb2d2b706'
+            '7c7707c738983f3683d76295b496f578996b7341fa39ad334ec2833bfe4b966e'
+            '3fa8a4af66d5a3b99b48ca979a247c61e81c9b2d3bcdffa9d3895a5532a420b4'
+            '79266c6cc970733fd35881d9a8f0a74c25c00b4d81741b8d4bba6827c48f7c78'
+            'e9527ad81d5b1821a7b17c56cb3abaec85785563f51e448cb3c06f1c68e2966f'
+            'a2494bbaa093e333425db5b3f7e455abda798212af24d346205dc90c71984c94')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -60,7 +63,11 @@ prepare() {
   done
 
   echo "Setting config..."
-  cp ../config .config
+  if [ $CARCH == loongarch64 ];then
+    cp ../config.la64 .config
+  else
+    cp ../config .config
+  fi
   make olddefconfig
   diff -u ../config .config || :
 
@@ -112,19 +119,33 @@ _package-headers() {
   install -Dt "$builddir" -m644 .config Makefile Module.symvers System.map \
     localversion.* version vmlinux
   install -Dt "$builddir/kernel" -m644 kernel/Makefile
-  install -Dt "$builddir/arch/x86" -m644 arch/x86/Makefile
+  if [ $CARCH == x86_64 ];then
+    install -Dt "$builddir/arch/x86" -m644 arch/x86/Makefile
+  elif [ $CARCH == loongarch64 ];then
+    install -Dt "$builddir/arch/loongarch" -m644 arch/loongarch/Makefile
+  fi
+
   cp -t "$builddir" -a scripts
 
-  # required when STACK_VALIDATION is enabled
-  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
+  # add objtool for external module building and enabled VALIDATION_STACK option
+  #install -Dt "$builddir/tools/objtool" tools/objtool/objtool
+
+  # required when DEBUG_INFO_BTF_MODULES is enabled
+  install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
 
   # required when DEBUG_INFO_BTF_MODULES is enabled
   install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
 
   echo "Installing headers..."
   cp -t "$builddir" -a include
-  cp -t "$builddir/arch/x86" -a arch/x86/include
-  install -Dt "$builddir/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
+  if [ $CARCH == x86_64 ];then
+    cp -t "$builddir/arch/x86" -a arch/x86/include
+    install -Dt "$builddir/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
+  elif [ $CARCH == loongarch64 ];then
+    cp -t "$builddir/arch/loongarch" -a arch/loongarch/include
+    install -Dt "$builddir/arch/loongarch/kernel" -m644 arch/loongarch/kernel/asm-offsets.s
+  fi
+
 
   install -Dt "$builddir/drivers/md" -m644 drivers/md/*.h
   install -Dt "$builddir/net/mac80211" -m644 net/mac80211/*.h
@@ -146,7 +167,11 @@ _package-headers() {
   echo "Removing unneeded architectures..."
   local arch
   for arch in "$builddir"/arch/*/; do
-    [[ $arch = */x86/ ]] && continue
+    if [ $CARCH == x86_64 ];then
+      [[ $arch = */x86/ ]] && continue
+    elif [ $CARCH == loongarch64 ];then
+      [[ $arch = */loongarch/ ]] && continue
+    fi
     echo "Removing $(basename "$arch")"
     rm -r "$arch"
   done

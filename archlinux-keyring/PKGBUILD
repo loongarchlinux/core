@@ -2,8 +2,8 @@
 # Maintainer: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
 
 pkgname=archlinux-keyring
-_tag='cdf4b6b45cf96152b694aedb747eb9376d48b963' # git rev-parse ${pkgver}
-pkgver=20220831
+_tag='77582ca0d35031359e85b4b083cb3608d4d5bdea' # git rev-parse ${pkgver}
+pkgver=20220225
 pkgrel=1
 pkgdesc='Arch Linux PGP keyring'
 arch=('any')
@@ -14,7 +14,7 @@ install=$pkgname.install
 depends=('pacman')
 makedepends=('git' 'python' 'sequoia-sq' 'pkgconf' 'systemd')
 checkdepends=('python-coverage' 'python-pytest')
-source=("archlinux-keyring::git+https://gitlab.archlinux.org/archlinux/archlinux-keyring.git#tag=${_tag}?signed")
+source=("archlinux-keyring::git+https://github.com/loongarchlinux/archlinux-keyring.git#tag=${_tag}?signed")
 sha256sums=('SKIP')
 validpgpkeys=('02FD1C7A934E614545849F19A6234074498E9CEE'  # Christian Hesse <eworm@archlinux.org>
               'C7E7849466FE2358343588377258734B41C31549'  # David Runge <dvzrv@archlinux.org>
