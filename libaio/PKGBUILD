@@ -8,14 +8,25 @@ pkgdesc="The Linux-native asynchronous I/O facility (aio) library"
 arch=('loongarch64' 'x86_64')
 url="http://lse.sourceforge.net/io/aio.html"
 license=('LGPL')
-source=(http://ftp.de.debian.org/debian/pool/main/liba/$pkgname/${pkgname}_${pkgver}.orig.tar.xz)
-md5sums=('66e3b7dd255581a73542ee851f8cd737')
+source=(http://ftp.de.debian.org/debian/pool/main/liba/$pkgname/${pkgname}_${pkgver}.orig.tar.xz
+libaio-la.patch)
+md5sums=('66e3b7dd255581a73542ee851f8cd737'
+         'b92a1769f28a03b64f9d029c4ad1b580')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+  patch -p1 -i $srcdir/libaio-la.patch
+}
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
   # AIO library is a thin wrapper around kernel syscalls, it does not use stdlib
   # and other helpers like stack protection libraries
-  CFLAGS="-march=${CARCH/_/-} -mtune=generic -O2 -pipe"
+  if [ ${CARCH} == "loongarch64" ]; then
+      CFLAGS="-mabi=lp64d -march=la464 -O2 -pipe"
+  else
+      CFLAGS="-march=${CARCH/_/-} -mtune=generic -O2 -pipe"
+  fi
   make
 }
 

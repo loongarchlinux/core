@@ -27,7 +27,7 @@ prepare() {
 }
 
 build() {
-  make LFLAGS=${LDFLAGS}
+  make LFLAGS="${LDFLAGS}"
 }
 
 package() {

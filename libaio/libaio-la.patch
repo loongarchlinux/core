@@ -1,0 +1,51 @@
+Index: libaio-0.3.112/harness/cases/16.t
+===================================================================
+--- libaio-0.3.112.orig/harness/cases/16.t
++++ libaio-0.3.112/harness/cases/16.t
+@@ -18,7 +18,7 @@
+ #define SYS_eventfd 318
+ #elif defined(__alpha__)
+ #define SYS_eventfd 478
+-#elif defined(__aarch64__)
++#elif defined(__aarch64__) || defined(__loongarch64)
+ /* arm64 does not implement eventfd, only eventfd2 */
+ #define USE_EVENTFD2
+ #ifndef SYS_eventfd2
+Index: libaio-0.3.112/libaio.spec
+===================================================================
+--- libaio-0.3.112.orig/libaio.spec
++++ libaio-0.3.112/libaio.spec
+@@ -7,7 +7,7 @@ Group:  System Environment/Libraries
+ Source: %{name}-%{version}.tar.gz
+ BuildRoot: %{_tmppath}/%{name}-root
+ # Fix ExclusiveArch as we implement this functionality on more architectures
+-ExclusiveArch: i386 x86_64 ia64 s390 s390x ppc ppc64 ppc64pseries ppc64iseries alpha alphaev6 %{arm}
++ExclusiveArch: i386 x86_64 ia64 s390 s390x ppc ppc64 ppc64pseries ppc64iseries alpha alphaev6 %{arm} loongarch64
+ 
+ %description
+ The Linux-native asynchronous I/O facility ("async I/O", or "aio") has a
+Index: libaio-0.3.112/src/libaio.h
+===================================================================
+--- libaio-0.3.112.orig/src/libaio.h
++++ libaio-0.3.112/src/libaio.h
+@@ -63,6 +63,7 @@ typedef enum io_iocb_cmd {
+ /* little endian, 64 bits */
+ #elif defined(__ia64__) || defined(__x86_64__) || defined(__alpha__) || \
+       (defined(__aarch64__) && defined(__AARCH64EL__)) || \
++      (defined(__loongarch64)) || \
+       (defined(__riscv) && __riscv_xlen == 64) || \
+       (defined(__GNUC__) && defined(__BYTE_ORDER__) && \
+           __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__ && __SIZEOF_LONG__ == 8)
+Index: libaio-0.3.112/src/syscall.h
+===================================================================
+--- libaio-0.3.112.orig/src/syscall.h
++++ libaio-0.3.112/src/syscall.h
+@@ -27,7 +27,7 @@
+ #include "syscall-arm.h"
+ #elif defined(__sparc__)
+ #include "syscall-sparc.h"
+-#elif defined(__aarch64__) || defined(__riscv)
++#elif defined(__aarch64__) || defined(__riscv) || defined(__loongarch64)
+ #include "syscall-generic.h"
+ #else
+ #warning "using system call numbers from sys/syscall.h"

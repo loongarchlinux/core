@@ -1,0 +1,58 @@
+--- a/scripts/makepkg.sh.in	2021-09-04 17:42:20.357641200 +0800
++++ b/scripts/makepkg.sh.in	2022-07-03 10:53:19.172054732 +0800
+@@ -75,6 +75,7 @@
+ RMDEPS=0
+ SKIPCHECKSUMS=0
+ SKIPPGPCHECK=0
++SKIPCONFIG=0
+ SIGNPKG=''
+ SPLITPKG=0
+ SOURCEONLY=0
+@@ -405,6 +406,12 @@
+ 	eval "$restoreshopt"
+ }
+ 
++replace_config_sub()
++{
++    for c_s in $(find -type f -name config.sub -o -name configure.sub); do cp -f /usr/share/automake-1.16/config.sub "$c_s"; done
++    for c_g in $(find -type f -name config.guess -o -name configure.guess); do cp -f /usr/share/automake-1.16/config.guess "$c_g"; done
++}
++
+ run_function() {
+ 	if [[ -z $1 ]]; then
+ 		return 1
+@@ -415,6 +422,9 @@
+ 		msg "$(gettext "Starting %s()...")" "$pkgfunc"
+ 	fi
+ 	cd_safe "$srcdir"
++	if [ $SKIPCONFIG -eq 0 ]; then
++	    replace_config_sub
++    fi
+ 
+ 	local ret=0
+ 	if (( LOGGING )); then
+@@ -999,6 +1009,7 @@
+ 	printf -- "$(gettext "  --skipchecksums  Do not verify checksums of the source files")\n"
+ 	printf -- "$(gettext "  --skipinteg      Do not perform any verification checks on source files")\n"
+ 	printf -- "$(gettext "  --skippgpcheck   Do not verify source files with PGP signatures")\n"
++	printf -- "$(gettext "  --skipconfig     Do not replace config.{guess,sub}")\n"
+ 	printf -- "$(gettext "  --verifysource   Download source files (if needed) and perform integrity checks")\n"
+ 	echo
+ 	printf -- "$(gettext "These options can be passed to %s:")\n" "pacman"
+@@ -1042,7 +1053,7 @@
+           'help' 'holdver' 'ignorearch' 'install' 'key:' 'log' 'noarchive' 'nobuild'
+           'nocolor' 'nocheck' 'nodeps' 'noextract' 'noprepare' 'nosign' 'packagelist'
+           'printsrcinfo' 'repackage' 'rmdeps' 'sign' 'skipchecksums' 'skipinteg'
+-          'skippgpcheck' 'source' 'syncdeps' 'verifysource' 'version')
++          'skipconfig' 'skippgpcheck' 'source' 'syncdeps' 'verifysource' 'version')
+ 
+ # Pacman Options
+ OPT_LONG+=('asdeps' 'noconfirm' 'needed' 'noprogressbar')
+@@ -1093,6 +1104,7 @@
+ 		--skipchecksums)  SKIPCHECKSUMS=1 ;;
+ 		--skipinteg)      SKIPCHECKSUMS=1; SKIPPGPCHECK=1 ;;
+ 		--skippgpcheck)   SKIPPGPCHECK=1;;
++		--skipconfig)     SKIPCONFIG=1;;
+ 		-s|--syncdeps)    DEP_BIN=1 ;;
+ 		-S|--source)      BUILDPKG=0 SOURCEONLY=1 ;;
+ 		--verifysource)   BUILDPKG=0 VERIFYSOURCE=1 ;;

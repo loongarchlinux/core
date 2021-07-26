@@ -15,7 +15,8 @@ makedepends=(gettext gtk-doc shared-mime-info python libelf git util-linux
 checkdepends=(desktop-file-utils)
 source=("git+https://gitlab.gnome.org/GNOME/glib.git?signed#tag=$pkgver"
         0001-glib-compile-schemas-Remove-noisy-deprecation-warnin.patch
-        glib-compile-schemas.hook gio-querymodules.{hook,script})
+        glib-compile-schemas.hook gio-querymodules.{hook,script}
+        glib2-objcopy-patch.patch)
 sha256sums=('SKIP'
             'edb5e34ac0a77431978cab55b98e39754d73455e28a38f5003424e943bbe5fff'
             '64ae5597dda3cc160fc74be038dbe6267d41b525c0c35da9125fbf0de27f9b25'
@@ -31,6 +32,7 @@ prepare() {
 
   # Suppress noise from glib-compile-schemas.hook
   git apply -3 ../0001-glib-compile-schemas-Remove-noisy-deprecation-warnin.patch
+  patch -p1 -i $srcdir/glib2-objcopy-patch.patch
 }
 
 build() {
@@ -80,3 +82,9 @@ package_glib2-docs() {
 }
 
 # vim:set sw=2 et:
+sha256sums=('SKIP'
+            'edb5e34ac0a77431978cab55b98e39754d73455e28a38f5003424e943bbe5fff'
+            '64ae5597dda3cc160fc74be038dbe6267d41b525c0c35da9125fbf0de27f9b25'
+            '2a9f9b8235f48e3b7d0f6cfcbc76cd2116c45f28692cac4bd61074c495bd5eb7'
+            '92d08db5aa30bda276bc3d718e7ff9dd01dc40dcab45b359182dcc290054e24e'
+            '9b8533ef8d237753a2dde5fb1a147c1337724ca4985851381db5c1228bf50b6b')

@@ -5,7 +5,7 @@
 
 pkgname=coreutils
 pkgver=9.0
-pkgrel=2
+pkgrel=3
 pkgdesc='The basic file, shell and text manipulation utilities of the GNU operating system'
 arch=('loongarch64' 'x86_64')
 license=('GPL3')
@@ -29,6 +29,7 @@ prepare() {
     fi
   done
   :
+  autoreconf -vfi
 }
 
 build() {

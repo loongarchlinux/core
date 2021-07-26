@@ -4,7 +4,7 @@
 
 pkgname=file
 pkgver=5.41
-pkgrel=1
+pkgrel=2
 pkgdesc='File type identification utility'
 arch=('loongarch64' 'x86_64')
 license=('custom')
@@ -13,10 +13,12 @@ url='https://www.darwinsys.com/file/'
 depends=('glibc' 'zlib' 'xz' 'bzip2' 'libseccomp' 'libseccomp.so')
 provides=('libmagic.so')
 options=('!emptydirs')
-source=("https://astron.com/pub/$pkgname/$pkgname-$pkgver.tar.gz"{,.asc})
+source=("https://astron.com/pub/$pkgname/$pkgname-$pkgver.tar.gz"{,.asc}
+        0001-add-support-for-loongarch.patch)
 validpgpkeys=('BE04995BA8F90ED0C0C176C471112AB16CB33B3A') # Christos Zoulas
 sha256sums=('13e532c7b364f7d57e23dfeea3147103150cb90593a57af86c10e4f6e411603f'
-            'SKIP')
+            'SKIP'
+            '8838e740364edc9b318e65a348892ccdc943f8271d4f637ddbb4064b685d2987')
 
 prepare() {
   cd $pkgname-$pkgver

@@ -14,8 +14,10 @@ url="https://github.com/rhboot/efibootmgr"
 license=('GPL2')
 depends=('glibc' 'popt')
 makedepends=('efivar' 'git')
-source=("${pkgname}::git+https://github.com/rhboot/efibootmgr#tag=${pkgver}?signed")
-sha512sums=('SKIP')
+source=("${pkgname}::git+https://github.com/rhboot/efibootmgr#tag=${pkgver}?signed"
+        efibootmgr-fix-build.patch)
+sha512sums=('SKIP'
+            '0fab53be54f0e1492b5b650d71e18149099f36c4c88e6d602a12b0f369bd97757e59c40ec6107e2135c093237c328dd718d5212ece79d38870ef0568c421b369')
 validpgpkeys=('B00B48BC731AA8840FED9FB0EED266B70F4FEF10') # Peter Jones <pjones@redhat.com>
 
 prepare() {
@@ -24,6 +26,7 @@ prepare() {
   # removing hotfix function declaration:
   # https://github.com/rhboot/efibootmgr/issues/128
   sed -e '/extern int efi_set_verbose/d' -i "src/${pkgname}.c"
+  patch -p1 -i "$srcdir/efibootmgr-fix-build.patch"
 }
 
 build() {

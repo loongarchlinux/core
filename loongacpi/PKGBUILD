@@ -1,0 +1,22 @@
+# This is an example PKGBUILD file. Use this as a start to creating your own,
+# and remove these comments. For more information, see 'man PKGBUILD'.
+# NOTE: Please fill out the license field for your package! If it is unknown,
+# then please put 'unknown'.
+
+# Maintainer: Your Name <youremail@domain.com>
+pkgname=loongacpi
+pkgver=20210915
+pkgrel=1
+arch=('loongarch64' 'x86_64')
+pkgdesc="ACPI Table for loongarch"
+url="https://loongarch.dev"
+license=('GPL')
+depends=('mkinitcpio')
+makedepends=('acpica')
+source=("http://public.loongarch.dev/sources/loongacpi/$pkgname-$pkgver.tar.xz/0f821a8a5ae96e53a162a346ab2b50b1/$pkgname-$pkgver.tar.xz")
+sha256sums=('0324783717920eb7e4ae36b64c2983482b86bb6f3689e7873bffd50fa6f3eedd')
+
+package() {
+	cd "$pkgname-$pkgver"
+	make DESTDIR="$pkgdir/" install
+}

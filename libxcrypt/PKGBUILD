@@ -1,7 +1,7 @@
 # Maintainer: Christian Hesse <mail@eworm.de>
 
 pkgbase=libxcrypt
-pkgname=(libxcrypt libxcrypt-compat)
+pkgname=(libxcrypt) #libxcrypt-compat)
 pkgver=4.4.28
 pkgrel=2
 pkgdesc='Modern library for one-way hashing of passwords'
@@ -13,9 +13,16 @@ provides=('libcrypt.so')
 options=('debug')
 install=libxcrypt.install
 validpgpkeys=('678CE3FEE430311596DB8C16F52E98007594C21D') # Björn 'besser82' Esser
-source=("${url}/releases/download/v${pkgver}/${pkgbase}-${pkgver}.tar.xz"{,.asc})
+source=("${url}/releases/download/v${pkgver}/${pkgbase}-${pkgver}.tar.xz"{,.asc}
+		libxcrypt-la64.patch)
 sha256sums=('9e936811f9fad11dbca33ca19bd97c55c52eb3ca15901f27ade046cc79e69e87'
-            'SKIP')
+            'SKIP'
+            'a6afa6ca8328c031f99d2e49da92b2187a4accddf4519bc7c5e02f80cc5713ca')
+
+prepare() {
+  cd "$pkgbase-$pkgver"
+  patch -p1 -i "$srcdir/libxcrypt-la64.patch"
+}
 
 build() {
   mkdir build-libxcrypt build-libxcrypt-compat
@@ -26,15 +33,6 @@ build() {
     --disable-static \
     --enable-hashes=strong,glibc \
     --enable-obsolete-api=no \
-    --disable-failure-tokens
-  make
-  
-  cd "${srcdir}/build-libxcrypt-compat/"
-  "${srcdir}/${pkgbase}-${pkgver}"/configure \
-    --prefix=/usr \
-    --disable-static \
-    --enable-hashes=strong,glibc \
-    --enable-obsolete-api=glibc \
     --disable-failure-tokens
   make
 }
