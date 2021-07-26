@@ -14,9 +14,18 @@ depends=('glibc')
 checkdepends=('dejagnu')
 provides=('libffi.so')
 options=('debug')
-source=(https://github.com/libffi/libffi/releases/download/v$pkgver/libffi-$pkgver.tar.gz)
-sha256sums=('d66c56ad259a82cf2a9dfc408b32bf5da52371500b84745f7fb8b645712df676')
-b2sums=('189fe1ffe9507f204581b0ab09995dc7e7b761bb4eac7e338e9f5ff81431aebcef6c182c1839c9f9acb2706697a260c67e6d1351cf7e2aed7c4eb5d694f6f8fd')
+source=(https://github.com/libffi/libffi/releases/download/v$pkgver/libffi-$pkgver.tar.gz
+        libffi-la64.patch)
+sha256sums=('d66c56ad259a82cf2a9dfc408b32bf5da52371500b84745f7fb8b645712df676'
+            'acc52fd3cf59845b97d13402e1ea6ebb17cbf4dbfc3f5dd5e2bdfe873bd187cb')
+b2sums=('189fe1ffe9507f204581b0ab09995dc7e7b761bb4eac7e338e9f5ff81431aebcef6c182c1839c9f9acb2706697a260c67e6d1351cf7e2aed7c4eb5d694f6f8fd'
+        'bf8a5a995f7ae7e73673b2989e6de0db04304336d60797bee405a9fdb7024ed05c4662cdad861981eb62554fba43bdef1133b3df2665763d78b2204f13a1aa0f')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 -i "$srcdir/libffi-la64.patch"
+  autoreconf -fiv
+}
 
 build() {
   cd $pkgname-$pkgver

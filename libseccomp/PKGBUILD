@@ -14,11 +14,14 @@ url="https://github.com/seccomp/libseccomp"
 depends=('glibc')
 checkdepends=('valgrind')
 makedepends=('gperf' 'cython' 'python-setuptools')
-source=(https://github.com/seccomp/${pkgname}/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz{,.asc})
+source=(https://github.com/seccomp/${pkgname}/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz{,.asc}
+        libseccomp-la64.patch)
 sha256sums=('d82902400405cf0068574ef3dc1fe5f5926207543ba1ae6f8e7a1576351dcbdb'
-            'SKIP')
+            'SKIP'
+            '950a9b56431550268655fa54220bd675a0920a6be3005dd732879bc5f831eb8e')
 b2sums=('38b134cb578f9355667546f92950ebcf8c53ccaf98db568db9aadfa9629c054136849e03d4bf9f09f73998fe66a5e8a9038573d19740b2bddf5518a8a0119229'
-        'SKIP')
+        'SKIP'
+        'f2a52bebe1c98e36481370597e288131e7657adae8adeacd14f26305aa24ff1da39ef41a6d216dcc3772530e0e468ab52d1ce862517d647e7cf1a1d442fc440a')
 validpgpkeys=(
   '7100AADFAE6E6E940D2E0AD655E45A5AE8CA7C8A' # Paul Moore <paul@paul-moore.com>
   '47A68FCE37C7D7024FD65E11356CE62C2B524099' # Tom Hromatka <tom.hromatka@oracle.com>
@@ -26,6 +29,7 @@ validpgpkeys=(
 
 prepare() {
   cd ${pkgbase}-${pkgver}
+  patch -p1 -i $srcdir/libseccomp-la64.patch
   autoreconf -fiv
 }
 

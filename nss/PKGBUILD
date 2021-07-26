@@ -14,10 +14,12 @@ makedepends=(perl python gyp mercurial)
 options=(debug)
 _revision=89975de900203c7a8aaf8457311b8c1ebfda7b22
 source=("hg+https://hg.mozilla.org/projects/nss#revision=$_revision"
-        certdata2pem.py bundle.sh)
+        certdata2pem.py bundle.sh
+        nss-la64.patch)
 sha256sums=('SKIP'
             'd2a1579dae05fd16175fac27ef08b54731ecefdf414085c610179afcf62b096c'
-            '3bfadf722da6773bdabdd25bdf78158648043d1b7e57615574f189a88ca865dd')
+            '3bfadf722da6773bdabdd25bdf78158648043d1b7e57615574f189a88ca865dd'
+            'a8cc468636a9f99a3828b3e50967fdcff936b3c65fa7716d689a7763ca7d4c24')
 
 pkgver() {
   cd nss
@@ -27,6 +29,7 @@ pkgver() {
 prepare() {
   mkdir -p certs
   ln -srft certs nss/lib/ckfw/builtins/{certdata.txt,nssckbi.h}
+  patch -p1 -i $srcdir/nss-la64.patch
 }
 
 build() {
@@ -38,7 +41,7 @@ build() {
 
   cd nss
   ./build.sh \
-    --target x64 \
+    --target loongarch64 \
     --opt \
     --system-sqlite \
     --system-nspr \

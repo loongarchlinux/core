@@ -39,6 +39,7 @@ build() {
     --disable-setuid \
     --enable-cache-owner=root \
     --enable-mandirs=GNU \
+    --without-libseccomp \
     --with-sections="1 1p n l 8 3 3p 0 0p 2 5 4 9 6 7"
   make
 }
