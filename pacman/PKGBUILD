@@ -4,7 +4,7 @@
 
 pkgname=pacman
 pkgver=6.0.2
-pkgrel=6
+pkgrel=8
 pkgdesc="A library-based package manager with dependency support"
 arch=('loong64' 'x86_64')
 url="https://www.archlinux.org/pacman/"
@@ -26,15 +26,21 @@ source=(https://sources.archlinux.org/other/pacman/$pkgname-$pkgver.tar.xz{,.sig
         pacman-fix-unique-source-paths.patch::https://gitlab.archlinux.org/pacman/pacman/-/commit/478af273dfe24ded197ec54ae977ddc3719d74a0.patch
         pacman-strip-include-o-files-similar-to-kernel-modules.patch::https://gitlab.archlinux.org/pacman/pacman/-/commit/de11824527ec4e2561e161ac40a5714ec943543c.patch
         pacman.conf
-        makepkg.conf)
+        makepkg.x86_64.conf
+        makepkg.loong64.conf
+        makepkg-loongarch64.patch
+        pacman-use-loong64.patch)
 sha256sums=('7d8e3e8c5121aec0965df71f59bedf46052c6cf14f96365c4411ec3de0a4c1a5'
             'SKIP'
             '6fed94326b9ecfbb438ab17a4576b5e9d52ecc0f4574f29d46adfde3886dee03'
             'd2bc104788290e3de829a232590b66ad745cf5b4762a01acc1191ebf70fef114'
             'f3d4f39ef24e312f610cbb3439fb02bc6b8829e37bcf1a50ae50cd0a69bde5d0'
             'd87d0c9957c613fda272553bee58140349d151ae399f346ddaf6d75ee5916312'
-            '606e55f06c297d2b508bc4438890b229a1abaa68b0374a2d7f94c8e7be6792d7'
-            '072020e34f2c55b94a9a486829a7eadab0a830ddb4d8e759b0c4e6cf1bde73a6')
+            'fd138005cd80d00721762ca36b0cc815269a9d3f3c5c4ad1d3b9f52befaeae3e'
+            '072020e34f2c55b94a9a486829a7eadab0a830ddb4d8e759b0c4e6cf1bde73a6'
+            '92248586d9c79902e38843035962e820ee00c200860a5541d5cc9d0e5adc4914'
+            'cc28f2e803d39f7b4789471aebf8b6b2b4780f79b4f3b8453e5abcc3772dda98'
+            '8a0ca1f6187ad21bcbfa143668dc47fe5582b610a5020ed590fb33cc2969c05b')
 
 prepare() {
   cd "${pkgname}-${pkgver}"
@@ -78,5 +84,5 @@ package() {
   # install Arch specific stuff
   install -dm755 "$pkgdir/etc"
   install -m644 "$srcdir/pacman.conf" "$pkgdir/etc"
-  install -m644 "$srcdir/makepkg.conf" "$pkgdir/etc"
+  install -m644 "$srcdir/makepkg.${CARCH}.conf" "$pkgdir/etc/makepkg.conf"
 }

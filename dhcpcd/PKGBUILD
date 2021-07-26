@@ -27,6 +27,7 @@ source=(
   $pkgname.service
   $pkgname.sysusers
   $pkgname.tmpfiles
+  https://github.com/NetworkConfiguration/dhcpcd/commit/3fc025392dc9a8a3c8abd8568941bad07cecbd85.patch)
 )
 sha256sums=('6e9f6a5c47fcd8a763cfa26f1ca6eedf1e534992224a01d6c1ab8abb154af972'
             'SKIP'
@@ -44,6 +45,8 @@ validpgpkeys=('A785ED2755955D9E93EA59F6597F97EA9AD45549')  # Roy Marples (NetBSD
 
 prepare() {
   printf "# Don't attempt to obtain an IPv4LL address if we failed to get one via DHCP.  See RFC 3927.\nnoipv4ll\n" >> $pkgname-$pkgver/src/$pkgname.conf
+  cd ${pkgname}-${pkgver}
+  patch -p1 -i ${srcdir}/3fc025392dc9a8a3c8abd8568941bad07cecbd85.patch
 }
 
 build() {

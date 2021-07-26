@@ -4,7 +4,7 @@
 
 pkgname=fakeroot
 pkgver=1.31
-pkgrel=2
+pkgrel=4
 pkgdesc='Tool for simulating superuser privileges'
 arch=('loong64' 'x86_64')
 license=('GPL')
@@ -13,8 +13,17 @@ install=fakeroot.install
 depends=('glibc' 'filesystem' 'sed' 'util-linux' 'sh')
 makedepends=('systemd' 'po4a')
 checkdepends=('sharutils')
-source=("https://deb.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.orig.tar.gz")
-sha256sums=('63886d41e11c56c7170b9d9331cca086421b350d257338ef14daad98f77e202f')
+source=("https://deb.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.orig.tar.gz"
+        4.patch)
+sha256sums=('63886d41e11c56c7170b9d9331cca086421b350d257338ef14daad98f77e202f'
+            'b0a3c9d0958c857915a3d8a0597dc0464b5bb22a519bae0ef228107c5e83bd8a')
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  patch -p1 -i $srcdir/4.patch
+  ./bootstrap
+}
 
 build() {
   cd $pkgname-$pkgver

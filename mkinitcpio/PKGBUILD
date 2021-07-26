@@ -12,6 +12,7 @@ url='https://gitlab.archlinux.org/archlinux/mkinitcpio/mkinitcpio'
 license=('GPL')
 depends=('awk' 'mkinitcpio-busybox>=1.19.4-2' 'kmod' 'util-linux>=2.23' 'libarchive' 'coreutils'
          'bash' 'binutils' 'diffutils' 'findutils' 'grep' 'filesystem>=2011.10-1' 'zstd' 'systemd')
+makedepends=('asciidoc')
 checkdepends=('bash-bats' 'bash-bats-assert' 'lzop')
 optdepends=('gzip: Use gzip compression for the initramfs image'
             'xz: Use lzma or xz compression for the initramfs image'
@@ -21,14 +22,25 @@ optdepends=('gzip: Use gzip compression for the initramfs image'
             'mkinitcpio-nfs-utils: Support for root filesystem on NFS')
 provides=('initramfs')
 backup=('etc/mkinitcpio.conf')
-source=("https://sources.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz"{,.sig})
+source=("https://sources.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz"{,.sig}
+        "mkinitcpio-la64.patch"
+        "mkinitcpio-zboot.patch")
 install=mkinitcpio.install
 sha512sums=('9ca8544bc5de3d215bf94ecf9a3bfb9265c9ed9871357af4b597a37e94c6951935641c11558470aaa934e8fbe9bc1f875dfa9d0fe8734a97f90154c9cbabfdba'
-            'SKIP')
+            'SKIP'
+            '7e3942f38fcdca9358024b355839e0285503d009e00ae13d9f67f8451ac91622f26781857a70e00e21fff44d90e7771ce23764cfecd5976ee3f853d84d85c9f1'
+            '791ab4cd779483a2ecdb87b185bc992b294578d4ee7229e31fadb54d103ebd1c6a5d2dcc61b14dc7e8347a9257ab1b26ac5976a76c737e5ef86448ef24b1a2ee')
 b2sums=('e7d56ea1de8d21271d4e94a61563af9c5f33320a46ce9f006092bb70e2161be02791dfd75b14e9c9b5ad2fbb781617f04b4e49afa93a707785c23773c1a48664'
-        'SKIP')
+        'SKIP'
+        '8e1e8a4aa2247df7b32374ba5c0474c1da16a06cf66609729133b5eb2b54250ae581384030e61d7dd4e53689d3d0725315d2e5465902c9368d588ab7ca4e79a1'
+        '794df937071b7e72dee6ce53c037faf87440e439ce174576a7c0333a513cdaa487a744d380a43933ff179039b4b0c0a79ca20c0f7c5d063f1de901549d76c709')
 validpgpkeys=('ECCAC84C1BA08A6CC8E63FBBF22FB1D78A77AEAB'    # Giancarlo Razzolini
               'C100346676634E80C940FB9E9C02FF419FECBE16')   # Morten Linderud
+
+prepare() {
+  patch -p1 -d "$pkgname-$pkgver" -i $srcdir/mkinitcpio-la64.patch
+  patch -p1 -d "$pkgname-$pkgver" -i $srcdir/mkinitcpio-zboot.patch
+}
 
 check() {
   make -C "$pkgname-$pkgver" check
