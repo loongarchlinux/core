@@ -1,0 +1,38 @@
+diff --git a/nss/lib/freebl/verified/kremlin/include/kremlin/internal/types.h b/nss/lib/freebl/verified/kremlin/include/kremlin/internal/types.h
+index 2c966cb54..a28ff3741 100644
+--- a/nss/lib/freebl/verified/kremlin/include/kremlin/internal/types.h
++++ b/nss/lib/freebl/verified/kremlin/include/kremlin/internal/types.h
+@@ -62,6 +62,7 @@ typedef const char *Prims_string;
+      (defined(_MSC_VER) && defined(_M_X64) && defined(__clang__)) || \
+      (defined(__mips__) && defined(__LP64__)) ||                     \
+      (defined(__riscv) && __riscv_xlen == 64) ||                     \
++     defined(__loongarch64) ||                                       \
+      defined(__SIZEOF_INT128__))
+ #define HAS_INT128 1
+ #endif
+diff --git a/nss/lib/ssl/ssl3exthandle.c b/nss/lib/ssl/ssl3exthandle.c
+index b5ae62f39..7134447bf 100644
+--- a/nss/lib/ssl/ssl3exthandle.c
++++ b/nss/lib/ssl/ssl3exthandle.c
+@@ -201,7 +201,7 @@
+  * Clients sends a filled in session ticket if one is available, and otherwise
+  * sends an empty ticket.  Servers always send empty tickets.
+  */
+-PRInt32
++SECStatus
+ ssl3_ClientSendSessionTicketXtn(const sslSocket *ss, TLSExtensionData *xtnData,
+                                 sslBuffer *buf, PRBool *added)
+ {
+diff --git a/nss/lib/ssl/sslsnce.c b/nss/lib/ssl/sslsnce.c
+index 56edafa1f..49f041c97 100644
+--- a/nss/lib/ssl/sslsnce.c
++++ b/nss/lib/ssl/sslsnce.c
+@@ -1820,7 +1820,7 @@
+     return SECSuccess;
+ }
+ 
+-static PRBool
++static SECStatus
+ ssl_GenerateSelfEncryptKeys(void *pwArg, PRUint8 *keyName,
+                             PK11SymKey **aesKey, PK11SymKey **macKey);
+ 

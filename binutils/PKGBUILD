@@ -56,7 +56,7 @@ build() {
     --enable-colored-disassembly \
     --enable-default-execstack=no \
     --enable-deterministic-archives \
-    --enable-gold \
+    --disable-gold \
     --enable-install-libiberty \
     --enable-jansson \
     --enable-ld=default \
@@ -65,7 +65,6 @@ build() {
     --enable-plugins \
     --enable-relro \
     --enable-shared \
-    --enable-targets=x86_64-pep,bpf-unknown-none \
     --enable-threads \
     --disable-gdb \
     --disable-gdbserver \

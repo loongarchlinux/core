@@ -11,6 +11,9 @@ license=('GPL')
 backup=(etc/pacman.d/mirrorlist)
 source=(mirrorlist)
 
+md5sums=('2b3036e05975b71bb831de074e0ee596')
+sha256sums=('f398ece30889615192900e63de72a6e7cb4fc63349b26fbb27cc1a14bfa484ff')
+
 # NOTE on building this package:
 # * Go to the trunk/ directory
 # * Run bash -c ". PKGBUILD; updatelist"
@@ -26,6 +29,3 @@ package() {
   mkdir -p "$pkgdir/etc/pacman.d"
   install -m644 "$srcdir/mirrorlist" "$pkgdir/etc/pacman.d/"
 }
-
-md5sums=('8509a072494866a4d5092ff3350cdaf6')
-sha256sums=('aaa43f97adf0e0a5bbf8f2668237aa1d7aa35fd6e99d639602aabde09756c392')

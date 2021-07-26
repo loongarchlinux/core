@@ -1,0 +1,37 @@
+Index: fakeroot-1.28/configure.ac
+===================================================================
+--- fakeroot-1.28.orig/configure.ac
++++ fakeroot-1.28/configure.ac
+@@ -190,7 +190,7 @@ AC_MSG_CHECKING([for type of arg of __xm
+        #include <fcntl.h>
+        #include <unistd.h>
+   ]], [[
+-#ifndef __GLIBC__
++#if !defined(__GLIBC__) || (defined(__GLIBC__) && __GLIBC_PREREQ(2,35))
+ #error no extra *
+ #endif
+        int __xmknod  ( int ver,
+@@ -219,7 +219,7 @@ AC_MSG_CHECKING([for type of arg of __xm
+        #include <fcntl.h>
+        #include <unistd.h>
+   ]], [[
+-#ifndef __GLIBC__
++#if !defined(__GLIBC__) || (defined(__GLIBC__) && __GLIBC_PREREQ(2,35))
+ #error no extra *
+ #endif
+        int __xmknodat  ( int ver,
+Index: fakeroot-1.28/libfakeroot.c
+===================================================================
+--- fakeroot-1.28.orig/libfakeroot.c
++++ fakeroot-1.28/libfakeroot.c
+@@ -1393,8 +1393,8 @@ int renameat(int olddir_fd, const char *
+ #endif // defined(__linux__)
+ 
+ #if defined(__GLIBC__)
+-#if __GLIBC_PREREQ(2,33)
+-/* Glibc 2.33 exports symbols for these functions in the shared lib */
++#if __GLIBC_PREREQ(2,38)
++/* Glibc 2.36 exports symbols for these functions in the shared lib */
+   int lstat(const char *file_name, struct stat *statbuf) {
+      return WRAP_LSTAT LSTAT_ARG(_STAT_VER, file_name, statbuf);
+   }
