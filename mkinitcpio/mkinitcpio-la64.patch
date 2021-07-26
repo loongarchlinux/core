@@ -1,0 +1,13 @@
+diff --git a/functions b/functions
+index 554bcde..17a9d23 100644
+--- a/functions
++++ b/functions
+@@ -963,7 +963,7 @@ initialize_buildroot() {
+     ln -s "/run"    "$buildroot/var/run"
+ 
+     case "$arch" in
+-        x86_64)
++        x86_64|loongarch64)
+             ln -s "lib"     "$buildroot/usr/lib64"
+             ln -s "usr/lib" "$buildroot/lib64"
+             ;;

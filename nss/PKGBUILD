@@ -54,7 +54,7 @@ build() {
 
   cd nss
   ./build.sh \
-    --target x64 \
+    --target loongarch64 \
     --opt \
     --system-sqlite \
     --system-nspr \
