@@ -1,8 +1,10 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
 pkgbase=linux
-pkgver=5.19.12.arch1
-pkgrel=1
+_ver=6.0
+_rdate=20220915
+pkgver=${_ver}.arch1
+pkgrel=2
 pkgdesc='Linux'
 _srctag=v${pkgver%.*}-${pkgver##*.}
 url="https://github.com/archlinux/linux/commits/$_srctag"
@@ -14,10 +16,10 @@ makedepends=(
   git
 )
 options=('!strip')
-_srcname=archlinux-linux
-source=(
-  "$_srcname::git+https://github.com/archlinux/linux?signed#tag=$_srctag"
-  config         # the main kernel config file
+_srcname=${pkgbase}-${_ver}
+source=(https://github.com/yetist/linux/releases/download/v${_rdate}/linux-${_ver}-${_rdate}.tar.xz
+        config         # the main kernel config file
+        config.la64
 )
 validpgpkeys=(
   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
@@ -25,8 +27,9 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
   'C7E7849466FE2358343588377258734B41C31549'  # David Runge <dvzrv@archlinux.org>
 )
-sha256sums=('SKIP'
-            '1e07bdd94abe73ac2074b151729cd9b73c7fa7a615a3a331a89dcb0da42649f8')
+sha256sums=('b4b528f05f96995d8dd2bea14f4d9515d60d513cf064566d1c2163bdb1c2610a'
+            '9ec3b7e3c23d1fef653b548fbb6b2b08a2f160e1a07aacd8715f56524279c00c'
+            '6ad1cfcfbd77d430992d19100a5621b1b2a9582947bffee0662716ef1cc28cc3')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -50,7 +53,11 @@ prepare() {
   done
 
   echo "Setting config..."
-  cp ../config .config
+  if [ $CARCH == loong64 ];then
+    cp ../config.la64 .config
+  else
+    cp ../config .config
+  fi
   make olddefconfig
   diff -u ../config .config || :
 
@@ -60,7 +67,7 @@ prepare() {
 
 build() {
   cd $_srcname
-  make htmldocs all
+  make htmldocs all -j120
 }
 
 _package() {
@@ -102,19 +109,30 @@ _package-headers() {
   install -Dt "$builddir" -m644 .config Makefile Module.symvers System.map \
     localversion.* version vmlinux
   install -Dt "$builddir/kernel" -m644 kernel/Makefile
-  install -Dt "$builddir/arch/x86" -m644 arch/x86/Makefile
+  if [ $CARCH == x86_64 ];then
+    install -Dt "$builddir/arch/x86" -m644 arch/x86/Makefile
+  elif [ $CARCH == loong64 ];then
+    install -Dt "$builddir/arch/loongarch" -m644 arch/loongarch/Makefile
+  fi
+
   cp -t "$builddir" -a scripts
 
   # required when STACK_VALIDATION is enabled
-  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
+#  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
 
   # required when DEBUG_INFO_BTF_MODULES is enabled
-  install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
+  #install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
 
   echo "Installing headers..."
   cp -t "$builddir" -a include
-  cp -t "$builddir/arch/x86" -a arch/x86/include
-  install -Dt "$builddir/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
+  if [ $CARCH == x86_64 ];then
+    cp -t "$builddir/arch/x86" -a arch/x86/include
+    install -Dt "$builddir/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
+  elif [ $CARCH == loong64 ];then
+    cp -t "$builddir/arch/loongarch" -a arch/loongarch/include
+    install -Dt "$builddir/arch/loongarch/kernel" -m644 arch/loongarch/kernel/asm-offsets.s
+  fi
+
 
   install -Dt "$builddir/drivers/md" -m644 drivers/md/*.h
   install -Dt "$builddir/net/mac80211" -m644 net/mac80211/*.h
@@ -136,7 +154,11 @@ _package-headers() {
   echo "Removing unneeded architectures..."
   local arch
   for arch in "$builddir"/arch/*/; do
-    [[ $arch = */x86/ ]] && continue
+    if [ $CARCH == x86_64 ];then
+      [[ $arch = */x86/ ]] && continue
+    elif [ $CARCH == loong64 ];then
+      [[ $arch = */loongarch/ ]] && continue
+    fi
     echo "Removing $(basename "$arch")"
     rm -r "$arch"
   done
@@ -201,3 +223,9 @@ for _p in "${pkgname[@]}"; do
 done
 
 # vim:set ts=8 sts=2 sw=2 et:
+sha256sums=('b5eaf7a69c3b03261a7c2b8874173aed11a4e1a89766bd1ce9cadda00e1456ba'
+            'f6fde268a3a05c0fa058475c5440002759cdae782b1a9e26673542c933514c47'
+            'a278d33424a50c0806639f7b9435ae26990e09cabf68654f7c45e336d2b9998e')
+sha256sums=('64db1ed1dd8e17c7f2646047fdae87ab2d0fce2bfb9003ba6a4fe923b0afc27e'
+            'f6fde268a3a05c0fa058475c5440002759cdae782b1a9e26673542c933514c47'
+            'a278d33424a50c0806639f7b9435ae26990e09cabf68654f7c45e336d2b9998e')

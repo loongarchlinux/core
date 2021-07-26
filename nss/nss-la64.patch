@@ -1,0 +1,25 @@
+diff --git a/nss/coreconf/config.gypi b/nss/coreconf/config.gypi
+index 7bae38ae4..e2fff7af4 100644
+--- a/nss/coreconf/config.gypi
++++ b/nss/coreconf/config.gypi
+@@ -211,7 +211,7 @@
+           },
+         },
+       }],
+-      [ 'target_arch=="arm64" or target_arch=="aarch64" or target_arch=="sparc64" or target_arch=="ppc64" or target_arch=="ppc64le" or target_arch=="s390x" or target_arch=="mips64" or target_arch=="e2k" or target_arch=="riscv64"', {
++      [ 'target_arch=="arm64" or target_arch=="aarch64" or target_arch=="sparc64" or target_arch=="ppc64" or target_arch=="ppc64le" or target_arch=="s390x" or target_arch=="mips64" or target_arch=="e2k" or target_arch=="riscv64" or target_arch=="loongarch64"', {
+         'defines': [
+           'NSS_USE_64',
+         ],
+diff --git a/nss/lib/freebl/verified/kremlin/include/kremlin/internal/types.h b/nss/lib/freebl/verified/kremlin/include/kremlin/internal/types.h
+index 2c966cb54..a28ff3741 100644
+--- a/nss/lib/freebl/verified/kremlin/include/kremlin/internal/types.h
++++ b/nss/lib/freebl/verified/kremlin/include/kremlin/internal/types.h
+@@ -62,6 +62,7 @@ typedef const char *Prims_string;
+      (defined(_MSC_VER) && defined(_M_X64) && defined(__clang__)) || \
+      (defined(__mips__) && defined(__LP64__)) ||                     \
+      (defined(__riscv) && __riscv_xlen == 64) ||                     \
++     defined(__loongarch64) ||                                       \
+      defined(__SIZEOF_INT128__))
+ #define HAS_INT128 1
+ #endif

@@ -4,25 +4,28 @@
 # Contributor: Keshav Amburay <(the ddoott ridikulus ddoott rat) (aatt) (gemmaeiil) (ddoott) (ccoomm)>
 
 ## "1" to enable IA32-EFI build in Arch x86_64, "0" to disable
-_IA32_EFI_IN_ARCH_X64="1"
+_IA32_EFI_IN_ARCH_X64="0"
 
 ## "1" to enable EMU build, "0" to disable
 _GRUB_EMU_BUILD="0"
 
 [[ "${CARCH}" == 'x86_64' ]] && _EFI_ARCH='x86_64'
 [[ "${CARCH}" == 'i686' ]] && _EFI_ARCH='i386'
+[[ "${CARCH}" == 'loong64' ]] && _EFI_ARCH='loongarch64'
 
 [[ "${CARCH}" == 'x86_64' ]] && _EMU_ARCH='x86_64'
 [[ "${CARCH}" == 'i686' ]] && _EMU_ARCH='i386'
+[[ "${CARCH}" == 'loong64' ]] && _EMU_ARCH=''
 
 pkgname='grub'
 pkgdesc='GNU GRand Unified Bootloader (2)'
 epoch=2
-_commit='d9b4638c50b16d4722e66d334e2c1a674b4a45cc'
-_pkgver=2.06.r322.gd9b4638c5
+_tag='53c5000739db114c229fe69ec3d4b76b92441098' # git rev-parse grub-${_pkgver}
+_gnulib_commit='be584c56eb1311606e5ea1a36363b97bddb6eed3'
 _unifont_ver='14.0.04'
+_pkgver=2.11
 pkgver=${_pkgver/-/}
-pkgrel=4
+pkgrel=3
 url='https://www.gnu.org/software/grub/'
 arch=('loong64' 'x86_64')
 license=('GPL3')
@@ -57,7 +60,7 @@ validpgpkeys=('E53D497F3FA42AD8C9B4D1E835A93B74E82E4209'  # Vladimir 'phcoder' S
               'BE5C23209ACDDACEB20DB0A28C8189F1988C2166'  # Daniel Kiper <dkiper@net-space.pl>
               '95D2E9AB8740D8046387FD151A09227B1F435A33') # Paul Hardy <unifoundry@unifoundry.com>
 
-source=("git+https://git.savannah.gnu.org/git/grub.git#commit=${_commit}"
+source=("git+https://github.com/loongarch64/grub.git#branch=dev/patchwork/efi"
         'git+https://git.savannah.gnu.org/git/gnulib.git'
         "https://ftp.gnu.org/gnu/unifont/unifont-${_unifont_ver}/unifont-${_unifont_ver}.bdf.gz"{,.sig}
         '0001-00_header-add-GRUB_COLOR_-variables.patch'
@@ -150,9 +153,7 @@ prepare() {
 	gzip -cd "${srcdir}/unifont-${_unifont_ver}.bdf.gz" > "unifont.bdf"
 
 	echo "Run bootstrap..."
-	./bootstrap \
-		--gnulib-srcdir="${srcdir}/gnulib/" \
-		--no-git
+	./bootstrap
 
 	echo "Make translations reproducible..."
 	sed -i '1i /^PO-Revision-Date:/ d' po/*.sed
@@ -246,8 +247,10 @@ _build_grub-emu() {
 build() {
 	cd "${srcdir}/grub/"
 
-	echo "Build grub bios stuff..."
-	_build_grub-common_and_bios
+	if [[ "${CARCH}" != "loong64" ]]; then
+	    echo "Build grub bios stuff..."
+	    _build_grub-common_and_bios
+	fi
 
 	echo "Build grub ${_EFI_ARCH} efi stuff..."
 	_build_grub-efi
@@ -320,6 +323,15 @@ package() {
 		_package_grub-emu
 	fi
 
-	echo "Package grub bios stuff..."
-	_package_grub-common_and_bios
+	if [[ "${CARCH}" != "loong64" ]]; then
+	    echo "Package grub bios stuff..."
+	    _package_grub-common_and_bios
+	    cd "${srcdir}/grub-bios/"
+
+	    echo "Run make install for bios build..."
+	    make DESTDIR="${pkgdir}/" bashcompletiondir="/usr/share/bash-completion/completions" install
+	fi
+
+	echo "Install /etc/default/grub (used by grub-mkconfig)..."
+	install -D -m0644 "${srcdir}/grub.default" "${pkgdir}/etc/default/grub"
 }

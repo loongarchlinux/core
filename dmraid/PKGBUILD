@@ -24,6 +24,8 @@ md5sums=('819338fcef98e8e25819f0516722beeb'
          'ea6d280fc6f63fb799abcd882bca53c8')
 
 build() {
+  CFLAGS=${CFLAGS/-Wformat -Werror=format-security/}
+  CXXFLAGS=${CXXFLAGS/-Wformat -Werror=format-security/}
   cd "$pkgname/1.0.0.rc16-3/$pkgname"
   ./configure --enable-led --enable-intel_led
   make -j1

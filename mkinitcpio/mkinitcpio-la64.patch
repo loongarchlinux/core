@@ -1,0 +1,13 @@
+Index: mkinitcpio-31.o/functions
+===================================================================
+--- mkinitcpio-31.o.orig/functions
++++ mkinitcpio-31.o/functions
+@@ -758,7 +758,7 @@ initialize_buildroot() {
+     ln -s "/run"    "$buildroot/var/run"
+ 
+     case $arch in
+-        x86_64)
++        x86_64|loongarch64)
+             ln -s "lib"     "$buildroot/usr/lib64"
+             ln -s "usr/lib" "$buildroot/lib64"
+             ;;

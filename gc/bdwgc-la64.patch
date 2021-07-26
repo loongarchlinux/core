@@ -1,0 +1,39 @@
+diff --git a/include/private/gcconfig.h b/include/private/gcconfig.h
+index 5eed838a..694f0496 100644
+--- a/include/private/gcconfig.h
++++ b/include/private/gcconfig.h
+@@ -226,6 +226,10 @@ EXTERN_C_BEGIN
+ #    define VAX
+ #    define mach_type_known
+ # endif
++# if defined(__loongarch64)
++#    define LOONGARCH64
++#    define mach_type_known
++# endif
+ # if defined(mips) || defined(__mips) || defined(_mips)
+ #    define MIPS
+ #    if defined(nec_ews) || defined(_nec_ews)
+@@ -506,6 +510,10 @@ EXTERN_C_BEGIN
+ #   define AARCH64
+ #   define mach_type_known
+ # endif
++# if defined(FREEBSD) && (defined(__loongarch64) )
++#   define LOONGARCH64
++#   define mach_type_known
++# endif
+ # if defined(FREEBSD) && (defined(mips) || defined(__mips) || defined(_mips))
+ #   define MIPS
+ #   define mach_type_known
+diff --git a/os_dep.c b/os_dep.c
+index d911ee5a..75c6a848 100644
+--- a/os_dep.c
++++ b/os_dep.c
+@@ -3218,7 +3218,7 @@ GC_API GC_push_other_roots_proc GC_CALL GC_get_push_other_roots(void)
+ #     ifndef SEGV_ACCERR
+ #       define SEGV_ACCERR 2
+ #     endif
+-#     if defined(AARCH64) || defined(ARM32) || defined(MIPS) \
++#     if defined(AARCH64) || defined(ARM32) || defined(LOONGARCH64) || defined(MIPS) \
+          || __FreeBSD__ >= 7
+ #       define CODE_OK (si -> si_code == SEGV_ACCERR)
+ #     elif defined(POWERPC)

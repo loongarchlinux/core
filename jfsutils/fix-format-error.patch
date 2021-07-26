@@ -1,0 +1,121 @@
+Index: jfsutils-1.1.15/fscklog/display.c
+===================================================================
+--- jfsutils-1.1.15.orig/fscklog/display.c
++++ jfsutils-1.1.15/fscklog/display.c
+@@ -54,7 +54,7 @@ FILE *infp;
+  * output: fsck extracted service log I/O buffer
+  *
+  */
+-char xchklog_buffer[XCHKLOG_BUFSIZE];
++static char xchklog_buffer[XCHKLOG_BUFSIZE];
+ 
+ /* + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+  *
+@@ -182,7 +182,7 @@ void dump_service_log()
+ 				} else {
+ 					/* the record looks ok */
+ 					msg_txt = &log_entry[log_entry_pos];
+-					printf(msg_txt);
++					printf("%s", msg_txt);
+ 					/*
+ 					 * set up for the next record
+ 					 */
+Index: jfsutils-1.1.15/fscklog/fscklog.c
+===================================================================
+--- jfsutils-1.1.15.orig/fscklog/fscklog.c
++++ jfsutils-1.1.15/fscklog/fscklog.c
+@@ -252,8 +252,8 @@ int v_send_msg(int msg_num, const char *
+ 
+ 	sprintf(debug_detail, " [%s:%d]\n", basename(file_name), line_number);
+ 
+-	printf(msg_string);
+-	printf(debug_detail);
++	printf("%s", msg_string);
++	printf("%s", debug_detail);
+ 
+ 	return 0;
+ }
+Index: jfsutils-1.1.15/fscklog/extract.c
+===================================================================
+--- jfsutils-1.1.15.orig/fscklog/extract.c
++++ jfsutils-1.1.15/fscklog/extract.c
+@@ -64,7 +64,7 @@ struct superblock *sb_ptr;
+   *
+   */
+ char fscklog_buffer[FSCKLOG_BUFSIZE];
+-char xchklog_buffer[XCHKLOG_BUFSIZE];
++static char xchklog_buffer[XCHKLOG_BUFSIZE];
+ 
+  /* + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+   *
+Index: jfsutils-1.1.15/logdump/helpers.c
+===================================================================
+--- jfsutils-1.1.15.orig/logdump/helpers.c
++++ jfsutils-1.1.15/logdump/helpers.c
+@@ -95,8 +95,8 @@ int v_fsck_send_msg(int msg_num, const c
+ 
+ 	sprintf(debug_detail, " [%s:%d]\n", file_name, line_number);
+ 
+-	printf(msg_string);
+-	printf(debug_detail);
++	printf("%s", msg_string);
++	printf("%s", debug_detail);
+ 
+ 	return 0;
+ }
+Index: jfsutils-1.1.15/libfs/logredo.c
+===================================================================
+--- jfsutils-1.1.15.orig/libfs/logredo.c
++++ jfsutils-1.1.15/libfs/logredo.c
+@@ -87,9 +87,9 @@ int32_t bmap_stg_bytes = 0;
+  *    S T U F F    F O R    T H E    L O G
+  *
+  */
+-struct logsuper logsup;		/* log super block */
+-int32_t numdoblk;		/* number of do blocks used     */
+-int32_t numnodofile;		/* number of nodo file blocks used  */
++static struct logsuper logsup;		/* log super block */
++static int32_t numdoblk;		/* number of do blocks used     */
++static int32_t numnodofile;		/* number of nodo file blocks used  */
+ int32_t numExtDtPg = 0;		/* number of extended dtpage blocks used  */
+ 
+ /*
+@@ -129,7 +129,7 @@ int32_t use_2ndary_agg_superblock;
+  */
+ 
+ /* buffer header table */
+-struct bufhdr {
++static struct bufhdr {
+ 	int16_t next;		/* 2: next on free/lru list */
+ 	int16_t prev;		/* 2: previous on free/lru list */
+ 	int16_t hnext;		/* 2: next on hash chain */
+@@ -142,7 +142,7 @@ struct bufhdr {
+ } bufhdr[NBUFPOOL];		/* (24) */
+ 
+ /* buffer table */
+-struct bufpool {
++static struct bufpool {
+ 	char bytes[PSIZE];
+ } buffer[NBUFPOOL - 1];
+ 
+@@ -151,15 +151,15 @@ struct bufpool {
+  *
+  * log has its own 4 page buffer pool.
+  */
+-uint8_t afterdata[LOGPSIZE * 2];	/* buffer to read in redopage data */
++static uint8_t afterdata[LOGPSIZE * 2];	/* buffer to read in redopage data */
+ 
+ /*
+  * Miscellaneous
+  */
+-caddr_t prog;			/* Program name */
+-int32_t mntcnt, bufsize;
+-char *mntinfo;
+-int32_t retcode;		/* return code from logredo    */
++static caddr_t prog;			/* Program name */
++static int32_t mntcnt, bufsize;
++static char *mntinfo;
++static int32_t retcode;		/* return code from logredo    */
+ int end_of_transaction = 0;
+ 
+ /*

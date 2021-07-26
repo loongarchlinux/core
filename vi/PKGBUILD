@@ -38,6 +38,8 @@ prepare() {
 }
 
 build() {
+  CFLAGS=${CFLAGS/-Wformat -Werror=format-security/}
+  CXXFLAGS=${CXXFLAGS/-Wformat -Werror=format-security/}
   cd ex-$pkgver
 
   make PREFIX=/usr LIBEXECDIR=/usr/lib/ex PRESERVEDIR=/var/lib/ex \

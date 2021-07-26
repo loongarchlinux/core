@@ -7,16 +7,16 @@
 # NOTE: valgrind requires rebuilt with each major glibc version
 
 pkgbase=glibc
-pkgname=(glibc lib32-glibc)
+pkgname=glibc
 pkgver=2.36
-_commit=645d94808aaa90fb1b20a25ff70bb50d9eb1d55b
+_pkgdate=20221009
 pkgrel=4
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/libc'
 license=(GPL LGPL)
-makedepends=(git gd lib32-gcc-libs python)
+makedepends=(git gd python)
 options=(debug staticlibs !lto)
-source=(git+https://sourceware.org/git/glibc.git#commit=${_commit}
+source=(https://github.com/yetist/glibc/releases/download/v${_rdate}/glibc-${pkgver}-${_pkgdate}.tar.xz
         locale.gen.txt
         locale-gen
         lib32-glibc.conf
@@ -34,7 +34,7 @@ b2sums=('SKIP'
         '5fdd133c367af2f5454ea1eea7907de12166fb95eb59dbe33eae16aa9e26209b6585972bc1c80e36a0af4bfb04296acaf940ee78cd624cdcbab9669dff46c051')
 
 prepare() {
-  mkdir -p glibc-build lib32-glibc-build
+  mkdir -p glibc-build
 
   [[ -d glibc-$pkgver ]] && ln -s glibc-$pkgver glibc
   cd glibc
@@ -43,6 +43,7 @@ prepare() {
   # which relies on DT_HASH to be present in these libs.
   # reconsider 2023-01
   patch -Np1 -i "${srcdir}"/reenable_DT_HASH.patch
+  cp /usr/share/automake-1.16/install-sh scripts/install-sh
 }
 
 build() {
@@ -53,7 +54,8 @@ build() {
       --enable-bind-now
       --enable-cet
       --enable-kernel=4.4
-      --enable-multi-arch
+      --disable-multi-arch
+      --disable-experimental-malloc
       --enable-stack-protector=strong
       --enable-systemtap
       --disable-profile
@@ -90,29 +92,29 @@ build() {
   # build info pages manually for reproducibility
   make info
 
-  cd "${srcdir}"/lib32-glibc-build
-  export CC="gcc -m32 -mstackrealign"
-  export CXX="g++ -m32 -mstackrealign"
-
-  echo "slibdir=/usr/lib32" >> configparms
-  echo "rtlddir=/usr/lib32" >> configparms
-  echo "sbindir=/usr/bin" >> configparms
-  echo "rootsbindir=/usr/bin" >> configparms
-
-  "${srcdir}"/glibc/configure \
-      --host=i686-pc-linux-gnu \
-      --libdir=/usr/lib32 \
-      --libexecdir=/usr/lib32 \
-      "${_configure_flags[@]}"
-
-  # build libraries with fortify disabled
-  echo "build-programs=no" >> configparms
-  make -O
-
-  # re-enable fortify for programs
-  sed -i "/build-programs=/s#no#yes#" configparms
-  echo "CFLAGS += -Wp,-D_FORTIFY_SOURCE=2" >> configparms
-  make -O
+#  cd "$srcdir/lib32-glibc-build"
+#  export CC="gcc -m32 -mstackrealign"
+#  export CXX="g++ -m32 -mstackrealign"
+#
+#  echo "slibdir=/usr/lib32" >> configparms
+#  echo "rtlddir=/usr/lib32" >> configparms
+#  echo "sbindir=/usr/bin" >> configparms
+#  echo "rootsbindir=/usr/bin" >> configparms
+#
+#  "$srcdir/glibc/configure" \
+#      --host=i686-pc-linux-gnu \
+#      --libdir=/usr/lib32 \
+#      --libexecdir=/usr/lib32 \
+#      "${_configure_flags[@]}"
+#
+#  # build libraries with fortify disabled
+#  echo "build-programs=no" >> configparms
+#  make -O
+#
+#  # re-enable fortify for programs
+#  sed -i "/build-programs=/s#no#yes#" configparms
+#  echo "CFLAGS += -Wp,-D_FORTIFY_SOURCE=2" >> configparms
+#  make -O
 
   # pregenerate C.UTF-8 locale until it is built into glibc
   # (https://sourceware.org/glibc/wiki/Proposals/C.UTF-8, FS#74864)-
@@ -184,6 +186,9 @@ package_glibc() {
   install -m644 "${srcdir}"/locale.gen.txt "${pkgdir}"/etc/locale.gen
   sed -e '1,3d' -e 's|/| |g' -e 's|\\| |g' -e 's|^|#|g' \
     "${srcdir}"/glibc/localedata/SUPPORTED >> "${pkgdir}"/etc/locale.gen
+
+  # Add SUPPORTED file
+  install -m644 "${srcdir}"/glibc/localedata/SUPPORTED "${pkgdir}"/usr/share/i18n/SUPPORTED
 
   # Add SUPPORTED file
   install -m644 "${srcdir}"/glibc/localedata/SUPPORTED "${pkgdir}"/usr/share/i18n/SUPPORTED
