@@ -30,6 +30,7 @@ source=(
   "hg+https://hg.mozilla.org/projects/nss#revision=$_revision"
   bundle.sh
   certdata2pem.py
+  nss-la64.patch
 )
 b2sums=('SKIP'
         '4be5dd836c844fdd7b63302a6994d62149082c3bc81eef70f373f416fed80a61a923960e4390d1c391b81ab01b409370d788818a30ffdd3a4ed467b670f990f6'
@@ -43,6 +44,7 @@ pkgver() {
 prepare() {
   mkdir -p certs
   ln -srft certs nss/lib/ckfw/builtins/{certdata.txt,nssckbi.h}
+  patch -p1 -i $srcdir/nss-la64.patch
 }
 
 build() {
@@ -54,7 +56,7 @@ build() {
 
   cd nss
   ./build.sh \
-    --target x64 \
+    --target loongarch64 \
     --opt \
     --system-sqlite \
     --system-nspr \

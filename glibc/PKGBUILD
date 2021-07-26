@@ -7,14 +7,14 @@
 # NOTE: valgrind requires rebuilt with each major glibc version
 
 pkgbase=glibc
-pkgname=(glibc lib32-glibc)
+pkgname=glibc
 pkgver=2.37
 _commit=a704fd9a133bfb10510e18702f48a6a9c88dbbd5
 pkgrel=2
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/libc'
 license=(GPL LGPL)
-makedepends=(git gd lib32-gcc-libs python)
+makedepends=(git gd python)
 options=(staticlibs !lto)
 source=(git+https://sourceware.org/git/glibc.git#commit=${_commit}
         locale.gen.txt
@@ -23,10 +23,11 @@ source=(git+https://sourceware.org/git/glibc.git#commit=${_commit}
         sdt.h sdt-config.h
         reenable_DT_HASH.patch
         cve-2023-25139.patch
+        glibc-loong64-elf-h.patch
 )
 validpgpkeys=(7273542B39962DF7B299931416792B4EA25340F8 # Carlos O'Donell
               BC7C7372637EC10C57D7AA6579C43DFBF1CF2187) # Siddhesh Poyarekar
-b2sums=('SKIP'
+b2sums=('8139cd977b2ed3bfdbde5ffb1cda8f759763dbb83071167272fef798cfbdc0d17cfd1ec893d126c52c91511b7961f3ad12eed34534b99412dfa04a1cdd5b4ea3'
         'c859bf2dfd361754c9e3bbd89f10de31f8e81fd95dc67b77d10cb44e23834b096ba3caa65fbc1bd655a8696c6450dfd5a096c476b3abf5c7e125123f97ae1a72'
         '04fbb3b0b28705f41ccc6c15ed5532faf0105370f22133a2b49867e790df0491f5a1255220ff6ebab91a462f088d0cf299491b3eb8ea53534cb8638a213e46e3'
         '7c265e6d36a5c0dff127093580827d15519b6c7205c2e1300e82f0fb5b9dd00b6accb40c56581f18179c4fbbc95bd2bf1b900ace867a83accde0969f7b609f8a'
@@ -34,9 +35,10 @@ b2sums=('SKIP'
         '214e995e84b342fe7b2a7704ce011b7c7fc74c2971f98eeb3b4e677b99c860addc0a7d91b8dc0f0b8be7537782ee331999e02ba48f4ccc1c331b60f27d715678'
         '5fdd133c367af2f5454ea1eea7907de12166fb95eb59dbe33eae16aa9e26209b6585972bc1c80e36a0af4bfb04296acaf940ee78cd624cdcbab9669dff46c051'
         '917b876dbc2bc23d15ffedb56bfb51611f8c7a5b8321281a2cf488d442a45c38fc754e857573843042bf7cc3df87d4271bc723acd52aab4c8fc3c8f07d41456e')
+        'd7f6146d354dcafd44b649f4be13656130cd453f81fc16353eec49f26e23f290f0da5985683d9540bcbcc362b006edd0380d5d2804747d40e94a8e86e5f58a66')
 
 prepare() {
-  mkdir -p glibc-build lib32-glibc-build
+  mkdir -p glibc-build
 
   [[ -d glibc-$pkgver ]] && ln -s glibc-$pkgver glibc
   cd glibc
@@ -50,6 +52,7 @@ prepare() {
   # Technical the fix itself is complete but the test cases aren't.
   # See https://sourceware.org/bugzilla/show_bug.cgi?id=30068
   patch -Np1 -i "${srcdir}"/cve-2023-25139.patch
+  patch -Np1 -i "${srcdir}"/glibc-loong64-elf-h.patch
 }
 
 build() {
@@ -60,7 +63,8 @@ build() {
       --enable-bind-now
       --enable-cet
       --enable-kernel=4.4
-      --enable-multi-arch
+      --disable-multi-arch
+      --disable-experimental-malloc
       --enable-stack-protector=strong
       --enable-systemtap
       --disable-crypt
@@ -97,29 +101,29 @@ build() {
   # build info pages manually for reproducibility
   make info
 
-  cd "${srcdir}"/lib32-glibc-build
-  export CC="gcc -m32 -mstackrealign"
-  export CXX="g++ -m32 -mstackrealign"
-
-  echo "slibdir=/usr/lib32" >> configparms
-  echo "rtlddir=/usr/lib32" >> configparms
-  echo "sbindir=/usr/bin" >> configparms
-  echo "rootsbindir=/usr/bin" >> configparms
-
-  "${srcdir}"/glibc/configure \
-      --host=i686-pc-linux-gnu \
-      --libdir=/usr/lib32 \
-      --libexecdir=/usr/lib32 \
-      "${_configure_flags[@]}"
-
-  # build libraries with fortify disabled
-  echo "build-programs=no" >> configparms
-  make -O
-
-  # re-enable fortify for programs
-  sed -i "/build-programs=/s#no#yes#" configparms
-  echo "CFLAGS += -Wp,-D_FORTIFY_SOURCE=2" >> configparms
-  make -O
+#  cd "$srcdir/lib32-glibc-build"
+#  export CC="gcc -m32 -mstackrealign"
+#  export CXX="g++ -m32 -mstackrealign"
+#
+#  echo "slibdir=/usr/lib32" >> configparms
+#  echo "rtlddir=/usr/lib32" >> configparms
+#  echo "sbindir=/usr/bin" >> configparms
+#  echo "rootsbindir=/usr/bin" >> configparms
+#
+#  "$srcdir/glibc/configure" \
+#      --host=i686-pc-linux-gnu \
+#      --libdir=/usr/lib32 \
+#      --libexecdir=/usr/lib32 \
+#      "${_configure_flags[@]}"
+#
+#  # build libraries with fortify disabled
+#  echo "build-programs=no" >> configparms
+#  make -O
+#
+#  # re-enable fortify for programs
+#  sed -i "/build-programs=/s#no#yes#" configparms
+#  echo "CFLAGS += -Wp,-D_FORTIFY_SOURCE=2" >> configparms
+#  make -O
 
   # pregenerate C.UTF-8 locale until it is built into glibc
   # (https://sourceware.org/glibc/wiki/Proposals/C.UTF-8, FS#74864)-

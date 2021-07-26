@@ -7,10 +7,10 @@
 # toolchain build order: linux-api-headers->glibc->binutils->gcc->glibc->binutils->gcc
 # NOTE: libtool requires rebuilt with each new gcc version
 
-pkgname=(gcc gcc-libs lib32-gcc-libs gcc-fortran gcc-objc gcc-ada gcc-go gcc-d lto-dump libgccjit)
-pkgver=12.2.1
+pkgname=(gcc gcc-libs gcc-fortran gcc-objc lto-dump)
+pkgver=13.0.1
+_pkgdate=20230212
 _majorver=${pkgver%%.*}
-_commit=fb2d50f72caf3b84b315bc760368670680999749
 pkgrel=2
 pkgdesc='The GNU Compiler Collection'
 arch=(loong64 x86_64)
@@ -19,11 +19,7 @@ url='https://gcc.gnu.org'
 makedepends=(
   binutils
   doxygen
-  gcc-ada
-  gcc-d
   git
-  lib32-glibc
-  lib32-gcc-libs
   libisl
   libmpc
   python
@@ -38,21 +34,29 @@ checkdepends=(
 )
 options=(!emptydirs !lto)
 _libdir=usr/lib/gcc/$CHOST/${pkgver%%+*}
-source=(git+https://sourceware.org/git/gcc.git#commit=${_commit}
+# _commit=6beb39ee6c465c21d0cc547fd66b445100cdcc35
+# source=(git://gcc.gnu.org/git/gcc.git#commit=$_commit
+#https://ftp.fu-berlin.de/unix/languages/gcc/snapshots/13-20230129/gcc-13-20230129.tar.xz
+source=(https://gcc.gnu.org/pub/gcc/snapshots/LATEST-13/gcc-13-${_pkgdate}.tar.xz
         c89 c99
         gcc-ada-repro.patch
+        gcc-use-register-names-gcc-s.patchpatch
+        gcc-lib64-lib.patch
 )
 validpgpkeys=(F3691687D867B81B51CE07D9BBE43771487328A9  # bpiotrowski@archlinux.org
               86CFFCA918CF3AF47147588051E8B148A9999C34  # evangelos@foutrelis.com
               13975A70E63C361C73AE69EF6EEB81F8981C74C7  # richard.guenther@gmail.com
               D3A93CAD751C2AF4F8C7AD516C35B99309B5FA62) # Jakub Jelinek <jakub@redhat.com>
-sha256sums=('SKIP'
+sha256sums=('11b231b34667a10f7330aa9bcc08a6da17f867a0ea925bcde99e7e92b648897d'
             'de48736f6e4153f03d0a5d38ceb6c6fdb7f054e8f47ddd6af0a3dbf14f27b931'
             '2513c6d9984dd0a2058557bf00f06d8d5181734e41dcfe07be7ed86f2959622a'
-            '1773f5137f08ac1f48f0f7297e324d5d868d55201c03068670ee4602babdef2f')
+            '1773f5137f08ac1f48f0f7297e324d5d868d55201c03068670ee4602babdef2f'
+            'd7d7d54efd1f967c7c06a32e2ff4104cfddec1f6a28ceefdca4e76e04712ae73'
+            'd99568bcfbfa651f63de35bb646ec41b9c27d7f76c9114c429ad18df57519dfa')
 
 prepare() {
-  [[ ! -d gcc ]] && ln -s gcc-${pkgver/+/-} gcc
+  #[[ ! -d gcc ]] && ln -s gcc-${pkgver/+/-} gcc
+  [[ ! -d gcc ]] && ln -s gcc-13-${_pkgdate} gcc
   cd gcc
 
   # Do not run fixincludes
@@ -63,6 +67,8 @@ prepare() {
 
   # Reproducible gcc-ada
   patch -Np0 < "$srcdir/gcc-ada-repro.patch"
+  patch -p1 -i $srcdir/gcc-use-register-names-gcc-s.patchpatch
+  patch -p1 -i $srcdir/gcc-lib64-lib.patch
 
   mkdir -p "$srcdir/gcc-build"
   mkdir -p "$srcdir/libgccjit-build"
@@ -91,7 +97,8 @@ build() {
       --enable-link-serialization=1
       --enable-linker-build-id
       --enable-lto
-      --enable-multilib
+      --disable-multiarch
+      --disable-multilib
       --enable-plugin
       --enable-shared
       --enable-threads=posix
@@ -109,7 +116,7 @@ build() {
   CXXFLAGS=${CXXFLAGS/-Werror=format-security/}
 
   "$srcdir/gcc/configure" \
-    --enable-languages=c,c++,ada,fortran,go,lto,objc,obj-c++,d \
+    --enable-languages=c,c++,fortran,lto,objc,obj-c++ \
     --enable-bootstrap \
     "${_confflags[@]:?_confflags unset}"
 
@@ -125,22 +132,22 @@ build() {
 
   # Build libgccjit separately, to avoid building all compilers with --enable-host-shared
   # which brings a performance penalty
-  cd "${srcdir}"/libgccjit-build
-
-  "$srcdir/gcc/configure" \
-    --enable-languages=jit \
-    --disable-bootstrap \
-    --enable-host-shared \
-    "${_confflags[@]:?_confflags unset}"
-
-  # see https://bugs.archlinux.org/task/71777 for rationale re *FLAGS handling
-  make -O STAGE1_CFLAGS="-O2" \
-          BOOT_CFLAGS="$CFLAGS" \
-          BOOT_LDFLAGS="$LDFLAGS" \
-          LDFLAGS_FOR_TARGET="$LDFLAGS" \
-          all-gcc
-
-  cp -a gcc/libgccjit.so* ../gcc-build/gcc/
+#  cd "${srcdir}"/libgccjit-build
+#
+#  "$srcdir/gcc/configure" \
+#    --enable-languages=jit \
+#    --disable-bootstrap \
+#    --enable-host-shared \
+#    "${_confflags[@]:?_confflags unset}"
+#
+#  # see https://bugs.archlinux.org/task/71777 for rationale re *FLAGS handling
+#  make -O STAGE1_CFLAGS="-O2" \
+#          BOOT_CFLAGS="$CFLAGS" \
+#          BOOT_LDFLAGS="$LDFLAGS" \
+#          LDFLAGS_FOR_TARGET="$LDFLAGS" \
+#          all-gcc
+#
+#  cp -a gcc/libgccjit.so* ../gcc-build/gcc/
 }
 
 check() {
@@ -158,8 +165,8 @@ package_gcc-libs() {
   pkgdesc='Runtime libraries shipped by GCC'
   depends=('glibc>=2.27')
   options=(!emptydirs !strip)
-  provides=($pkgname-multilib libgo.so libgfortran.so libgphobos.so
-            libubsan.so libasan.so libtsan.so liblsan.so)
+  provides=($pkgname-multilib libgfortran.so
+            libubsan.so libasan.so liblsan.so)
   replaces=($pkgname-multilib libgphobos)
 
   cd gcc-build
@@ -168,20 +175,19 @@ package_gcc-libs() {
 
   for lib in libatomic \
              libgfortran \
-             libgo \
              libgomp \
              libitm \
              libquadmath \
-             libsanitizer/{a,l,ub,t}san \
+             libsanitizer/{a,l,ub}san \
              libstdc++-v3/src \
-             libvtv; do
+             ; do
     make -C $CHOST/$lib DESTDIR="$pkgdir" install-toolexeclibLTLIBRARIES
   done
 
   make -C $CHOST/libobjc DESTDIR="$pkgdir" install-libs
   make -C $CHOST/libstdc++-v3/po DESTDIR="$pkgdir" install
 
-  make -C $CHOST/libphobos DESTDIR="$pkgdir" install
+  #make -C $CHOST/libphobos DESTDIR="$pkgdir" install
   rm -rf "$pkgdir"/$_libdir/include/d/
   rm -f "$pkgdir"/usr/lib/libgphobos.spec
 
@@ -203,7 +209,6 @@ package_gcc() {
   pkgdesc="The GNU Compiler Collection - C and C++ frontends"
   depends=("gcc-libs=$pkgver-$pkgrel" 'binutils>=2.28' libmpc zstd libisl.so)
   groups=('base-devel')
-  optdepends=('lib32-gcc-libs: for generating code for 32-bit ABI')
   provides=($pkgname-multilib)
   replaces=($pkgname-multilib)
   options=(!emptydirs staticlibs)
@@ -217,22 +222,22 @@ package_gcc() {
   install -m755 -t "$pkgdir/${_libdir}/" gcc/{cc1,cc1plus,collect2,lto1}
 
   make -C $CHOST/libgcc DESTDIR="$pkgdir" install
-  make -C $CHOST/32/libgcc DESTDIR="$pkgdir" install
+  #make -C $CHOST/32/libgcc DESTDIR="$pkgdir" install
   rm -f "$pkgdir"/usr/lib{,32}/libgcc_s.so*
 
   make -C $CHOST/libstdc++-v3/src DESTDIR="$pkgdir" install
   make -C $CHOST/libstdc++-v3/include DESTDIR="$pkgdir" install
   make -C $CHOST/libstdc++-v3/libsupc++ DESTDIR="$pkgdir" install
   make -C $CHOST/libstdc++-v3/python DESTDIR="$pkgdir" install
-  make -C $CHOST/32/libstdc++-v3/src DESTDIR="$pkgdir" install
-  make -C $CHOST/32/libstdc++-v3/include DESTDIR="$pkgdir" install
-  make -C $CHOST/32/libstdc++-v3/libsupc++ DESTDIR="$pkgdir" install
+  #make -C $CHOST/32/libstdc++-v3/src DESTDIR="$pkgdir" install
+  #make -C $CHOST/32/libstdc++-v3/include DESTDIR="$pkgdir" install
+  #make -C $CHOST/32/libstdc++-v3/libsupc++ DESTDIR="$pkgdir" install
 
   make DESTDIR="$pkgdir" install-libcc1
   install -d "$pkgdir/usr/share/gdb/auto-load/usr/lib"
   mv "$pkgdir"/usr/lib/libstdc++.so.6.*-gdb.py \
     "$pkgdir/usr/share/gdb/auto-load/usr/lib/"
-  rm "$pkgdir"/usr/lib{,32}/libstdc++.so*
+  rm "$pkgdir"/usr/lib/libstdc++.so*
 
   make DESTDIR="$pkgdir" install-fixincludes
   make -C gcc DESTDIR="$pkgdir" install-mkheaders
@@ -247,16 +252,16 @@ package_gcc() {
   make -C $CHOST/libquadmath DESTDIR="$pkgdir" install-nodist_libsubincludeHEADERS
   make -C $CHOST/libsanitizer DESTDIR="$pkgdir" install-nodist_{saninclude,toolexeclib}HEADERS
   make -C $CHOST/libsanitizer/asan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
-  make -C $CHOST/libsanitizer/tsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
+#  make -C $CHOST/libsanitizer/tsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
   make -C $CHOST/libsanitizer/lsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
-  make -C $CHOST/32/libgomp DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
-  make -C $CHOST/32/libitm DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
-  make -C $CHOST/32/libsanitizer DESTDIR="$pkgdir" install-nodist_{saninclude,toolexeclib}HEADERS
-  make -C $CHOST/32/libsanitizer/asan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
+#  make -C $CHOST/32/libgomp DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
+#  make -C $CHOST/32/libitm DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
+#  make -C $CHOST/32/libsanitizer DESTDIR="$pkgdir" install-nodist_{saninclude,toolexeclib}HEADERS
+#  make -C $CHOST/32/libsanitizer/asan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
 
   make -C gcc DESTDIR="$pkgdir" install-man install-info
-  rm "$pkgdir"/usr/share/man/man1/{gccgo,gfortran,lto-dump,gdc}.1
-  rm "$pkgdir"/usr/share/info/{gccgo,gfortran,gnat-style,gnat_rm,gnat_ugn,gdc}.info
+  rm -f "$pkgdir"/usr/share/man/man1/{gccgo,gfortran}.1
+  rm -f "$pkgdir"/usr/share/info/{gccgo,gfortran}.info
 
   make -C libcpp DESTDIR="$pkgdir" install
   make -C gcc DESTDIR="$pkgdir" install-po
@@ -299,8 +304,8 @@ package_gcc-fortran() {
   cd gcc-build
   make -C $CHOST/libgfortran DESTDIR="$pkgdir" install-cafexeclibLTLIBRARIES \
     install-{toolexeclibDATA,nodist_fincludeHEADERS,gfor_cHEADERS}
-  make -C $CHOST/32/libgfortran DESTDIR="$pkgdir" install-cafexeclibLTLIBRARIES \
-    install-{toolexeclibDATA,nodist_fincludeHEADERS,gfor_cHEADERS}
+#  make -C $CHOST/32/libgfortran DESTDIR="$pkgdir" install-cafexeclibLTLIBRARIES \
+#    install-{toolexeclibDATA,nodist_fincludeHEADERS,gfor_cHEADERS}
   make -C $CHOST/libgomp DESTDIR="$pkgdir" install-nodist_fincludeHEADERS
   make -C gcc DESTDIR="$pkgdir" fortran.install-{common,man,info}
   install -Dm755 gcc/f951 "$pkgdir/${_libdir}/f951"
