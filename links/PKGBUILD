@@ -2,13 +2,14 @@
 # Contributor: Eric Bélanger <eric@archlinux.org>
 
 pkgname=links
-pkgver=2.23
+pkgver=2.25
 pkgrel=1
 pkgdesc='A text WWW browser, similar to Lynx'
 arch=('loongarch64' 'x86_64')
 url='http://links.twibright.com/'
 license=('GPL')
-depends=('bzip2' 'gpm' 'libevent' 'pcre' 'xz')
+depends=('brotli' 'libbrotlidec.so' 'bzip2' 'libbz2.so' 'gpm' 'libgpm.so'
+         'libevent' 'openssl' 'pcre' 'xz' 'zstd' 'libzstd.so')
 makedepends=('libtiff' 'libpng' 'libxt' 'librsvg')
 optdepends=('libx11: for using xlinks'
 	    'libtiff: for using xlinks'
@@ -16,7 +17,7 @@ optdepends=('libx11: for using xlinks'
 	    'librsvg: for using xlinks')
 source=("http://links.twibright.com/download/${pkgname}-${pkgver}.tar.bz2"
         'links.desktop')
-sha256sums=('6660d202f521fd18bf5184c3f1732d1fa7426a103374277ad1cdb8e57ce6ac45'
+sha256sums=('2dd78508698e8279ef4f09a3a2a21e9595040113402da6c553974414fb49dd2c'
             'f96bf2638e9c309bfdb857bd62a732b980231b3a683cd585ec872b249c2c1b19')
 
 configure_options=(

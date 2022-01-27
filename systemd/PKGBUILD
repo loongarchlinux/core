@@ -4,25 +4,25 @@
 
 pkgbase=systemd
 pkgname=('systemd' 'systemd-libs' 'systemd-resolvconf' 'systemd-sysvcompat')
-_tag='fd9ad7d3bc35a3633b99edac14ff2a4fb10599b7' # git rev-parse v${_tag_name}
-_tag_name=248.3
+_tag='9c8279cdd5d0bc256b8cc0ced2312e27e069a214' # git rev-parse v${_tag_name}
+_tag_name=250
 pkgver="${_tag_name/-/}"
-pkgrel=2
+pkgrel=4
 arch=('loongarch64' 'x86_64')
 url='https://www.github.com/systemd/systemd'
 makedepends=('acl' 'cryptsetup' 'docbook-xsl' 'gperf' 'lz4' 'xz' 'pam' 'libelf'
              'intltool' 'iptables' 'kmod' 'libcap' 'libidn2' 'libgcrypt'
              'libmicrohttpd' 'libxcrypt' 'libxslt' 'util-linux' 'linux-api-headers'
-             'python-lxml' 'quota-tools' 'shadow' 'gnu-efi-libs' 'git'
+             'python-jinja' 'python-lxml' 'quota-tools' 'shadow' 'gnu-efi-libs' 'git'
              'meson' 'libseccomp' 'pcre2' 'audit' 'kexec-tools' 'libxkbcommon'
              'bash-completion' 'p11-kit' 'systemd' 'libfido2' 'tpm2-tss' 'rsync')
 options=('strip')
 validpgpkeys=('63CDA1E5D3FC22B998D20DD6327F26951A015CC4'  # Lennart Poettering <lennart@poettering.net>
+              'A9EA9081724FFAE0484C35A1A81CEA22BC8C7E2E'  # Luca Boccassi <luca.boccassi@gmail.com>
               '5C251B5FC54EB2F80F407AAAC54CA336CFEB557E') # Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl>
 source=("git+https://github.com/systemd/systemd-stable#tag=${_tag}?signed"
         "git+https://github.com/systemd/systemd#tag=v${_tag_name%.*}?signed"
         '0001-Use-Arch-Linux-device-access-groups.patch'
-        '0003-PARTIAL-REVERT-commit-tree-wide-replace-strverscmp-and-str_verscmp-with-strverscmp_improved.patch'
         'initcpio-hook-udev'
         'initcpio-install-systemd'
         'initcpio-install-udev'
@@ -42,11 +42,10 @@ source=("git+https://github.com/systemd/systemd-stable#tag=${_tag}?signed"
         '30-systemd-update.hook')
 sha512sums=('SKIP'
             'SKIP'
-            '882e486b6d88c8bafc50088845e41a49686e98981967f72ca1fb4ef07a01767400632f4b648fd31857d2a2a24a8fd65bcc2a8983284dd4fff2380732741d4c41'
-            '34541f1967536524329867f9f341f8d9250d9d771c60dc3e6a22ccb82fc01f103cfd3f9903329777591ccbecd2446622a5d6b3804fa0411482b85c70593ee8ad'
+            'cc0c2ffb5f7c3a7176cd68f3dddd85ca000dcc4cdf3044746a20147234adb6811800fd28a4713faa6a59bf8c02be9fd43c2d6aa6695fd1dbf03ae773a91d090c'
             'f0d933e8c6064ed830dec54049b0a01e27be87203208f6ae982f10fb4eddc7258cb2919d594cbfb9a33e74c3510cfd682f3416ba8e804387ab87d1a217eb4b73'
-            'f599e1a35cba2c4e83e37c2299fac23ae128d8f68081283e71e1729384975dee1c4b677787f31a17890aeb98c8d2fc90405a202644290708ef9c027315022b17'
-            'a25b28af2e8c516c3a2eec4e64b8c7f70c21f974af4a955a4a9d45fd3e3ff0d2a98b4419fe425d47152d5acae77d64e69d8d014a7209524b75a81b0edb10bf3a'
+            '5479c8ef963ff247381392907c13308b4ae3a9383c867bd4c8a318b159f23acdb4be5f4ddae0dab4665f4927d3f30166077b1d3aaa2cde6bf53d023b7abb939c'
+            'a8c7e4a2cc9c9987e3c957a1fc3afe8281f2281fffd2e890913dcf00cf704024fb80d86cb75f9314b99b0e03bac275b22de93307bfc226d8be9435497e95b7e6'
             '61032d29241b74a0f28446f8cf1be0e8ec46d0847a61dadb2a4f096e8686d5f57fe5c72bcf386003f6520bc4b5856c32d63bf3efe7eb0bc0deefc9f68159e648'
             'c416e2121df83067376bcaacb58c05b01990f4614ad9de657d74b6da3efa441af251d13bf21e3f0f71ddcb4c9ea658b81da3d915667dc5c309c87ec32a1cb5a5'
             '5a1d78b5170da5abe3d18fdf9f2c3a4d78f15ba7d1ee9ec2708c4c9c2e28973469bc19386f70b3cf32ffafbe4fcc4303e5ebbd6d5187a1df3314ae0965b25e75'
@@ -63,6 +62,11 @@ sha512sums=('SKIP'
             '825b9dd0167c072ba62cabe0677e7cd20f2b4b850328022540f122689d8b25315005fa98ce867cf6e7460b2b26df16b88bb3b5c9ebf721746dce4e2271af7b97')
 
 _backports=(
+  # chrattr-util: return EOPNOTSUPP from chrattr_full if no other failure was observed
+  '7c3b51c469140cdbc1b7e9a232af3f250fea3884'
+
+  # manager: always close idle pipe when sending ready notification
+  '9c1b17c3dc1541df02118ee3aaf6dd5dd540cdc2'
 )
 
 _reverts=(
@@ -86,10 +90,6 @@ prepare() {
 
   # Replace cdrom/dialout/tape groups with optical/uucp/storage
   patch -Np1 -i ../0001-Use-Arch-Linux-device-access-groups.patch
-
-  # https://bugs.archlinux.org/task/70264
-  # https://github.com/systemd/systemd/issues/19191
-  patch -Np1 -i ../0003-PARTIAL-REVERT-commit-tree-wide-replace-strverscmp-and-str_verscmp-with-strverscmp_improved.patch
 }
 
 build() {
@@ -100,16 +100,18 @@ build() {
     #  * Cloudflare (https://1.1.1.1/)
     #  * Quad9 without filtering (https://www.quad9.net/)
     #  * Google (https://developers.google.com/speed/public-dns/)
-    1.1.1.1
-    9.9.9.10
-    8.8.8.8
-    2606:4700:4700::1111
-    2620:fe::10
-    2001:4860:4860::8888
+    1.1.1.1#cloudflare-dns.com
+    9.9.9.10#dns.quad9.net
+    8.8.8.8#dns.google
+    2606:4700:4700::1111#cloudflare-dns.com
+    2620:fe::10#dns.quad9.net
+    2001:4860:4860::8888#dns.google
   )
 
   local _meson_options=(
-    -Dversion-tag="${pkgver}-${pkgrel}-arch"
+    # internal version comparison is incompatible with pacman:
+    #   249~rc1 < 249 < 249.1 < 249rc
+    -Dversion-tag="${_tag_name/-/\~}-${pkgrel}-arch"
     -Dmode=release
 
     -Dgnu-efi=true
@@ -135,6 +137,12 @@ build() {
     -Drpmmacrosdir=no
     -Dsysvinit-path=
     -Dsysvrcnd-path=
+
+    -Dsbat-distro='arch'
+    -Dsbat-distro-summary='Arch Linux'
+    -Dsbat-distro-pkgname="${pkgname}"
+    -Dsbat-distro-version="${pkgver}"
+    -Dsbat-distro-url="https://archlinux.org/packages/core/x86_64/${pkgname}/"
   )
 
   arch-meson "$pkgbase-stable" build "${_meson_options[@]}"
@@ -205,9 +213,6 @@ package_systemd() {
   rm "$pkgdir"/usr/share/factory/etc/{issue,nsswitch.conf}
   sed -i -e '/^C \/etc\/nsswitch\.conf/d' \
     -e '/^C \/etc\/issue/d' "$pkgdir"/usr/lib/tmpfiles.d/etc.conf
-
-  # add back tmpfiles.d/legacy.conf, normally omitted without sysv-compat
-  install -m0644 $pkgbase-stable/tmpfiles.d/legacy.conf "$pkgdir"/usr/lib/tmpfiles.d
 
   # ship default policy to leave services disabled
   echo 'disable *' >"$pkgdir"/usr/lib/systemd/system-preset/99-default.preset
