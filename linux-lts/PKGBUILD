@@ -1,8 +1,8 @@
 # Maintainer: Andreas Radke <andyrtr@archlinux.org>
 
 pkgbase=linux-lts
-pkgver=5.10.88
-pkgrel=2
+pkgver=5.15.25
+pkgrel=1
 pkgdesc='LTS Linux'
 url="https://www.kernel.org/"
 arch=(loongarch64 x86_64)
@@ -17,18 +17,28 @@ source=(
   https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/${_srcname}.tar.{xz,sign}
   config         # the main kernel config file
   0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch
-  0002-HID-holtek-fix-mouse-probing.patch
+  0002-PCI_Add_more_NVIDIA_controllers_to_the_MSI_masking_quirk.patch
+  0003-iommu_intel_do_deep_dma-unmapping_to_avoid_kernel-flooding.patch
+  0004-cpufreq_intel_pstate_ITMT_support_for_overclocked_system.patch
+  0005-Bluetooth_btintel_Fix_bdaddress_comparison_with_garbage_value.patch
+  0006-lg-laptop_Recognize_more_models.patch
+  0007_fix_NFSv4_mount_regression.diff
 )
 validpgpkeys=(
   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
   '647F28654894E3BD457199BE38DBBDC86092693E'  # Greg Kroah-Hartman
 )
 # https://www.kernel.org/pub/linux/kernel/v5.x/sha256sums.asc
-sha256sums=('6f8631b6c382a2b0cfeff1e5f8805c8e1cfbe8d714b6e65f5bb79733c99068eb'
+sha256sums=('4399ffbe524a11b3c44bff6dd858ed31417341f58513f04cb6ae15e527543879'
             'SKIP'
-            '259196906a6e3c3c4fcbacd083094b3e3d4e2b75cfb7a18382381a88a07399be'
-            '96a72e1652314215da7140956c3abcf495cafd00811eda3cf4ce03ec5f791f1e'
-            '4753850a30c6a64e2bb27b1c07ea72f3c40b8c7ee73e890bbc4745860ce1798d')
+            'e64c383073b850b45a0c1555d235a9ee61eb99e7b8bf454822ac0a8fde365800'
+            '99df282c594cc269d9a5d19bb86ea887892d3654cfc53c4ce94a644cf3278423'
+            'c35018601f04ae81e0a2018a8597595db6ae053158c206845399cdebb2d2b706'
+            '7c7707c738983f3683d76295b496f578996b7341fa39ad334ec2833bfe4b966e'
+            '420844779356286057d931e30bbe1dabb8ee52bff575845a8fbf3c34e1a1d29e'
+            '3fa8a4af66d5a3b99b48ca979a247c61e81c9b2d3bcdffa9d3895a5532a420b4'
+            '79266c6cc970733fd35881d9a8f0a74c25c00b4d81741b8d4bba6827c48f7c78'
+            'e9527ad81d5b1821a7b17c56cb3abaec85785563f51e448cb3c06f1c68e2966f')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -36,6 +46,10 @@ export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EP
 
 prepare() {
   cd $_srcname
+
+  # fix NFSv4 mounting issue regression - FS#73838 / FS#73860
+  # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=6f2836341d8a39e1e000572b10959347d7e61fd9
+  patch -Rp1 -i ../0007_fix_NFSv4_mount_regression.diff
 
   echo "Setting version..."
   scripts/setlocalversion --save-scmversion
@@ -54,6 +68,7 @@ prepare() {
   echo "Setting config..."
   cp ../config .config
   make olddefconfig
+#  diff -u ../config .config || :
 #return 1
   make -s kernelrelease > version
   echo "Prepared $pkgbase version $(<version)"
@@ -94,6 +109,7 @@ _package() {
 
 _package-headers() {
   pkgdesc="Headers and scripts for building modules for the $pkgdesc kernel"
+  depends=(pahole)
 
   cd $_srcname
   local builddir="$pkgdir/usr/lib/modules/$(<version)/build"
@@ -119,13 +135,16 @@ _package-headers() {
   install -Dt "$builddir/drivers/md" -m644 drivers/md/*.h
   install -Dt "$builddir/net/mac80211" -m644 net/mac80211/*.h
 
-  # http://bugs.archlinux.org/task/13146
+  # https://bugs.archlinux.org/task/13146
   install -Dt "$builddir/drivers/media/i2c" -m644 drivers/media/i2c/msp3400-driver.h
 
-  # http://bugs.archlinux.org/task/20402
+  # https://bugs.archlinux.org/task/20402
   install -Dt "$builddir/drivers/media/usb/dvb-usb" -m644 drivers/media/usb/dvb-usb/*.h
   install -Dt "$builddir/drivers/media/dvb-frontends" -m644 drivers/media/dvb-frontends/*.h
   install -Dt "$builddir/drivers/media/tuners" -m644 drivers/media/tuners/*.h
+
+  # https://bugs.archlinux.org/task/71392
+  install -Dt "$builddir/drivers/iio/common/hid-sensors" -m644 drivers/iio/common/hid-sensors/*.h
 
   echo "Installing KConfig files..."
   find . -name 'Kconfig*' -exec install -Dm644 {} "$builddir/{}" \;
