@@ -9,25 +9,23 @@
 pkgbase=glibc
 pkgname=(glibc lib32-glibc)
 pkgver=2.35
-pkgrel=2
+_commit=28ea43f8d64f0dd1f2de75525157730e1532e600
+pkgrel=5
 arch=(loongarch64 x86_64)
 url='https://www.gnu.org/software/libc'
 license=(GPL LGPL)
 makedepends=(git gd lib32-gcc-libs python)
-optdepends=('perl: for mtrace')
-options=(!strip staticlibs !lto)
-#_commit=3de512be7ea6053255afed6154db9ee31d4e557a
-#source=(git+https://sourceware.org/git/glibc.git#commit=$_commit
-source=(https://ftp.gnu.org/gnu/glibc/glibc-$pkgver.tar.xz{,.sig}
+options=(debug staticlibs !lto)
+source=(git+https://sourceware.org/git/glibc.git#commit=${_commit}
         locale.gen.txt
         locale-gen
         lib32-glibc.conf
         sdt.h sdt-config.h
-        disable-clone3.diff)
+        disable-clone3.diff
+)
 validpgpkeys=(7273542B39962DF7B299931416792B4EA25340F8 # Carlos O'Donell
               BC7C7372637EC10C57D7AA6579C43DFBF1CF2187) # Siddhesh Poyarekar
-b2sums=('623c728884f070cd87ffeb9203f74206197c52405ac9bc44f3dd519a3468b8e8ae2536c883e5d17d94417dbd1e91775de2e674314e4ff7424f9720026d6b7063'
-        'SKIP'
+b2sums=('SKIP'
         '46d533d25c7a2ce4ae75d452eee7ebb8e3ce4d191af9be3daa43718b78cb81d33cfd8046a117a15d87de9f5e940448c66005b0490515bf731c9e4691c53908d6'
         '1f6d927b4972220b1c00abee5329c5d6bc01ed5bee57b20db0c7d7433292f7d666b02baf9968267f8e378b1f3bb273e8eef0ccbf22d21400ac36949d7615a474'
         '7c265e6d36a5c0dff127093580827d15519b6c7205c2e1300e82f0fb5b9dd00b6accb40c56581f18179c4fbbc95bd2bf1b900ace867a83accde0969f7b609f8a'
@@ -38,7 +36,7 @@ b2sums=('623c728884f070cd87ffeb9203f74206197c52405ac9bc44f3dd519a3468b8e8ae2536c
 prepare() {
   mkdir -p glibc-build lib32-glibc-build
 
-  [[ -d glibc-$pkgver ]] && ln -s glibc-$pkgver glibc 
+  [[ -d glibc-$pkgver ]] && ln -s glibc-$pkgver glibc
   cd glibc
 
   # Disable clone3 syscall for now
@@ -46,7 +44,6 @@ prepare() {
   # https://github.com/electron/electron/commit/993ecb5bdd5c57024c8718ca6203a8f924d6d574
   # Patch src: https://patchwork.ozlabs.org/project/glibc/patch/87eebkf8ph.fsf@oldenburg.str.redhat.com/
   patch -Np1 -i "${srcdir}"/disable-clone3.diff
-
 }
 
 build() {
@@ -54,15 +51,11 @@ build() {
       --prefix=/usr
       --with-headers=/usr/include
       --with-bugurl=https://bugs.archlinux.org/
-      --enable-add-ons
       --enable-bind-now
       --enable-cet
       --enable-kernel=4.4
-      --enable-lock-elision
       --enable-multi-arch
       --enable-stack-protector=strong
-      --enable-stackguard-randomization
-      --enable-static-pie
       --enable-systemtap
       --disable-profile
       --disable-crypt
@@ -95,7 +88,7 @@ build() {
   echo "CFLAGS += -Wp,-D_FORTIFY_SOURCE=2" >> configparms
   make -O
 
-  # build info pages manually for reprducibility
+  # build info pages manually for reproducibility
   make info
 
   cd "$srcdir/lib32-glibc-build"
@@ -144,7 +137,7 @@ check() {
 
   # The following tests fail due to restrictions in the Arch build system
   # The correct fix is to add the following to the systemd-nspawn call:
-  # --capability=CAP_IPC_LOCK --system-call-filter="@clock @pkey"
+  # --system-call-filter="@clock @memlock @pkey"
   skip_test test-errno-linux sysdeps/unix/sysv/linux/Makefile
   skip_test tst-ntp_gettime  sysdeps/unix/sysv/linux/Makefile
   skip_test tst-ntp_gettimex sysdeps/unix/sysv/linux/Makefile
@@ -159,17 +152,15 @@ check() {
 package_glibc() {
   pkgdesc='GNU C Library'
   depends=('linux-api-headers>=4.10' tzdata filesystem)
-  optdepends=('gd: for memusagestat')
+  optdepends=('gd: for memusagestat'
+              'perl: for mtrace')
   install=glibc.install
   backup=(etc/gai.conf
           etc/locale.gen
           etc/nscd.conf)
 
-  install -dm755 "$pkgdir/etc"
-  touch "$pkgdir/etc/ld.so.conf"
-
   make -C glibc-build install_root="$pkgdir" install
-  rm -f "$pkgdir"/etc/ld.so.{cache,conf}
+  rm -f "$pkgdir"/etc/ld.so.cache
 
   # Shipped in tzdata
   rm -f "$pkgdir"/usr/bin/{tzselect,zdump,zic}
@@ -191,26 +182,10 @@ package_glibc() {
   sed -e '1,3d' -e 's|/| |g' -e 's|\\| |g' -e 's|^|#|g' \
     "$srcdir/glibc/localedata/SUPPORTED" >> "$pkgdir/etc/locale.gen"
 
-  if check_option 'debug' n; then
-    find "$pkgdir"/usr/bin -type f -executable -exec strip $STRIP_BINARIES {} + 2> /dev/null || true
-    find "$pkgdir"/usr/lib -name '*.a' -type f -exec strip $STRIP_STATIC {} + 2> /dev/null || true
-
-    # Do not strip these for gdb and valgrind functionality, but strip the rest
-    find "$pkgdir"/usr/lib \
-      -not -name 'ld-*.so' \
-      -not -name 'libc-*.so' \
-      -not -name 'libpthread-*.so' \
-      -not -name 'libthread_db-*.so' \
-      -name '*-*.so' -type f -exec strip $STRIP_SHARED {} + 2> /dev/null || true
-  fi
-
   # Provide tracing probes to libstdc++ for exceptions, possibly for other
   # libraries too. Useful for gdb's catch command.
   install -Dm644 "$srcdir/sdt.h" "$pkgdir/usr/include/sys/sdt.h"
   install -Dm644 "$srcdir/sdt-config.h" "$pkgdir/usr/include/sys/sdt-config.h"
-
-  # Provided by libxcrypt; keep the old shared library for backwards compatibility
-  rm -f "$pkgdir"/usr/include/crypt.h "$pkgdir"/usr/lib/libcrypt.{a,so}
 }
 
 package_lib32-glibc() {
@@ -235,17 +210,4 @@ package_lib32-glibc() {
 
   # Symlink /usr/lib32/locale to /usr/lib/locale
   ln -s ../lib/locale "$pkgdir/usr/lib32/locale"
-
-  if check_option 'debug' n; then
-    find "$pkgdir"/usr/lib32 -name '*.a' -type f -exec strip $STRIP_STATIC {} + 2> /dev/null || true
-    find "$pkgdir"/usr/lib32 \
-      -not -name 'ld-*.so' \
-      -not -name 'libc-*.so' \
-      -not -name 'libpthread-*.so' \
-      -not -name 'libthread_db-*.so' \
-      -name '*-*.so' -type f -exec strip $STRIP_SHARED {} + 2> /dev/null || true
-  fi
-
-  # Provided by lib32-libxcrypt; keep the old shared library for backwards compatibility
-  rm -f "$pkgdir"/usr/lib32/libcrypt.{a,so}
 }

@@ -4,7 +4,7 @@
 # Contributor: Judd Vinet <jvinet@zeroflux.org>
 
 pkgname=expat
-pkgver=2.4.6
+pkgver=2.4.8
 pkgrel=1
 pkgdesc="An XML parser library"
 arch=(loongarch64 x86_64)
@@ -15,9 +15,9 @@ makedepends=(cmake)
 provides=(libexpat.so)
 options=(debug)
 source=("https://github.com/libexpat/libexpat/releases/download/R_${pkgver//./_}/${pkgname}-${pkgver}.tar.bz2"{,.asc})
-sha512sums=('87e9e9597867fc73352122b89ea3e1d0dba0d81640b1defd7633bb13108b89e1703b69358021b90f0af29854020ddbc07bf56ea6acc764e5bdecd51ee6050d99'
+sha512sums=('46cc9d725f359b77681a2875bfefa15ceee50eb9513f6577607c0c5833dfa4241565c74f26b84b38d802c3cd8c32f00204fd74272bcecbd21229425764eef86c'
             'SKIP')
-b2sums=('4f41b019107f1dfc5d1b45fd5844069472e5ad2e5208ef5d7b9e4a9bdb020440d46c5ef1c7cc34fb846fc1f63b37b5ac57b692dfdcb59e52c94383945b0f456d'
+b2sums=('a829bd94d2cc9b305874ae2539dd4388ea99eaed21d2da17bbd99a1e7735b0f7cb910d096f72c71b128dcb8ffdff9021109e7ff5e562d8cefad228fd8d66f897'
         'SKIP')
 validpgpkeys=(3176EF7DB2367F1FCA4F306B1F9B0E909AF37285) # Sebastian Pipping
 

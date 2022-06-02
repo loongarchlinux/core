@@ -3,7 +3,7 @@
 # Contributor: Jochem Kossen <j.kossen@home.nl>
 
 pkgname=fakeroot
-pkgver=1.27
+pkgver=1.29
 pkgrel=1
 pkgdesc='Tool for simulating superuser privileges'
 arch=('loongarch64' 'x86_64')
@@ -15,7 +15,7 @@ depends=('glibc' 'filesystem' 'sed' 'util-linux' 'sh')
 makedepends=('systemd' 'po4a')
 checkdepends=('sharutils')
 source=("https://deb.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.orig.tar.gz")
-sha256sums=('3c45eb2d1802a2762069e2e9d21bdd6fb533592bc0cda74c9aff066ab01caddc')
+sha256sums=('8fbbafb780c9173e3ace4a04afbc1d900f337f3216883939f5c7db3431be7c20')
 
 build() {
   cd $pkgname-$pkgver
