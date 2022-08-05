@@ -8,7 +8,7 @@ pkgdesc="Device mapper RAID interface"
 url="https://people.redhat.com/~heinzm/sw/dmraid/"
 conflicts=('mkinitcpio<0.7')
 depends=('device-mapper>=2.0.54')
-arch=('loongarch64' 'x86_64')
+arch=('loong64' 'x86_64')
 license=('GPL')
 source=(#https://sources.archlinux.org/other/dmraid/$pkgname-$pkgver.tar.bz2
         https://people.redhat.com/~heinzm/sw/dmraid/src/$pkgname-1.0.0.rc16-3.tar.bz2

@@ -6,7 +6,7 @@ pkgver=1.19.3
 pkgrel=3
 pkgdesc='The Kerberos network authentication system'
 url='https://web.mit.edu/kerberos/'
-arch=('loongarch64' 'x86_64')
+arch=('loong64' 'x86_64')
 license=('custom')
 depends=('glibc' 'e2fsprogs' 'libldap' 'keyutils' 'libverto-module-base'
          libkeyutils.so libss.so libcom_err.so libverto.so)
