@@ -27,10 +27,6 @@ prepare() {
   patch -Np1 < ../0002-Validate-entry_bytes_remaining-in-pax_attribute.patch
 }
 
-prepare() {
-  cd "${pkgname}-${pkgver}"
-  patch -p1 -i $srcdir/a2f68263a1da5ad227bcb9cd8fa91b93c8b6c99f.patch
-}
 build() {
   cd "${pkgname}-${pkgver}"
 
