@@ -26,10 +26,10 @@ index 299a01b9be..dca74ea190 100644
  }.get(efi_arch[1], []))
  
  # We are putting the efi_cc command line together ourselves, so make sure to pull any
-@@ -260,9 +261,9 @@ efi_ldflags = [
-         '-z', 'nocombreloc',
-         efi_crt0,
+@@ -273,9 +276,9 @@ possible_link_flags = [
  ]
+ efi_ldflags += cc.get_supported_link_arguments(possible_link_flags)
+ 
 -if efi_arch[1] in ['aarch64', 'arm', 'riscv64']
 +if efi_arch[1] in ['aarch64', 'arm', 'loongarch64', 'riscv64']
          efi_ldflags += ['-shared']
