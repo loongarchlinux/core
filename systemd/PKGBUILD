@@ -14,7 +14,7 @@ makedepends=('acl' 'cryptsetup' 'docbook-xsl' 'gperf' 'lz4' 'xz' 'pam' 'libelf'
              'python-jinja' 'python-lxml' 'quota-tools' 'shadow' 'gnu-efi-libs' 'git'
              'meson' 'libseccomp' 'pcre2' 'audit' 'kexec-tools' 'libxkbcommon'
              'bash-completion' 'p11-kit' 'systemd' 'libfido2' 'tpm2-tss' 'rsync')
-options=('!debug' 'strip')
+options=('debug' 'strip')
 validpgpkeys=('63CDA1E5D3FC22B998D20DD6327F26951A015CC4'  # Lennart Poettering <lennart@poettering.net>
               'A9EA9081724FFAE0484C35A1A81CEA22BC8C7E2E'  # Luca Boccassi <luca.boccassi@gmail.com>
               '9A774DB5DB996C154EBBFBFDA0099A18E29326E1'  # Yu Watanabe <watanabe.yu+github@gmail.com>
@@ -43,7 +43,6 @@ source=("git+https://github.com/systemd/systemd-stable#tag=${_tag}?signed"
         )
 sha512sums=('SKIP'
             'SKIP'
-            '0c4a05129a3ce22432db6e189e87db71c73be517b7e4a10e2218a0b24f0fd5d8dff331249574e6e0e1958476db95315054320837b784ae6351473f5eecc20800'
             'cc0c2ffb5f7c3a7176cd68f3dddd85ca000dcc4cdf3044746a20147234adb6811800fd28a4713faa6a59bf8c02be9fd43c2d6aa6695fd1dbf03ae773a91d090c'
             'f0d933e8c6064ed830dec54049b0a01e27be87203208f6ae982f10fb4eddc7258cb2919d594cbfb9a33e74c3510cfd682f3416ba8e804387ab87d1a217eb4b73'
             'aeefb607471cffb5ed4c3d9f36dc0954a9a08cee4b7b4ff55468b561e089e3d8448398906a7df328049ba51b712e4d50698b96bc152bdb03a35ce39c3f51a7cb'
@@ -147,7 +146,6 @@ build() {
     -Dsbat-distro-version="${pkgver}"
     -Dsbat-distro-url="https://archlinux.org/packages/core/loong64/${pkgname}/"
   )
-  #CFLAGS="-O2 -flto -ffat-lto-objects"
 
   arch-meson "$pkgbase-stable" build "${_meson_options[@]}"
 
