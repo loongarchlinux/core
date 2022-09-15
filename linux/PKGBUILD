@@ -2,9 +2,9 @@
 
 pkgbase=linux
 _ver=6.0
-_rdate=20220902
+_rdate=20220915
 pkgver=${_ver}.arch1
-pkgrel=1
+pkgrel=2
 pkgdesc='Linux'
 _srctag=v${pkgver%.*}-${pkgver##*.}
 url="https://github.com/archlinux/linux/commits/$_srctag"
@@ -118,7 +118,7 @@ _package-headers() {
   cp -t "$builddir" -a scripts
 
   # required when STACK_VALIDATION is enabled
-  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
+#  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
 
   # required when DEBUG_INFO_BTF_MODULES is enabled
   #install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
@@ -223,3 +223,9 @@ for _p in "${pkgname[@]}"; do
 done
 
 # vim:set ts=8 sts=2 sw=2 et:
+sha256sums=('b5eaf7a69c3b03261a7c2b8874173aed11a4e1a89766bd1ce9cadda00e1456ba'
+            'f6fde268a3a05c0fa058475c5440002759cdae782b1a9e26673542c933514c47'
+            'a278d33424a50c0806639f7b9435ae26990e09cabf68654f7c45e336d2b9998e')
+sha256sums=('64db1ed1dd8e17c7f2646047fdae87ab2d0fce2bfb9003ba6a4fe923b0afc27e'
+            'f6fde268a3a05c0fa058475c5440002759cdae782b1a9e26673542c933514c47'
+            'a278d33424a50c0806639f7b9435ae26990e09cabf68654f7c45e336d2b9998e')
