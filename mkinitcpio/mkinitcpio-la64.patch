@@ -1,29 +1,7 @@
-Index: mkinitcpio-31.o/mkinitcpio
-===================================================================
---- mkinitcpio-31.o.orig/mkinitcpio
-+++ mkinitcpio-31.o/mkinitcpio
-@@ -123,7 +123,7 @@ resolve_kernver() {
-     error "invalid kernel specified: \`%s'" "$1"
- 
-     arch=$(uname -m)
--    if [[ $arch != @(i?86|x86_64) ]]; then
-+    if [[ $arch != @(i?86|x86_64|loongarch64) ]]; then
-         error "kernel version extraction from image not supported for \`%s' architecture" "$arch"
-         error "there's a chance the generic version extractor may work with a valid uncompressed kernel image"
-     fi
 Index: mkinitcpio-31.o/functions
 ===================================================================
 --- mkinitcpio-31.o.orig/functions
 +++ mkinitcpio-31.o/functions
-@@ -171,7 +171,7 @@ kver() {
-     local kver re='^[[:digit:]]+(\.[[:digit:]]+)+'
- 
-     local arch=$(uname -m)
--    if [[ $arch == @(i?86|x86_64) ]]; then
-+    if [[ $arch == @(i?86|x86_64|loongarch64) ]]; then
-         kver=$(kver_x86 "$1")
-     else
-         kver=$(kver_generic "$1")
 @@ -758,7 +758,7 @@ initialize_buildroot() {
      ln -s "/run"    "$buildroot/var/run"
  
