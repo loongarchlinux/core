@@ -9,9 +9,9 @@
 
 pkgname=(gcc gcc-libs gcc-fortran gcc-objc lto-dump)
 pkgver=12.2.1
-_pkgdate=20220905
+_pkgdate=20220911
 _majorver=${pkgver%%.*}
-pkgrel=1
+pkgrel=2
 pkgdesc='The GNU Compiler Collection'
 arch=(loong64 x86_64)
 license=(GPL3 LGPL FDL custom)
@@ -45,7 +45,7 @@ validpgpkeys=(F3691687D867B81B51CE07D9BBE43771487328A9  # bpiotrowski@archlinux.
               86CFFCA918CF3AF47147588051E8B148A9999C34  # evangelos@foutrelis.com
               13975A70E63C361C73AE69EF6EEB81F8981C74C7  # richard.guenther@gmail.com
               D3A93CAD751C2AF4F8C7AD516C35B99309B5FA62) # Jakub Jelinek <jakub@redhat.com>
-sha256sums=('19c7535dd2203c825bd49dddb263da98012e0881e0cd5706a7c1a4a0cb2fbd67'
+sha256sums=('cbdf44fb512a626a3d8d3141fd20ea22737b738ca46e55f3c7af9195bdef11a7'
             'de48736f6e4153f03d0a5d38ceb6c6fdb7f054e8f47ddd6af0a3dbf14f27b931'
             '2513c6d9984dd0a2058557bf00f06d8d5181734e41dcfe07be7ed86f2959622a'
             '1773f5137f08ac1f48f0f7297e324d5d868d55201c03068670ee4602babdef2f')
@@ -159,7 +159,7 @@ package_gcc-libs() {
   depends=('glibc>=2.27')
   options=(!emptydirs !strip)
   provides=($pkgname-multilib libgfortran.so
-            libubsan.so libasan.so libtsan.so liblsan.so)
+            libubsan.so libasan.so liblsan.so)
   replaces=($pkgname-multilib libgphobos)
 
   cd gcc-build
@@ -170,7 +170,9 @@ package_gcc-libs() {
              libgfortran \
              libgomp \
              libquadmath \
-             libstdc++-v3/src; do
+             libsanitizer/{a,l,ub}san \
+             libstdc++-v3/src \
+             ; do
     make -C $CHOST/$lib DESTDIR="$pkgdir" install-toolexeclibLTLIBRARIES
   done
 
@@ -239,10 +241,10 @@ package_gcc() {
   make -C $CHOST/libgomp DESTDIR="$pkgdir" install-nodist_{libsubinclude,toolexeclib}HEADERS
 #  make -C $CHOST/libitm DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
   make -C $CHOST/libquadmath DESTDIR="$pkgdir" install-nodist_libsubincludeHEADERS
-#  make -C $CHOST/libsanitizer DESTDIR="$pkgdir" install-nodist_{saninclude,toolexeclib}HEADERS
-#  make -C $CHOST/libsanitizer/asan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
+  make -C $CHOST/libsanitizer DESTDIR="$pkgdir" install-nodist_{saninclude,toolexeclib}HEADERS
+  make -C $CHOST/libsanitizer/asan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
 #  make -C $CHOST/libsanitizer/tsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
-#  make -C $CHOST/libsanitizer/lsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
+  make -C $CHOST/libsanitizer/lsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
 #  make -C $CHOST/32/libgomp DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
 #  make -C $CHOST/32/libitm DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
 #  make -C $CHOST/32/libsanitizer DESTDIR="$pkgdir" install-nodist_{saninclude,toolexeclib}HEADERS
