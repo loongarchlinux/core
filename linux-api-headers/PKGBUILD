@@ -6,16 +6,16 @@
 # toolchain build order: linux-api-headers->glibc->binutils->gcc->glibc->binutils->gcc
 
 pkgname=linux-api-headers
-pkgver=5.19.0
-pkgrel=4
-_rdate=20220730
+pkgver=6.0
+pkgrel=2
+_rdate=20220915
 pkgdesc='Kernel headers sanitized for use in userspace'
 arch=(any)
 url='https://www.gnu.org/software/libc'
 license=(GPL2)
 makedepends=(rsync)
 source=(https://github.com/yetist/linux/releases/download/v${_rdate}/linux-${pkgver}-${_rdate}.tar.xz)
-sha256sums=('915dd90caad82da2832309193dd063d55d99fe03dc85522bd61e2c293dcb905f')
+sha256sums=('64db1ed1dd8e17c7f2646047fdae87ab2d0fce2bfb9003ba6a4fe923b0afc27e')
 
 build() {
   cd linux-$pkgver
