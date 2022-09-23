@@ -147,7 +147,7 @@ build() {
     -Dsbat-distro-url="https://archlinux.org/packages/core/loong64/${pkgname}/"
   )
 
-  arch-meson "$pkgbase-stable" build "${_meson_options[@]}"
+  arch-meson "$pkgbase-stable" build "${_meson_options[@]}" --buildtype=release
 
   meson compile -C build
 }
