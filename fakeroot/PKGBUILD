@@ -16,8 +16,8 @@ makedepends=('systemd' 'po4a')
 checkdepends=('sharutils')
 source=("https://deb.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.orig.tar.gz"
         fakeroot-1.28-glibc-2.35-fix.patch)
-sha256sums=('3c45eb2d1802a2762069e2e9d21bdd6fb533592bc0cda74c9aff066ab01caddc'
-            '8471627ffb060d6daaf6243ffffe012f2fc15a97a75812c4e392aff04e86a2d5')
+sha256sums=('8fbbafb780c9173e3ace4a04afbc1d900f337f3216883939f5c7db3431be7c20'
+            '1143011fd7922e5ef529106b72986001a4be91b11ec9b2ae50df364eb473bfc3')
 
 prepare() {
   cd $pkgname-$pkgver
@@ -37,7 +37,7 @@ build() {
   make
 
   cd doc
-  #po4a -k 0 --rm-backups --variable 'srcdir=../doc/' po4a/po4a.cfg
+  po4a -k 0 --rm-backups --variable 'srcdir=../doc/' po4a/po4a.cfg
 }
 
 check() {
@@ -55,7 +55,3 @@ package() {
   # install README for sysv/tcp usage
   install -Dm0644 README "$pkgdir/usr/share/doc/$pkgname/README"
 }
-sha256sums=('8fbbafb780c9173e3ace4a04afbc1d900f337f3216883939f5c7db3431be7c20'
-            '8471627ffb060d6daaf6243ffffe012f2fc15a97a75812c4e392aff04e86a2d5')
-sha256sums=('8fbbafb780c9173e3ace4a04afbc1d900f337f3216883939f5c7db3431be7c20'
-            '1143011fd7922e5ef529106b72986001a4be91b11ec9b2ae50df364eb473bfc3')
