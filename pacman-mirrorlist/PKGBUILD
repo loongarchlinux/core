@@ -2,7 +2,7 @@
 # Contributor: Dan McGee <dan@archlinux.org>
 
 pkgname=pacman-mirrorlist
-pkgver=20220622
+pkgver=20220924
 pkgrel=1
 pkgdesc="Arch Linux mirror list for use by pacman"
 arch=('any')
@@ -11,8 +11,8 @@ license=('GPL')
 backup=(etc/pacman.d/mirrorlist)
 source=(mirrorlist)
 
-md5sums=('dbf32a89a189ce1a6b29089b4e1a42bd')
-sha256sums=('c55a422c9dc9f1d6bac4f9f71cb1cb56ae829d5fb14af2509ce6e8ef58341bc8')
+md5sums=('7e20d6985d8a5fc92b9521bdb9c1d213')
+sha256sums=('f787957c81e438640a2544f75988e78c94f8835a58d17fcae3bf9ea8c38fdbc4')
 
 # NOTE on building this package:
 # * Go to the trunk/ directory
