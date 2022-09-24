@@ -1,7 +1,7 @@
 # Maintainer: Christian Hesse <mail@eworm.de>
 
 pkgbase=libxcrypt
-pkgname=(libxcrypt) #libxcrypt-compat)
+pkgname=(libxcrypt libxcrypt-compat)
 pkgver=4.4.28
 pkgrel=2
 pkgdesc='Modern library for one-way hashing of passwords'
@@ -33,6 +33,15 @@ build() {
     --disable-static \
     --enable-hashes=strong,glibc \
     --enable-obsolete-api=no \
+    --disable-failure-tokens
+  make
+  
+  cd "${srcdir}/build-libxcrypt-compat/"
+  "${srcdir}/${pkgbase}-${pkgver}"/configure \
+    --prefix=/usr \
+    --disable-static \
+    --enable-hashes=strong,glibc \
+    --enable-obsolete-api=glibc \
     --disable-failure-tokens
   make
 }
