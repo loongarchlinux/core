@@ -40,6 +40,7 @@ source=("git+https://github.com/systemd/systemd-stable#tag=${_tag}?signed"
         '30-systemd-udev-reload.hook'
         '30-systemd-update.hook'
         'v251-loongarch64.patch'
+        'v251-la64-seccomp.patch'
         )
 sha512sums=('SKIP'
             'SKIP'
@@ -61,7 +62,8 @@ sha512sums=('SKIP'
             'da7a97d5d3701c70dd5388b0440da39006ee4991ce174777931fea2aa8c90846a622b2b911f02ae4d5fffb92680d9a7e211c308f0f99c04896278e2ee0d9a4dc'
             'a50d202a9c2e91a4450b45c227b295e1840cc99a5e545715d69c8af789ea3dd95a03a30f050d52855cabdc9183d4688c1b534eaa755ebe93616f9d192a855ee3'
             '825b9dd0167c072ba62cabe0677e7cd20f2b4b850328022540f122689d8b25315005fa98ce867cf6e7460b2b26df16b88bb3b5c9ebf721746dce4e2271af7b97'
-            '87123dcdf48980c6d72d68d868b58a39728445cd549bba124c06be45c20a3ee0a7f2677f162096462ab02e12f09ce13265478023fcb00c61664d7a31a142be7f')
+            'ea4e0c9c539adb7f700ed15b6ee191e9d62564d9a27f0e5c5a20219d6aeb4e8e146c59f2649843b38d04a13e3154ac668ddee51d1a6f7235418c06c69f8a56b4'
+            'db4464c36b3b867921d51ffac2460eb80386f215dacd18598c08b13dc9ce0af38282cfdedd2bab632109d618f3711e7f6be8dc6c0933a6ed7a98c78ea0041f53')
 
 _backports=(
 )
