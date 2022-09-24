@@ -48,7 +48,7 @@ check() {
 package() {
   meson install -C build --destdir "$pkgdir"
 
-  if [[ $CARCH == loongarch64 ]];then
+  if [[ $CARCH == loong64 ]];then
     install -Dt "$pkgdir/usr/share/pkgconfig/personality.d" -m644 \
       loongarch64-unknown-linux-gnu.personality
     ln -s pkgconf "$pkgdir/usr/bin/loongarch64-unknown-linux-gnu-pkg-config"
