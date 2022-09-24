@@ -1,7 +1,7 @@
 # Maintainer: Andreas Radke <andyrtr@archlinux.org>
 
 pkgbase=linux-lts
-pkgver=5.15.64
+pkgver=5.15.34
 pkgrel=1
 pkgdesc='LTS Linux'
 url="https://www.kernel.org/"
@@ -30,16 +30,15 @@ validpgpkeys=(
   '647F28654894E3BD457199BE38DBBDC86092693E'  # Greg Kroah-Hartman
 )
 # https://www.kernel.org/pub/linux/kernel/v5.x/sha256sums.asc
-sha256sums=('c6a1d38c6fa3798341372d5cf0088ae806ccdc827e31ecbff8988e097ba5de50'
-            'SKIP'
-            'c8f239b60405161fdc238ebbfd4cae6f7cdd27b79d71abc12588e83ffa674c7d'
-            '99df282c594cc269d9a5d19bb86ea887892d3654cfc53c4ce94a644cf3278423'
-            'c35018601f04ae81e0a2018a8597595db6ae053158c206845399cdebb2d2b706'
-            '7c7707c738983f3683d76295b496f578996b7341fa39ad334ec2833bfe4b966e'
-            '3fa8a4af66d5a3b99b48ca979a247c61e81c9b2d3bcdffa9d3895a5532a420b4'
-            '79266c6cc970733fd35881d9a8f0a74c25c00b4d81741b8d4bba6827c48f7c78'
-            'e9527ad81d5b1821a7b17c56cb3abaec85785563f51e448cb3c06f1c68e2966f'
-            'a2494bbaa093e333425db5b3f7e455abda798212af24d346205dc90c71984c94')
+sha256sums=('11c9a72dc71e2c1f9f845c1f98006c0d4ab9444d0853772443ddc5da614f50e1'
+            '2609c913efdfb43a4f3f8094f08595fc708e8e66c0260964b73433d6d3d4a54a'
+            '7bd64ff894475b3415d792ba8466ba7e8f872af56dbf1aeed0d261fe4008b8b5'
+            '39649dc1dfcb06b411ad124e123769e955a78961b4ea17538c0919a930925549'
+            '56c12551e859cc67520909e64feecbf1b190cee8addef150c5b9d1bb1d40981e'
+            '5c1ee81fdd5818442af6081de987f9c1a9ce3c8d183566b3dfc19a8433aa3dde'
+            '067e8995fcd6f6ed25e0253e9374c0e179a000c154da3e59ce62634945ac5be9'
+            '95dad02b01937681af0a207e22a6bf64c33e067bf7a14cb98262dd8f69194eb8'
+            '03b9450ddd74d033f72c9e47f514f15ebe9a8e85e5d79438a36ab803eb6827bd')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -63,7 +62,7 @@ prepare() {
   done
 
   echo "Setting config..."
-  if [ $CARCH == loongarch64 ];then
+  if [ $CARCH == loong64 ];then
     cp ../config.la64 .config
   else
     cp ../config .config
@@ -141,7 +140,7 @@ _package-headers() {
   if [ $CARCH == x86_64 ];then
     cp -t "$builddir/arch/x86" -a arch/x86/include
     install -Dt "$builddir/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
-  elif [ $CARCH == loongarch64 ];then
+  elif [ $CARCH == loong64 ];then
     cp -t "$builddir/arch/loongarch" -a arch/loongarch/include
     install -Dt "$builddir/arch/loongarch/kernel" -m644 arch/loongarch/kernel/asm-offsets.s
   fi
@@ -169,7 +168,7 @@ _package-headers() {
   for arch in "$builddir"/arch/*/; do
     if [ $CARCH == x86_64 ];then
       [[ $arch = */x86/ ]] && continue
-    elif [ $CARCH == loongarch64 ];then
+    elif [ $CARCH == loong64 ];then
       [[ $arch = */loongarch/ ]] && continue
     fi
     echo "Removing $(basename "$arch")"
