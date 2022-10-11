@@ -7,8 +7,8 @@
 
 pkgname=binutils
 pkgver=2.39
-_rdate=20220915
-pkgrel=2
+_rdate=20221009
+pkgrel=3
 pkgdesc='A set of programs to assemble and manipulate binary and object files'
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/binutils/'
@@ -23,7 +23,7 @@ replaces=(binutils-multilib)
 options=(staticlibs !distcc !ccache debug)
 source=(https://github.com/yetist/binutils-gdb/releases/download/v${_rdate}/${pkgname}-${pkgver}-${_rdate}.tar.xz
         gold-warn-unsupported.patch)
-sha256sums=('819e96d74460501b0c357ea9963f06a25ff17a029d3e267daefc228cf9f78727'
+sha256sums=('a292323d570e75af94f6930c161651cd1887a39ff534dd78d72a0c36cc9abc61'
             '2d430b66f84a19c154725ec535280c493be1d34f1a90f95208dce02fecd0e4e4')
 validpgpkeys=(3A24BC1E8FB409FA9F14371813FCEF89DD9E3C4F)
 
