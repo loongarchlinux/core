@@ -9,8 +9,8 @@
 pkgbase=glibc
 pkgname=glibc
 pkgver=2.36
-_pkgdate=20220905
-pkgrel=3
+_pkgdate=20221009
+pkgrel=4
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/libc'
 license=(GPL LGPL)
@@ -26,7 +26,7 @@ source=(https://github.com/yetist/glibc/releases/download/v${_rdate}/glibc-${pkg
 )
 validpgpkeys=(7273542B39962DF7B299931416792B4EA25340F8 # Carlos O'Donell
               BC7C7372637EC10C57D7AA6579C43DFBF1CF2187) # Siddhesh Poyarekar
-sha256sums=('6793fa783fed3a518190a1ed246abe0ea70a929b2af823682f4a3cb30383eb7d'
+sha256sums=('9a1ecc445449be104579267861cd21459931097ad7188952a7c121eed23f3f8a'
             'd42648cea552ba5353a32e264686e992263289d5cc86207314dffc54ab514981'
             '8c5cc09018cbd65e8570430f872e118caa2644e311d6200b7d5f0cba837fbba4'
             'c27424154a6096ae32c0824b785e05de6acef33d9224fd6147d1936be9b4962b'
@@ -194,6 +194,9 @@ package_glibc() {
   install -m644 "$srcdir/locale.gen.txt" "$pkgdir/etc/locale.gen"
   sed -e '1,3d' -e 's|/| |g' -e 's|\\| |g' -e 's|^|#|g' \
     "$srcdir/glibc/localedata/SUPPORTED" >> "$pkgdir/etc/locale.gen"
+
+  # Add SUPPORTED file
+  install -m644 "${srcdir}"/glibc/localedata/SUPPORTED "${pkgdir}"/usr/share/i18n/SUPPORTED
 
   # install C.UTF-8 so that it is always available
   install -dm755 "$pkgdir/usr/lib/locale"
