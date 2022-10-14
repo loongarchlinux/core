@@ -134,7 +134,7 @@ prepare() {
 	patch -Np1 -i "${srcdir}/0002-10_linux-detect-archlinux-initramfs.patch"
 
 	echo "Patch to increase default heap size..."
-	patch -Np1 -i "${srcdir}/0003-kern-efi-mm-increase-default-heap-size.patch"
+#	patch -Np1 -i "${srcdir}/0003-kern-efi-mm-increase-default-heap-size.patch"
 
 	echo "Fix DejaVuSans.ttf location so that grub-mkfont can create *.pf2 files for starfield theme..."
 	sed 's|/usr/share/fonts/dejavu|/usr/share/fonts/dejavu /usr/share/fonts/TTF|g' -i "configure.ac"
