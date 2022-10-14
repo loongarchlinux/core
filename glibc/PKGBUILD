@@ -10,7 +10,7 @@ pkgbase=glibc
 pkgname=glibc
 pkgver=2.36
 _pkgdate=20221009
-pkgrel=4
+pkgrel=5
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/libc'
 license=(GPL LGPL)
@@ -186,9 +186,6 @@ package_glibc() {
   install -m644 "${srcdir}"/locale.gen.txt "${pkgdir}"/etc/locale.gen
   sed -e '1,3d' -e 's|/| |g' -e 's|\\| |g' -e 's|^|#|g' \
     "${srcdir}"/glibc/localedata/SUPPORTED >> "${pkgdir}"/etc/locale.gen
-
-  # Add SUPPORTED file
-  install -m644 "${srcdir}"/glibc/localedata/SUPPORTED "${pkgdir}"/usr/share/i18n/SUPPORTED
 
   # Add SUPPORTED file
   install -m644 "${srcdir}"/glibc/localedata/SUPPORTED "${pkgdir}"/usr/share/i18n/SUPPORTED
