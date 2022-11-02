@@ -9,9 +9,9 @@
 
 pkgname=(gcc gcc-libs gcc-fortran gcc-objc lto-dump)
 pkgver=12.2.1
-_pkgdate=20221009
+_pkgdate=20221025
 _majorver=${pkgver%%.*}
-pkgrel=3
+pkgrel=4
 pkgdesc='The GNU Compiler Collection'
 arch=(loong64 x86_64)
 license=(GPL3 LGPL FDL custom)
@@ -45,7 +45,7 @@ validpgpkeys=(F3691687D867B81B51CE07D9BBE43771487328A9  # bpiotrowski@archlinux.
               86CFFCA918CF3AF47147588051E8B148A9999C34  # evangelos@foutrelis.com
               13975A70E63C361C73AE69EF6EEB81F8981C74C7  # richard.guenther@gmail.com
               D3A93CAD751C2AF4F8C7AD516C35B99309B5FA62) # Jakub Jelinek <jakub@redhat.com>
-sha256sums=('7dcd8ca9255ec69cd7b1525e396c7827582b9ba327f5c9eaa619bc31245f6ac7'
+sha256sums=('525198db43a5c0b18a06191e25786e83be24a755f4b6ce6efa54a3e6c49507c2'
             'de48736f6e4153f03d0a5d38ceb6c6fdb7f054e8f47ddd6af0a3dbf14f27b931'
             '2513c6d9984dd0a2058557bf00f06d8d5181734e41dcfe07be7ed86f2959622a'
             '1773f5137f08ac1f48f0f7297e324d5d868d55201c03068670ee4602babdef2f')
