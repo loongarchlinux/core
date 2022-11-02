@@ -8,8 +8,8 @@ shopt -s extglob
 
 pkgbase=python
 pkgname=(python python-tests)
-pkgver=3.10.7
-pkgrel=1
+pkgver=3.10.8
+pkgrel=2
 _pybasever=${pkgver%.*}
 pkgdesc="Next generation of the python high-level scripting language"
 arch=('loong64' 'x86_64')
@@ -19,7 +19,7 @@ options=('debug')
 depends=('bzip2' 'expat' 'gdbm' 'libffi' 'libnsl' 'libxcrypt' 'openssl' 'zlib')
 makedepends=('tk' 'sqlite' 'bluez-libs' 'mpdecimal' 'llvm' 'gdb' 'xorg-server-xvfb' 'ttf-font')
 source=("https://www.python.org/ftp/python/${pkgver%rc*}/Python-${pkgver}.tar.xz"{,.asc})
-sha512sums=('dc3432d72ee7382617318c9645204876d13bb61d4caf3fbbb65e6b14897261123c743049657c95e159e5566daf4dcde613d2e393f025de758f610b44eb958313'
+sha512sums=('40e3e77d79618c81d6fc57c5d119b99c2959dcf932f40aad6b26f2ec39c5e713e6ff298f7597b4fad2ab94680db3732483b5ca0a45e6ae58c14580b3ea44cb0f'
             'SKIP')
 validpgpkeys=('0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D'  # Ned Deily (Python release signing key) <nad@python.org>
               'E3FF2839C048B25C084DEBE9B26995E310250568'  # Łukasz Langa (GPG langa.pl) <lukasz@langa.pl>
@@ -104,9 +104,6 @@ package_python() {
 
   make DESTDIR="${pkgdir}" EXTRA_CFLAGS="$CFLAGS" install
 
-  # Split tests
-  rm -r "$pkgdir"/usr/lib/python*/{test,ctypes/test,distutils/tests,idlelib/idle_test,lib2to3/tests,sqlite3/test,tkinter/test,unittest/test}
-
   # Why are these not done by default...
   ln -s python3               "${pkgdir}"/usr/bin/python
   ln -s python3-config        "${pkgdir}"/usr/bin/python-config
@@ -121,6 +118,13 @@ package_python() {
 
   # License
   install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+  # Split tests
+  cd "$pkgdir"/usr/lib/python*/
+  rm -r {ctypes/test,distutils/tests,idlelib/idle_test,lib2to3/tests,sqlite3/test,tkinter/test,unittest/test}
+  cd test
+  # FS#76193
+  rm -r !(support)
 }
 
 package_python-tests() {
@@ -132,6 +136,8 @@ package_python-tests() {
   make DESTDIR="${pkgdir}" EXTRA_CFLAGS="$CFLAGS" libinstall
   cd "$pkgdir"/usr/lib/python*/
   rm -r !(test|ctypes|distutils|idlelib|lib2to3|sqlite3|tkinter|unittest)
+  cd "$pkgdir"/usr/lib/python*/test
+  rm -r support
   cd "$pkgdir"/usr/lib/python*/ctypes
   rm -r !(test)
   cd "$pkgdir"/usr/lib/python*/distutils
