@@ -10,7 +10,6 @@ pkgdesc="Modular initramfs image creation utility"
 arch=('any')
 url='https://github.com/archlinux/mkinitcpio'
 license=('GPL')
-makedepends=(asciidoc)
 depends=('awk' 'mkinitcpio-busybox>=1.19.4-2' 'kmod' 'util-linux>=2.23' 'libarchive' 'coreutils'
          'bash' 'binutils' 'diffutils' 'findutils' 'grep' 'filesystem>=2011.10-1' 'zstd' 'systemd')
 optdepends=('gzip: Use gzip compression for the initramfs image'
@@ -27,11 +26,11 @@ source=("https://sources.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz"{,
 install=mkinitcpio.install
 sha512sums=('c180bef8af774305e8c9779b3405daaa5be33588bf89c6625a28eac1cde424f447782737d85d810fed4971d38b31086a072293d42aad08398c090f9538b56a4e'
             'SKIP'
-            'd19718f92916e00cece4e213bd7bd1cbf55b0094a39c459aaa995442342b64eb3fe8ec0bf023074f7ea26474a6fe2dc0370e0663823ed08ec5d33f6f645b833c'
+            '33bebb544b632066838a13a5d2d5adb09a74be37cee96e44e0f9e71b2ba5f4097d3642f98f299d936141692347504cc95a9cf35fdf444e27d6620871051d7ddc'
             'e521ad748fc73bd788e1fcf52ee11fd3c87e88dfa44072698b3f7925bd5fc9975e18b15373f6926ae5aa59ead378d2633a9967a71db1588e69754b939e56223c')
 b2sums=('0c29659278e662eb58bc776f99e9579b5f0cf3268175382ecf2d635d54a6a8261ae173e387503a0c20a7492656c703a6699b52e1a6693c85c3211225d3e7abf8'
         'SKIP'
-        '2b404010d5edb4b7eac36e25f0bf1c7958b7bc7b9740a1fda859579de48dc47552d9eee1d40abb8d2ebf1dffc523a64797c834bba59a22bab9e537ad12e991c7'
+        'b1779f2d2fc0ce51b2ea347058b55845c00eb964d87013310528dcc0de661af9f0a2ef801531d66d17bf807ffe44cbdf7fbc34eb91734bfa973fc9b2fb08399b'
         '52e6b1b516fb49faeadb0c3b1bf7adb55b276b52097bfb3b8638bcea1a33a4dbf10ccbb266747275285354e0bc766597874b4c0c85f9fbd3c326f459970a8500')
 validpgpkeys=('ECCAC84C1BA08A6CC8E63FBBF22FB1D78A77AEAB'    # Giancarlo Razzolini
               'C100346676634E80C940FB9E9C02FF419FECBE16')   # Morten Linderud
@@ -39,7 +38,7 @@ validpgpkeys=('ECCAC84C1BA08A6CC8E63FBBF22FB1D78A77AEAB'    # Giancarlo Razzolin
 prepare() {
     cd "${pkgname}-${pkgver}"
     patch -Np1 < "$srcdir/fix-strip.patch"
-  patch -p1 -i $srcdir/mkinitcpio-la64.patch
+    patch -p1 -i $srcdir/mkinitcpio-la64.patch
 }
 
 check() {
