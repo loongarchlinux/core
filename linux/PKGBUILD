@@ -2,9 +2,9 @@
 
 pkgbase=linux
 _ver=6.1
-_rdate=20221026
+_rdate=20221110
 pkgver=${_ver}.arch1
-pkgrel=1
+pkgrel=2
 pkgdesc='Linux'
 _srctag=v${pkgver%.*}-${pkgver##*.}
 url="https://github.com/archlinux/linux/commits/$_srctag"
@@ -28,8 +28,8 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
   'C7E7849466FE2358343588377258734B41C31549'  # David Runge <dvzrv@archlinux.org>
 )
-sha256sums=('e15016c515d874e0854a5bf5eb1fbc79d5c6b6b423d8f75ec929cc662b5df92e'
-            'ee4132cb0984bfa32670f0c8fdef507e39d955587148ea9a799132640b077cf2'
+sha256sums=('472d7febdbd05e90d23961c28b5aa613c12468ff40573e490030804dcf02478e'
+            'f70d75575d66eb1f47ba466b25ad0c549b9bb8418eb62c7d1005ec7b54641208'
             '899d21d4c0b475603a003a2f003a9852fa7576e4f1f4003666128c26f57233d1'
             'a2b8393d138f62c835a4df0c0a886ad024d716e08768620a259b7f1582da0067')
 
@@ -69,7 +69,7 @@ prepare() {
 
 build() {
   cd $_srcname
-  make htmldocs all -j120
+  make htmldocs all
 
   gcc -o kernel-version $srcdir/kernel-version.c
   ./kernel-version "$(make -s image_name)" "$(make -s kernelrelease)"
