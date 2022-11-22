@@ -7,15 +7,15 @@
 
 pkgname=linux-api-headers
 pkgver=6.1
-pkgrel=2
-_rdate=20221110
+pkgrel=3
+_rdate=20221122
 pkgdesc='Kernel headers sanitized for use in userspace'
 arch=(any)
 url='https://www.gnu.org/software/libc'
 license=(GPL2)
 makedepends=(rsync)
 source=(https://github.com/yetist/linux/releases/download/v${_rdate}/linux-${pkgver}-${_rdate}.tar.xz)
-sha256sums=('60db2c970630626bb2b82739e3467c93ad807dd6e8819adde1814e1290cfd215')
+sha256sums=('2f062c54e51c99305f42135f54bccf0c645dd61e84122f61d399eac930d84062')
 
 build() {
   cd linux-$pkgver
