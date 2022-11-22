@@ -2,9 +2,9 @@
 
 pkgbase=linux
 _ver=6.1
-_rdate=20221110
+_rdate=20221122
 pkgver=${_ver}.arch1
-pkgrel=2
+pkgrel=4
 pkgdesc='Linux'
 _srctag=v${pkgver%.*}-${pkgver##*.}
 url="https://github.com/archlinux/linux/commits/$_srctag"
@@ -28,9 +28,9 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
   'C7E7849466FE2358343588377258734B41C31549'  # David Runge <dvzrv@archlinux.org>
 )
-sha256sums=('60db2c970630626bb2b82739e3467c93ad807dd6e8819adde1814e1290cfd215'
+sha256sums=('2f062c54e51c99305f42135f54bccf0c645dd61e84122f61d399eac930d84062'
             'f70d75575d66eb1f47ba466b25ad0c549b9bb8418eb62c7d1005ec7b54641208'
-            '9ce1c3db4c9af1ac56f71b278f44d0e8dd49d8630d337481493c0515d00dd374'
+            '32be824f7a252034ecccd2a98ff48eb47abde57e5b02d58632217c1592a5ff11'
             'a2b8393d138f62c835a4df0c0a886ad024d716e08768620a259b7f1582da0067')
 
 export KBUILD_BUILD_HOST=archlinux
@@ -61,7 +61,11 @@ prepare() {
     cp ../config .config
   fi
   make olddefconfig
+  if [ $CARCH == loong64 ];then
+  diff -u ../config.la64 .config || :
+  else
   diff -u ../config .config || :
+  fi
 
   make -s kernelrelease > version
   echo "Prepared $pkgbase version $(<version)"
