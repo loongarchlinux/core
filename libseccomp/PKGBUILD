@@ -6,7 +6,7 @@
 pkgbase=libseccomp
 pkgname=(libseccomp python-libseccomp)
 pkgver=2.5.4
-pkgrel=1
+pkgrel=2
 pkgdesc='Enhanced seccomp library'
 arch=('loong64' 'x86_64')
 license=('LGPL2.1')
@@ -14,14 +14,11 @@ url="https://github.com/seccomp/libseccomp"
 depends=('glibc')
 checkdepends=('valgrind')
 makedepends=('gperf' 'cython' 'python-setuptools')
-source=(https://github.com/seccomp/${pkgname}/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz{,.asc}
-        libseccomp-la64.patch)
-sha256sums=('d82902400405cf0068574ef3dc1fe5f5926207543ba1ae6f8e7a1576351dcbdb'
-            'SKIP'
-            '950a9b56431550268655fa54220bd675a0920a6be3005dd732879bc5f831eb8e')
-b2sums=('38b134cb578f9355667546f92950ebcf8c53ccaf98db568db9aadfa9629c054136849e03d4bf9f09f73998fe66a5e8a9038573d19740b2bddf5518a8a0119229'
-        'SKIP'
-        'f2a52bebe1c98e36481370597e288131e7657adae8adeacd14f26305aa24ff1da39ef41a6d216dcc3772530e0e468ab52d1ce862517d647e7cf1a1d442fc440a')
+source=(https://github.com/seccomp/${pkgname}/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz{,.asc})
+sha256sums=('65612dfec11116e1b56ae9a0df681660d155cd6590ad54119708f78166573265'
+            'SKIP')
+b2sums=('82352d421339c5cdd3acdd38fddb462ea0b8cc8beb7f285eec374f7448784232b6e7be6499539888fffa5ac2bf2b18c9d81b326ce80dce332671b3a0b4335cfe'
+        'SKIP')
 validpgpkeys=(
   '7100AADFAE6E6E940D2E0AD655E45A5AE8CA7C8A' # Paul Moore <paul@paul-moore.com>
   '47A68FCE37C7D7024FD65E11356CE62C2B524099' # Tom Hromatka <tom.hromatka@oracle.com>
@@ -29,7 +26,6 @@ validpgpkeys=(
 
 prepare() {
   cd ${pkgbase}-${pkgver}
-  patch -p1 -i $srcdir/libseccomp-la64.patch
   autoreconf -fiv
 }
 
