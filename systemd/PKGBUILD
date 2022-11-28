@@ -5,7 +5,7 @@ pkgname=('systemd' 'systemd-libs' 'systemd-resolvconf' 'systemd-sysvcompat')
 _tag='7442d25a54b6dd494299b3a932b28953f4e67b21' # git rev-parse v${_tag_name}
 _tag_name=251.7
 pkgver="${_tag_name/-/}"
-pkgrel=1
+pkgrel=2
 arch=('loong64' 'x86_64')
 url='https://www.github.com/systemd/systemd'
 makedepends=('acl' 'cryptsetup' 'docbook-xsl' 'gperf' 'lz4' 'xz' 'pam' 'libelf'
@@ -96,6 +96,7 @@ prepare() {
   # Replace cdrom/dialout/tape groups with optical/uucp/storage
   patch -Np1 -i ../0001-Use-Arch-Linux-device-access-groups.patch
   patch -Np1 -i ../v251-loongarch64.patch
+  patch -Np1 -i ../v251-la64-seccomp.patch
 }
 
 build() {
