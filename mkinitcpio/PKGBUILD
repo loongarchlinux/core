@@ -21,21 +21,24 @@ optdepends=('gzip: Use gzip compression for the initramfs image'
 provides=('initramfs')
 backup=('etc/mkinitcpio.conf')
 source=("https://sources.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz"{,.sig}
-        "mkinitcpio-la64.patch")
+        "mkinitcpio-la64.patch"
+        "mkinitcpio-zboot.patch")
 install=mkinitcpio.install
 sha512sums=('13526e749d23f2933db4a9ed74f138b0fafaf9b93f455dcf686b29b950247f0b62f8f6a091d7006c41642b4106bf8bcd666af03ec44a9f0ee7cf2b57b5714cf0'
             'SKIP'
-            'e521ad748fc73bd788e1fcf52ee11fd3c87e88dfa44072698b3f7925bd5fc9975e18b15373f6926ae5aa59ead378d2633a9967a71db1588e69754b939e56223c')
+            'e521ad748fc73bd788e1fcf52ee11fd3c87e88dfa44072698b3f7925bd5fc9975e18b15373f6926ae5aa59ead378d2633a9967a71db1588e69754b939e56223c'
+            '0b7c01a1feb32e1dcd4bc83036767e45f3953635ee0417fb1048c919912448769acead7cfc6e64fb7bbd84e4951be1acae9c02786cb685b3a756676165779fec')
 b2sums=('1a85152e6ce465e419e87a1915860be83c198f4e7a6ecab44277a68f2f1ecb316c7fed6e8af93b0282b646c2de1a8057831668749788030eb3e5256eeb28979b'
         'SKIP'
-        '52e6b1b516fb49faeadb0c3b1bf7adb55b276b52097bfb3b8638bcea1a33a4dbf10ccbb266747275285354e0bc766597874b4c0c85f9fbd3c326f459970a8500')
+        '52e6b1b516fb49faeadb0c3b1bf7adb55b276b52097bfb3b8638bcea1a33a4dbf10ccbb266747275285354e0bc766597874b4c0c85f9fbd3c326f459970a8500'
+        '0fd2de095e52f9898d7eeeee580430afc0cfe9c0cad3e96f31e7f3504ceb9e9865f2410f9e0c1dfd5f213ef06769f97fae294dd776cb157a4e16693cd63024cc')
 validpgpkeys=('ECCAC84C1BA08A6CC8E63FBBF22FB1D78A77AEAB'    # Giancarlo Razzolini
               'C100346676634E80C940FB9E9C02FF419FECBE16')   # Morten Linderud
 
 prepare() {
     cd "${pkgname}-${pkgver}"
-    patch -Np1 < "$srcdir/fix-strip.patch"
     patch -p1 -i $srcdir/mkinitcpio-la64.patch
+    patch -p1 -i $srcdir/mkinitcpio-zboot.patch
 }
 
 check() {
