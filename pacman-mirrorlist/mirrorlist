@@ -4,4 +4,4 @@
 ##
 
 ## China
-Server = https://mirrors.wsyu.edu.cn/loongarch/2022.09/$repo/os/$arch
+Server = https://mirrors.wsyu.edu.cn/loongarch/archlinux/$repo/os/$arch
