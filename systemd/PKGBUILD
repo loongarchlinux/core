@@ -5,7 +5,7 @@ pkgname=('systemd' 'systemd-libs' 'systemd-resolvconf' 'systemd-sysvcompat')
 _tag='2306696b774a8c23f3796a0c9ebd8486fbb2a069' # git rev-parse v${_tag_name}
 _tag_name=252.2
 pkgver="${_tag_name/-/}"
-pkgrel=2
+pkgrel=3
 arch=('loong64' 'x86_64')
 url='https://www.github.com/systemd/systemd'
 makedepends=('acl' 'cryptsetup' 'docbook-xsl' 'gperf' 'lz4' 'xz' 'pam' 'libelf'
@@ -39,8 +39,8 @@ source=("git+https://github.com/systemd/systemd-stable#tag=${_tag}?signed"
         '30-systemd-tmpfiles.hook'
         '30-systemd-udev-reload.hook'
         '30-systemd-update.hook'
-        'v251-loongarch64.patch'
-        'v251-la64-seccomp.patch'
+        'v252-la64.patch'
+        'reduce-default-service-timeout-to-15s.patch'
         )
 sha512sums=('SKIP'
             'SKIP'
@@ -62,8 +62,8 @@ sha512sums=('SKIP'
             'da7a97d5d3701c70dd5388b0440da39006ee4991ce174777931fea2aa8c90846a622b2b911f02ae4d5fffb92680d9a7e211c308f0f99c04896278e2ee0d9a4dc'
             'a50d202a9c2e91a4450b45c227b295e1840cc99a5e545715d69c8af789ea3dd95a03a30f050d52855cabdc9183d4688c1b534eaa755ebe93616f9d192a855ee3'
             '825b9dd0167c072ba62cabe0677e7cd20f2b4b850328022540f122689d8b25315005fa98ce867cf6e7460b2b26df16b88bb3b5c9ebf721746dce4e2271af7b97'
-            'ea4e0c9c539adb7f700ed15b6ee191e9d62564d9a27f0e5c5a20219d6aeb4e8e146c59f2649843b38d04a13e3154ac668ddee51d1a6f7235418c06c69f8a56b4'
-            'db4464c36b3b867921d51ffac2460eb80386f215dacd18598c08b13dc9ce0af38282cfdedd2bab632109d618f3711e7f6be8dc6c0933a6ed7a98c78ea0041f53')
+            'a2bf16f8011a9d3accfead426ee08ca1b4486aca031d4aefb7cd6d61215d2a649486e4d4deda1699c520fa7e0fa226d4b146d220719e96d93f529204001f8613'
+            '7679219138f640f4d4f11e1596aec7601c1a2fbaf0d6339eef2275beb37260429b0fc26840a712224cadf9284794454eaf067d5a1ce6d8a28bbfdc8b14e59d4a')
 
 _backports=(
   # stub: Fix cmdline handling
@@ -95,8 +95,10 @@ prepare() {
 
   # Replace cdrom/dialout/tape groups with optical/uucp/storage
   patch -Np1 -i ../0001-Use-Arch-Linux-device-access-groups.patch
-  patch -Np1 -i ../v251-loongarch64.patch
-  patch -Np1 -i ../v251-la64-seccomp.patch
+#  patch -Np1 -i ../v251-loongarch64.patch
+#  patch -Np1 -i ../v251-la64-seccomp.patch
+  patch -Np1 -i ../v252-la64.patch
+  patch -Np1 -i ../reduce-default-service-timeout-to-15s.patch
 }
 
 build() {
@@ -120,7 +122,6 @@ build() {
     -Dversion-tag="${_tag_name/-/\~}-${pkgrel}-arch"
     -Dshared-lib-tag="${pkgver}-${pkgrel}"
     -Dmode=release
-    --buildtype=release
 
     -Dgnu-efi=true
     -Dima=false
