@@ -3,7 +3,7 @@
 
 pkgname=inetutils
 pkgver=2.3
-pkgrel=1
+pkgrel=2
 pkgdesc="A collection of common network programs"
 arch=('loong64' 'x86_64')
 url="https://www.gnu.org/software/inetutils/"
