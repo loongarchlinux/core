@@ -1,7 +1,7 @@
 # Maintainer: Andreas Radke <andyrtr@archlinux.org>
 
 pkgbase=linux-lts
-pkgver=5.15.80
+pkgver=5.15.86
 pkgrel=1
 pkgdesc='LTS Linux'
 url="https://www.kernel.org/"
@@ -9,7 +9,7 @@ arch=(loong64 x86_64)
 license=(GPL2)
 makedepends=(
   bc libelf pahole cpio perl tar xz
-  xmlto python-sphinx python-sphinx_rtd_theme graphviz imagemagick texlive-latexextra
+  xmlto 'python-sphinx<6.0.0' python-sphinx_rtd_theme graphviz imagemagick texlive-latexextra
 )
 options=('!strip')
 _srcname=linux-$pkgver
@@ -27,9 +27,9 @@ validpgpkeys=(
   '647F28654894E3BD457199BE38DBBDC86092693E'  # Greg Kroah-Hartman
 )
 # https://www.kernel.org/pub/linux/kernel/v5.x/sha256sums.asc
-sha256sums=('3b321a6466d2021f60ed8d4e33bba21db2f23efc2ddd2d9fb775393d9afdfd4d'
+sha256sums=('80fcd9efa443502de9e2750f6dfb59e8de43a5d87a6d2be09dca748d79b5f2ee'
             'SKIP'
-            '2f1489c4fc8261e414553854ebb7ebe165d56e5b91eb1439fef85ad620bf7683'
+            'ec9d9df99be94638c47a5685bbd8ba7ad17b0cd67a5f1bb249fd8acffe93c73b'
             '3b5cfc9ca9cf778ea2c4b619b933cda26519969df2d764b5a687f63cf59974cd'
             'c175fbb141c3cec013c799f694d88310375ac5456042f6a4a1adc7667836d786'
             '8357f000b2b622e73dcfd41c2bad42b5e99fffe8f7ee64f774aa771f86cef43c'
