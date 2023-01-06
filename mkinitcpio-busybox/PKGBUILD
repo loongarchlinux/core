@@ -5,7 +5,7 @@
 
 pkgname=mkinitcpio-busybox
 pkgver=1.35.0
-pkgrel=2
+pkgrel=3
 pkgdesc='Base initramfs tools'
 arch=(loong64 x86_64)
 url="https://www.busybox.net/"
@@ -25,7 +25,7 @@ prepare() {
   if [ $CARCH == "x86_64" ];then
     local safeflags="-march=${CARCH/_/-} -mtune=generic -Os -pipe -fno-strict-aliasing"
   elif [ $CARCH == "loong64" ];then
-    local safeflags="-march=loongarch64 -mtune=loongarch64 -Os -pipe -fno-strict-aliasing"
+    local safeflags="-march=la464 -mabi=lp64d -Os -pipe -fno-strict-aliasing"
   else
     local safeflags="-march=${CARCH/_/-} -mtune=${CARCH/_/-} -Os -pipe -fno-strict-aliasing"
   fi
