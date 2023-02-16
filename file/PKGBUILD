@@ -17,7 +17,7 @@ source=("https://astron.com/pub/$pkgname/$pkgname-$pkgver.tar.gz"{,.asc}
         0001-add-support-for-loongarch.patch)
 validpgpkeys=('BE04995BA8F90ED0C0C176C471112AB16CB33B3A') # Christos Zoulas
 sha256sums=('3751c7fba8dbc831cb8d7cc8aff21035459b8ce5155ef8b0880a27d028475f3b'
-            'SKIP')
+            'SKIP'
             'b5be889b7b3f18d0f277b7d4c6faad21d61ef6c94a8f852d73c8b3470a7ba054')
 
 prepare() {
