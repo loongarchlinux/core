@@ -22,7 +22,7 @@ optdepends=('gzip: Use gzip compression for the initramfs image'
 provides=('initramfs')
 backup=('etc/mkinitcpio.conf')
 source=("https://sources.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz"{,.sig}
-        '0001-functions-fix-overwriting-of-symlinks-with-regular-f.patch')
+        '0001-functions-fix-overwriting-of-symlinks-with-regular-f.patch'
         "mkinitcpio-la64.patch"
         "mkinitcpio-zboot.patch")
 install=mkinitcpio.install
