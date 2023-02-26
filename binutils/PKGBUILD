@@ -24,7 +24,7 @@ backup=('etc/gprofng.rc')
 options=(staticlibs !distcc !ccache)
 source=(git+https://sourceware.org/git/binutils-gdb.git#commit=${_commit}
         gold-warn-unsupported.patch)
-sha256sums=('b4f4402dc0279abba2d4453b4cabd5eb4abd3b87b2cb3974002ebdbcf2dea582'
+sha256sums=('SKIP'
             '2d430b66f84a19c154725ec535280c493be1d34f1a90f95208dce02fecd0e4e4')
 validpgpkeys=(3A24BC1E8FB409FA9F14371813FCEF89DD9E3C4F)
 
