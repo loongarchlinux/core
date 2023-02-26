@@ -5,7 +5,7 @@ Date:   Thu Mar 24 17:15:03 2022 +0800
     change lib64->lib directory
 
 diff --git a/gcc/config/loongarch/linux.h b/gcc/config/loongarch/linux.h
-index 110d0fab93d..bbbe7d1b02f 100644
+index 9059d2441..329115e72 100644
 --- a/gcc/config/loongarch/linux.h
 +++ b/gcc/config/loongarch/linux.h
 @@ -24,11 +24,11 @@ along with GCC; see the file COPYING3.  If not see
@@ -24,7 +24,7 @@ index 110d0fab93d..bbbe7d1b02f 100644
  
  #endif
 diff --git a/gcc/config/loongarch/t-linux b/gcc/config/loongarch/t-linux
-index 5b9796aea2b..864381573ff 100644
+index e40da1792..c354f0a6f 100644
 --- a/gcc/config/loongarch/t-linux
 +++ b/gcc/config/loongarch/t-linux
 @@ -39,15 +39,15 @@ endif
@@ -33,7 +33,7 @@ index 5b9796aea2b..864381573ff 100644
      MULTILIB_OSDIRNAMES = \
 -      mabi.lp64d=../lib64$\
 +      mabi.lp64d=../lib$\
-       $(call if_multiarch,:loongarch64-linux-gnuf64)
+       $(call if_multiarch,:loongarch64-linux-gnu)
  
      MULTILIB_OSDIRNAMES += \
 -      mabi.lp64f=../lib64/f32$\

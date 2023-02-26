@@ -9,9 +9,9 @@
 
 pkgname=(gcc gcc-libs gcc-fortran gcc-objc lto-dump)
 pkgver=13.0.1
-_pkgdate=20230212
+_pkgdate=20230219
 _majorver=${pkgver%%.*}
-pkgrel=2
+pkgrel=3
 pkgdesc='The GNU Compiler Collection'
 arch=(loong64 x86_64)
 license=(GPL3 LGPL FDL custom)
@@ -47,12 +47,12 @@ validpgpkeys=(F3691687D867B81B51CE07D9BBE43771487328A9  # bpiotrowski@archlinux.
               86CFFCA918CF3AF47147588051E8B148A9999C34  # evangelos@foutrelis.com
               13975A70E63C361C73AE69EF6EEB81F8981C74C7  # richard.guenther@gmail.com
               D3A93CAD751C2AF4F8C7AD516C35B99309B5FA62) # Jakub Jelinek <jakub@redhat.com>
-sha256sums=('11b231b34667a10f7330aa9bcc08a6da17f867a0ea925bcde99e7e92b648897d'
+sha256sums=('b10e0e0ad66cc64f4e7ec2150a220bea05c61dc2ceeef8cffd86deb32c59f764'
             'de48736f6e4153f03d0a5d38ceb6c6fdb7f054e8f47ddd6af0a3dbf14f27b931'
             '2513c6d9984dd0a2058557bf00f06d8d5181734e41dcfe07be7ed86f2959622a'
             '1773f5137f08ac1f48f0f7297e324d5d868d55201c03068670ee4602babdef2f'
             'd7d7d54efd1f967c7c06a32e2ff4104cfddec1f6a28ceefdca4e76e04712ae73'
-            'd99568bcfbfa651f63de35bb646ec41b9c27d7f76c9114c429ad18df57519dfa')
+            'a5904483163c3086f24088a2b422988bb3bc55f493d946e6a54f95ac48d83fb9')
 
 prepare() {
   #[[ ! -d gcc ]] && ln -s gcc-${pkgver/+/-} gcc
@@ -272,7 +272,7 @@ package_gcc() {
   # create cc-rs compatible symlinks
   # https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L2578-L2581
   for binary in {c++,g++,gcc,gcc-ar,gcc-nm,gcc-ranlib}; do
-    ln -s /usr/bin/${binary} "${pkgdir}"/usr/bin/x86_64-linux-gnu-${binary}
+    ln -s /usr/bin/${binary} "${pkgdir}"/usr/bin/`uname -m`-linux-gnu-${binary}
   done
 
   # POSIX conformance launcher scripts for c89 and c99
