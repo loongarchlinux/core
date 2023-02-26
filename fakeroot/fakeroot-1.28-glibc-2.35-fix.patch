@@ -30,7 +30,7 @@ Index: fakeroot-1.28/libfakeroot.c
  #if defined(__GLIBC__)
 -#if __GLIBC_PREREQ(2,33)
 -/* Glibc 2.33 exports symbols for these functions in the shared lib */
-+#if __GLIBC_PREREQ(2,37)
++#if __GLIBC_PREREQ(2,38)
 +/* Glibc 2.36 exports symbols for these functions in the shared lib */
    int lstat(const char *file_name, struct stat *statbuf) {
       return WRAP_LSTAT LSTAT_ARG(_STAT_VER, file_name, statbuf);
