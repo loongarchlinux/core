@@ -1,10 +1,10 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
 pkgbase=linux
-_ver=6.1
-_rdate=20221221
+_ver=6.2
+_rdate=20230226
 pkgver=${_ver}.arch1
-pkgrel=9
+pkgrel=1
 pkgdesc='Linux'
 _srctag=v${pkgver%.*}-${pkgver##*.}
 url="https://github.com/archlinux/linux/commits/$_srctag"
@@ -28,9 +28,9 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
   'C7E7849466FE2358343588377258734B41C31549'  # David Runge <dvzrv@archlinux.org>
 )
-sha256sums=('fbc18036c24877469458f74ef1bb3d7ff0306fb971879225e6b945c014a717c8'
-            'cca31f0ae7abb493ace33bd5945fc06cd6c7eeeba9bea3a03d11ba6fb9a8b1bb'
-            '5acb7e9328165549a5f0b631e6950ed1ffe162589d9ab421b75c0cdb85f8be73'
+sha256sums=('42bf9ecc1e1ab92caec8fbd0c7588bf006c15027beef4083b2c4e5623c3c9cdd'
+            'e4069e0bc9b039c482ea7eac06dde956709058600e57867159e2df123419a253'
+            '468f0de534abb6f8ba4f84a62eacf530b41804369112f0591f00424f3f8b3a1d'
             'a2b8393d138f62c835a4df0c0a886ad024d716e08768620a259b7f1582da0067')
 
 export KBUILD_BUILD_HOST=archlinux
