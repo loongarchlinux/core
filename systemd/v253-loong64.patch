@@ -1,8 +1,8 @@
 diff --git a/src/basic/architecture.h b/src/basic/architecture.h
-index b86f5f35d0..26d2db2407 100644
+index 096526a857..cee3f42429 100644
 --- a/src/basic/architecture.h
 +++ b/src/basic/architecture.h
-@@ -20,6 +20,7 @@ typedef enum {
+@@ -19,6 +19,7 @@ typedef enum {
          ARCHITECTURE_ARM_BE,
          ARCHITECTURE_CRIS,
          ARCHITECTURE_IA64,
@@ -10,7 +10,7 @@ index b86f5f35d0..26d2db2407 100644
          ARCHITECTURE_LOONGARCH64,
          ARCHITECTURE_M68K,
          ARCHITECTURE_MIPS,
-@@ -198,16 +199,29 @@ Architecture uname_architecture(void);
+@@ -197,16 +198,29 @@ Architecture uname_architecture(void);
  #  elif defined(__SH4A__)
  #    define LIB_ARCH_TUPLE "sh4a-linux-gnu"
  #  endif
@@ -50,7 +50,7 @@ index b86f5f35d0..26d2db2407 100644
  #elif defined(__m68k__)
  #  define native_architecture() ARCHITECTURE_M68K
 diff --git a/src/boot/efi/meson.build b/src/boot/efi/meson.build
-index 395386d3ed..013e9d7c60 100644
+index 380177449f..3319aef8b3 100644
 --- a/src/boot/efi/meson.build
 +++ b/src/boot/efi/meson.build
 @@ -24,6 +24,7 @@ efi_arch = {
@@ -61,7 +61,7 @@ index 395386d3ed..013e9d7c60 100644
          'riscv64': ['riscv64', 'riscv64'],
  }.get(efi_arch, [])
  
-@@ -212,6 +213,7 @@ efi_cflags += cc.get_supported_arguments({
+@@ -203,6 +204,7 @@ efi_cflags += cc.get_supported_arguments({
          'ia32':   ['-mno-sse', '-mno-mmx'],
          'x86_64': ['-mno-red-zone', '-mno-sse', '-mno-mmx'],
          'arm':    ['-mgeneral-regs-only', '-mfpu=none'],
@@ -69,20 +69,20 @@ index 395386d3ed..013e9d7c60 100644
  }.get(efi_arch[1], []))
  
  # We are putting the efi_cc command line together ourselves, so make sure to pull any
-@@ -283,9 +285,9 @@ foreach arg : ['-Wl,--no-warn-execstack',
-         endif
- endforeach
+@@ -281,9 +283,9 @@ else
+         coff_header_in_crt0 = false
+ endif
  
--if efi_arch[1] in ['aarch64', 'arm', 'riscv64']
-+if efi_arch[1] in ['aarch64', 'arm', 'loongarch64', 'riscv64']
+-if efi_arch[1] in ['arm', 'riscv64'] or (efi_arch[1] == 'aarch64' and (not objcopy_2_38.found() or coff_header_in_crt0))
++if efi_arch[1] in ['arm', 'riscv64', 'loongarch64'] or (efi_arch[1] == 'aarch64' and (not objcopy_2_38.found() or coff_header_in_crt0))
          efi_ldflags += ['-shared']
--        # Aarch64, ARM32 and 64bit RISC-V don't have an EFI capable objcopy.
-+        # Aarch64, ARM32, 64bit LoongArch and RISC-V don't have an EFI capable objcopy.
+-        # ARM32 and 64bit RISC-V don't have an EFI capable objcopy.
++        # ARM32 and 64bit LoongArch and RISC-V don't have an EFI capable objcopy.
+         # Older objcopy doesn't support Aarch64 either.
          # Use 'binary' instead, and add required symbols manually.
          efi_ldflags += ['-Wl,--defsym=EFI_SUBSYSTEM=0xa']
-         efi_format = ['-O', 'binary']
 diff --git a/src/boot/efi/pe.c b/src/boot/efi/pe.c
-index 3d5da14d10..ca8410e035 100644
+index c946ce2b0a..c9ba963271 100644
 --- a/src/boot/efi/pe.c
 +++ b/src/boot/efi/pe.c
 @@ -20,6 +20,8 @@
@@ -95,7 +95,7 @@ index 3d5da14d10..ca8410e035 100644
  #  define TARGET_MACHINE_TYPE EFI_IMAGE_MACHINE_RISCV64
  #else
 diff --git a/src/nspawn/nspawn-oci.c b/src/nspawn/nspawn-oci.c
-index 02142a9352..c9bcdf9434 100644
+index 3c6bfd3eaf..989ff6722e 100644
 --- a/src/nspawn/nspawn-oci.c
 +++ b/src/nspawn/nspawn-oci.c
 @@ -1645,6 +1645,9 @@ static int oci_seccomp_arch_from_string(const char *name, uint32_t *ret) {
@@ -109,7 +109,7 @@ index 02142a9352..c9bcdf9434 100644
                  { "SCMP_ARCH_MIPS64",      SCMP_ARCH_MIPS64      },
                  { "SCMP_ARCH_MIPS64N32",   SCMP_ARCH_MIPS64N32   },
 diff --git a/src/shared/seccomp-util.c b/src/shared/seccomp-util.c
-index dfac4da7cc..4065d5d6d1 100644
+index 8ece7f163f..a67a7cf181 100644
 --- a/src/shared/seccomp-util.c
 +++ b/src/shared/seccomp-util.c
 @@ -47,6 +47,8 @@ uint32_t seccomp_local_archs[] = {
@@ -143,7 +143,7 @@ index dfac4da7cc..4065d5d6d1 100644
          else if (streq(n, "mips"))
                  *ret = SCMP_ARCH_MIPS;
          else if (streq(n, "mips64"))
-@@ -1366,6 +1376,9 @@ int seccomp_protect_sysctl(void) {
+@@ -1364,6 +1374,9 @@ int seccomp_protect_sysctl(void) {
  
                  if (IN_SET(arch,
                             SCMP_ARCH_AARCH64,
@@ -153,7 +153,7 @@ index dfac4da7cc..4065d5d6d1 100644
  #ifdef SCMP_ARCH_RISCV64
                             SCMP_ARCH_RISCV64,
  #endif
-@@ -1446,6 +1459,9 @@ int seccomp_restrict_address_families(Set *address_families, bool allow_list) {
+@@ -1444,6 +1457,9 @@ int seccomp_restrict_address_families(Set *address_families, bool allow_list) {
                  case SCMP_ARCH_X32:
                  case SCMP_ARCH_ARM:
                  case SCMP_ARCH_AARCH64:
@@ -163,7 +163,7 @@ index dfac4da7cc..4065d5d6d1 100644
                  case SCMP_ARCH_MIPSEL64N32:
                  case SCMP_ARCH_MIPS64N32:
                  case SCMP_ARCH_MIPSEL64:
-@@ -1700,7 +1716,7 @@ static int add_seccomp_syscall_filter(scmp_filter_ctx seccomp,
+@@ -1698,7 +1714,7 @@ static int add_seccomp_syscall_filter(scmp_filter_ctx seccomp,
  }
  
  /* For known architectures, check that syscalls are indeed defined or not. */
@@ -172,7 +172,7 @@ index dfac4da7cc..4065d5d6d1 100644
  assert_cc(SCMP_SYS(shmget) > 0);
  assert_cc(SCMP_SYS(shmat) > 0);
  assert_cc(SCMP_SYS(shmdt) > 0);
-@@ -1749,16 +1765,19 @@ int seccomp_memory_deny_write_execute(void) {
+@@ -1747,16 +1763,19 @@ int seccomp_memory_deny_write_execute(void) {
                  case SCMP_ARCH_X86_64:
                  case SCMP_ARCH_X32:
                  case SCMP_ARCH_AARCH64:
@@ -195,7 +195,7 @@ index dfac4da7cc..4065d5d6d1 100644
  #endif
                  }
 diff --git a/src/test/test-seccomp.c b/src/test/test-seccomp.c
-index 4c704badbd..52cd7d9b1e 100644
+index 2d06098ddd..9e5d83bb0e 100644
 --- a/src/test/test-seccomp.c
 +++ b/src/test/test-seccomp.c
 @@ -126,6 +126,9 @@ TEST(architecture_table) {
