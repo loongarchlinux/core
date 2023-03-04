@@ -1,16 +1,3 @@
-diff --git a/nss/coreconf/config.gypi b/nss/coreconf/config.gypi
-index 7bae38ae4..e2fff7af4 100644
---- a/nss/coreconf/config.gypi
-+++ b/nss/coreconf/config.gypi
-@@ -211,7 +211,7 @@
-           },
-         },
-       }],
--      [ 'target_arch=="arm64" or target_arch=="aarch64" or target_arch=="sparc64" or target_arch=="ppc64" or target_arch=="ppc64le" or target_arch=="s390x" or target_arch=="mips64" or target_arch=="e2k" or target_arch=="riscv64"', {
-+      [ 'target_arch=="arm64" or target_arch=="aarch64" or target_arch=="sparc64" or target_arch=="ppc64" or target_arch=="ppc64le" or target_arch=="s390x" or target_arch=="mips64" or target_arch=="e2k" or target_arch=="riscv64" or target_arch=="loongarch64"', {
-         'defines': [
-           'NSS_USE_64',
-         ],
 diff --git a/nss/lib/freebl/verified/kremlin/include/kremlin/internal/types.h b/nss/lib/freebl/verified/kremlin/include/kremlin/internal/types.h
 index 2c966cb54..a28ff3741 100644
 --- a/nss/lib/freebl/verified/kremlin/include/kremlin/internal/types.h
@@ -23,3 +10,29 @@ index 2c966cb54..a28ff3741 100644
       defined(__SIZEOF_INT128__))
  #define HAS_INT128 1
  #endif
+diff --git a/nss/lib/ssl/ssl3exthandle.c b/nss/lib/ssl/ssl3exthandle.c
+index b5ae62f39..7134447bf 100644
+--- a/nss/lib/ssl/ssl3exthandle.c
++++ b/nss/lib/ssl/ssl3exthandle.c
+@@ -201,7 +201,7 @@
+  * Clients sends a filled in session ticket if one is available, and otherwise
+  * sends an empty ticket.  Servers always send empty tickets.
+  */
+-PRInt32
++SECStatus
+ ssl3_ClientSendSessionTicketXtn(const sslSocket *ss, TLSExtensionData *xtnData,
+                                 sslBuffer *buf, PRBool *added)
+ {
+diff --git a/nss/lib/ssl/sslsnce.c b/nss/lib/ssl/sslsnce.c
+index 56edafa1f..49f041c97 100644
+--- a/nss/lib/ssl/sslsnce.c
++++ b/nss/lib/ssl/sslsnce.c
+@@ -1820,7 +1820,7 @@
+     return SECSuccess;
+ }
+ 
+-static PRBool
++static SECStatus
+ ssl_GenerateSelfEncryptKeys(void *pwArg, PRUint8 *keyName,
+                             PK11SymKey **aesKey, PK11SymKey **macKey);
+ 
