@@ -2,9 +2,9 @@
 
 pkgbase=linux
 _ver=6.3
-_rdate=20230316
+_rdate=20230320
 pkgver=${_ver}.arch1
-pkgrel=2
+pkgrel=4
 pkgdesc='Linux'
 _srctag=v${pkgver%.*}-${pkgver##*.}
 url="https://github.com/archlinux/linux/commits/$_srctag"
@@ -27,9 +27,9 @@ validpgpkeys=(
   'A2FF3A36AAA56654109064AB19802F8B0D70FC30'  # Jan Alexander Steffens (heftig)
   'C7E7849466FE2358343588377258734B41C31549'  # David Runge <dvzrv@archlinux.org>
 )
-sha256sums=('59fcc8a859da60ce95ade5c7c7d0c7b94aab0579c027d39ef2678e544af15b8e'
+sha256sums=('ad0c21c33159f5b9b01e2a3e78a530b7e7164ca03adaacfe0c121727a86b2fdd'
             'e4069e0bc9b039c482ea7eac06dde956709058600e57867159e2df123419a253'
-            '7f56afe31fecf83278f1e15fbe0c6f9dbed41fa25f9614e856a1150ca73df0a8')
+            '84ce6ed983628b44dd73a577bc4f2b57cdf6e55e99ec40007f7b0f2e6907db08')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
