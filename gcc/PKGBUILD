@@ -40,7 +40,7 @@ _libdir=usr/lib/gcc/$CHOST/${pkgver%%+*}
 source=(https://gcc.gnu.org/pub/gcc/snapshots/LATEST-13/gcc-13-${_pkgdate}.tar.xz
         c89 c99
         gcc-ada-repro.patch
-        gcc-use-register-names-gcc-s.patchpatch
+        gcc-use-register-names-gcc-s.patch
         gcc-lib64-lib.patch
 )
 validpgpkeys=(F3691687D867B81B51CE07D9BBE43771487328A9  # bpiotrowski@archlinux.org
@@ -67,7 +67,7 @@ prepare() {
 
   # Reproducible gcc-ada
   patch -Np0 < "$srcdir/gcc-ada-repro.patch"
-  patch -p1 -i $srcdir/gcc-use-register-names-gcc-s.patchpatch
+  patch -p1 -i $srcdir/gcc-use-register-names-gcc-s.patch
   patch -p1 -i $srcdir/gcc-lib64-lib.patch
 
   mkdir -p "$srcdir/gcc-build"
