@@ -7,11 +7,11 @@
 # toolchain build order: linux-api-headers->glibc->binutils->gcc->glibc->binutils->gcc
 # NOTE: libtool requires rebuilt with each new gcc version
 
-pkgname=(gcc gcc-libs gcc-fortran gcc-objc lto-dump)
+pkgname=(gcc gcc-libs gcc-fortran gcc-objc lto-dump libgccjit)
 pkgver=13.0.1
-_pkgdate=20230312
+_pkgdate=20230422
 _majorver=${pkgver%%.*}
-pkgrel=5
+pkgrel=6
 pkgdesc='The GNU Compiler Collection'
 arch=(loong64 x86_64)
 license=(GPL3 LGPL FDL custom)
@@ -47,7 +47,7 @@ validpgpkeys=(F3691687D867B81B51CE07D9BBE43771487328A9  # bpiotrowski@archlinux.
               86CFFCA918CF3AF47147588051E8B148A9999C34  # evangelos@foutrelis.com
               13975A70E63C361C73AE69EF6EEB81F8981C74C7  # richard.guenther@gmail.com
               D3A93CAD751C2AF4F8C7AD516C35B99309B5FA62) # Jakub Jelinek <jakub@redhat.com>
-sha256sums=('9058b415f1776b930bc0957276cb8cfcb01ced7db2a3111cdec74a69c5146c7b'
+sha256sums=('058189e9beec3df571ae06e1c37febfb943a3051659e0d33e3e2d8fa78ac71a3'
             'de48736f6e4153f03d0a5d38ceb6c6fdb7f054e8f47ddd6af0a3dbf14f27b931'
             '2513c6d9984dd0a2058557bf00f06d8d5181734e41dcfe07be7ed86f2959622a'
             '1773f5137f08ac1f48f0f7297e324d5d868d55201c03068670ee4602babdef2f'
@@ -132,22 +132,22 @@ build() {
 
   # Build libgccjit separately, to avoid building all compilers with --enable-host-shared
   # which brings a performance penalty
-#  cd "${srcdir}"/libgccjit-build
-#
-#  "$srcdir/gcc/configure" \
-#    --enable-languages=jit \
-#    --disable-bootstrap \
-#    --enable-host-shared \
-#    "${_confflags[@]:?_confflags unset}"
-#
-#  # see https://bugs.archlinux.org/task/71777 for rationale re *FLAGS handling
-#  make -O STAGE1_CFLAGS="-O2" \
-#          BOOT_CFLAGS="$CFLAGS" \
-#          BOOT_LDFLAGS="$LDFLAGS" \
-#          LDFLAGS_FOR_TARGET="$LDFLAGS" \
-#          all-gcc
-#
-#  cp -a gcc/libgccjit.so* ../gcc-build/gcc/
+  cd "${srcdir}"/libgccjit-build
+
+  "$srcdir/gcc/configure" \
+    --enable-languages=jit \
+    --disable-bootstrap \
+    --enable-host-shared \
+    "${_confflags[@]:?_confflags unset}"
+
+  # see https://bugs.archlinux.org/task/71777 for rationale re *FLAGS handling
+  make -O STAGE1_CFLAGS="-O2" \
+          BOOT_CFLAGS="$CFLAGS" \
+          BOOT_LDFLAGS="$LDFLAGS" \
+          LDFLAGS_FOR_TARGET="$LDFLAGS" \
+          all-gcc
+
+  cp -a gcc/libgccjit.so* ../gcc-build/gcc/
 }
 
 check() {
@@ -180,7 +180,7 @@ package_gcc-libs() {
              libquadmath \
              libsanitizer/{a,l,ub}san \
              libstdc++-v3/src \
-             ; do
+             libvtv; do
     make -C $CHOST/$lib DESTDIR="$pkgdir" install-toolexeclibLTLIBRARIES
   done
 
