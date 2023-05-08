@@ -18,13 +18,13 @@ index 78e5a09927221..01c538dce66e3 100755
  # elif defined(__ia64__)
          ia64-linux-gnu
 +# elif defined(__loongarch__)
-+#  if defined(__loongarch64)
++#  if defined(__loongarch_lp64)
 +#   if defined(__loongarch_soft_float)
 +        loongarch64-linux-gnusf
 +#   elif defined(__loongarch_single_float)
 +        loongarch64-linux-gnuf32
 +#   elif defined(__loongarch_double_float)
-+        loongarch64-linux-gnuf64
++        loongarch64-linux-gnu
 +#   else
 +#    error unknown platform triplet
 +#   endif
@@ -43,13 +43,13 @@ index a0fbe41c9ec59..c4fe61bef2d91 100644
  # elif defined(__ia64__)
          ia64-linux-gnu
 +# elif defined(__loongarch__)
-+#  if defined(__loongarch64)
++#  if defined(__loongarch_lp64)
 +#   if defined(__loongarch_soft_float)
 +        loongarch64-linux-gnusf
 +#   elif defined(__loongarch_single_float)
 +        loongarch64-linux-gnuf32
 +#   elif defined(__loongarch_double_float)
-+        loongarch64-linux-gnuf64
++        loongarch64-linux-gnu
 +#   else
 +#    error unknown platform triplet
 +#   endif
