@@ -11,8 +11,8 @@ license=('GPL')
 backup=(etc/pacman.d/mirrorlist)
 source=(mirrorlist)
 
-md5sums=('d750f3147c4f5e1fed150ad1c06e2ce9')
-sha256sums=('ac84fc869c11c91bfc88c57e36575a066126c0798416b3293f570a0562de3cd3')
+md5sums=('8cebae3959ffd498423399e5ba9f61fe')
+sha256sums=('e223401f259d3272a2e33dadcb3d527e78ca8ef8d86cab3a021bfe1a92c653c6')
 
 # NOTE on building this package:
 # * Go to the trunk/ directory
