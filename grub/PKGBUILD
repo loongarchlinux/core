@@ -21,11 +21,11 @@ SKIPCONFIG=1
 pkgname='grub'
 pkgdesc='GNU GRand Unified Bootloader (2)'
 epoch=2
-_commit='34037747033879287864be289abb911a29751634'
+_commit='3ee57bd277f046f19ca352b5e883bea1034734b4'
 _pkgver=2.11
 _unifont_ver='15.0.01'
 pkgver=${_pkgver/-/}
-pkgrel=11
+pkgrel=12
 url='https://www.gnu.org/software/grub/'
 arch=('loong64' 'x86_64')
 license=('GPL3')
@@ -60,7 +60,7 @@ validpgpkeys=('E53D497F3FA42AD8C9B4D1E835A93B74E82E4209'  # Vladimir 'phcoder' S
               'BE5C23209ACDDACEB20DB0A28C8189F1988C2166'  # Daniel Kiper <dkiper@net-space.pl>
               '95D2E9AB8740D8046387FD151A09227B1F435A33') # Paul Hardy <unifoundry@unifoundry.com>
 
-source=("git+https://github.com/loongarch64/grub.git#branch=dev/patchwork/efi"
+source=("git+https://git.savannah.gnu.org/git/grub.git#commit=${_commit}"
         'git+https://git.savannah.gnu.org/git/gnulib.git'
         "https://ftp.gnu.org/gnu/unifont/unifont-${_unifont_ver}/unifont-${_unifont_ver}.bdf.gz"{,.sig}
         '0001-00_header-add-GRUB_COLOR_-variables.patch'
