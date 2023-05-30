@@ -34,7 +34,7 @@ b2sums=('SKIP'
         '5fdd133c367af2f5454ea1eea7907de12166fb95eb59dbe33eae16aa9e26209b6585972bc1c80e36a0af4bfb04296acaf940ee78cd624cdcbab9669dff46c051')
 
 prepare() {
-  mkdir -p glibc-build
+  mkdir -p glibc-build lib32-glibc-build
 
   [[ -d glibc-$pkgver ]] && ln -s glibc-$pkgver glibc
   cd glibc
@@ -53,8 +53,7 @@ build() {
       --enable-bind-now
       --enable-cet
       --enable-kernel=4.4
-      --disable-multi-arch
-      --disable-experimental-malloc
+      --enable-multi-arch
       --enable-stack-protector=strong
       --enable-systemtap
       --disable-crypt
