@@ -4,7 +4,7 @@
 
 pkgname=fakeroot
 pkgver=1.31
-pkgrel=3
+pkgrel=4
 pkgdesc='Tool for simulating superuser privileges'
 arch=('loong64' 'x86_64')
 license=('GPL')
