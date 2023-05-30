@@ -6,7 +6,7 @@
 pkgbase=libseccomp
 pkgname=(libseccomp python-libseccomp)
 pkgver=2.5.4
-pkgrel=2
+pkgrel=4
 pkgdesc='Enhanced seccomp library'
 arch=('loong64' 'x86_64')
 license=('LGPL2.1')
