@@ -1,7 +1,7 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
 pkgbase=linux
-pkgver=6.3.2.arch1
+pkgver=6.3.5.arch1
 pkgrel=1
 pkgdesc='Linux'
 _srctag=v${pkgver%.*}-${pkgver##*.}
@@ -24,7 +24,6 @@ makedepends=(
   imagemagick
   python-sphinx
   texlive-latexextra
-  xmlto
 )
 options=('!strip')
 _srcname=archlinux-linux
@@ -39,7 +38,7 @@ validpgpkeys=(
   C7E7849466FE2358343588377258734B41C31549  # David Runge <dvzrv@archlinux.org>
 )
 b2sums=('SKIP'
-        'e4998c4a144843cb6072ffc706baae3cf7530fc245fbf9cc4264aad119304944bdbb5aed9e5cfcefc87ab3e694067759e400dda669d5d734c439db288ad467c1')
+        'c2d1c69265adc041dc0364e448f6e86dc4c9ca1207c84071abc1675dd820534a8ab5a230e579e68bfb1bf2b861f23ad34e090f8ceaef5e265ea95e2bc6946013')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
