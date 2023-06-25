@@ -28,7 +28,9 @@ validpgpkeys=(
 sha256sums=('1e736cc9bd6036379a1d915e518abd4c2c94ad0fd1ea0da961c3489308b8fcfb'
             'SKIP'
             'ec7a2cb3af65594ff97c967172a783f1f4d23b7b46cb76d35d3aa279c6035e1c'
-            '1bd8388fcb6ed4eec46450c65eb7a0889a8c541f164a39e3064633981a7a4a3d')
+            '1bd8388fcb6ed4eec46450c65eb7a0889a8c541f164a39e3064633981a7a4a3d'
+            '845fd80f200567d163ede7e62149acf7e15f35c98b40e6b32ba722d8f01d43bc'
+            '21472a8550b441fe743fa3bd8966f0794effe426e1daa4ddd301df446f2031de')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
