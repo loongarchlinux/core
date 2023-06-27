@@ -31,6 +31,7 @@ source=(
   https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/${_srcname}.tar.{xz,sign}
   0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch
   config  # the main kernel config file
+  config.la64
 )
 validpgpkeys=(
   ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
@@ -40,11 +41,13 @@ validpgpkeys=(
 sha256sums=('c29d043b01dd4fcc61a24fd027c5c7912b15b1f10d8e3c83a0cb935885f0758d'
             'SKIP'
             '21195509fded29d0256abfce947b5a8ce336d0d3e192f3f8ea90bde9dd95a889'
-            'd669825bcd006b5d6e87d8a02470eb8b213beb5d0e0e169284e0cefd0a7d631d')
-b2sums=('fab6c07c2a7658bd3e8b8dac7c20438f892dd97f1364f026a64b96af5cc84ebc0e1c638f56210b49bc45b7e61212857f49c2cf56b976d0713748984462894f17'
+            '1fe14e3fa2a4806efe9898ca3a89ed47a8caa08ad3c8ac957a8c0bb4a674cbc5'
+            '21472a8550b441fe743fa3bd8966f0794effe426e1daa4ddd301df446f2031de')
+b2sums=('c70da3ecb8f849890fe2b5bf2874a2dd4f468508b508aaf1e7e6773c63845e782e2cf5285e0e7e62ce25e7a4485e1cf033122c4d6fbff0e83b92e172423e7a5c'
         'SKIP'
         '02a10396c92ab93124139fc3e37b1d4d8654227556d0d11486390da35dfc401ff5784ad86d0d2aa7eacac12bc451aa2ff138749748c7e24deadd040d5404734c'
-        '26ace597fd2856fb7b556b55b08f052b57e93f2e1c368ce1b50cdb4c2141ee50b5c91b907d05d7555e6f340422eaeb25795bcab2fe580faf2fc2e07cae33f534')
+        '70dd8e24349076512b004dd82bc7b3617d4ee54060a5c7539fe6f316e4575ff8525b071db1ee29f3dfebc3f646910a594ff706dcb41e38523e7d4e8e40f5cee7'
+        'b67de2027e1dc2ddbf4f694401ca8447064b80bc3bffb66427697bf3e0c62e94d7282e4358b5ae115713fc57995d094253ad66f0d48ac4f2fd632cf71ab2ebc5')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -68,7 +71,11 @@ prepare() {
   done
 
   echo "Setting config..."
-  cp ../config .config
+  if [ $CARCH == loong64 ];then
+    cp ../config.la64 .config
+  else
+    cp ../config .config
+  fi
   make olddefconfig
   diff -u ../config .config || :
 
@@ -132,19 +139,30 @@ _package-headers() {
   install -Dt "$builddir" -m644 .config Makefile Module.symvers System.map \
     localversion.* version vmlinux
   install -Dt "$builddir/kernel" -m644 kernel/Makefile
-  install -Dt "$builddir/arch/x86" -m644 arch/x86/Makefile
+  if [ $CARCH == x86_64 ];then
+    install -Dt "$builddir/arch/x86" -m644 arch/x86/Makefile
+  elif [ $CARCH == loong64 ];then
+    install -Dt "$builddir/arch/loongarch" -m644 arch/loongarch/Makefile
+  fi
+
   cp -t "$builddir" -a scripts
 
-  # required when STACK_VALIDATION is enabled
-  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
+  # add objtool for external module building and enabled VALIDATION_STACK option
+  #install -Dt "$builddir/tools/objtool" tools/objtool/objtool
 
   # required when DEBUG_INFO_BTF_MODULES is enabled
-  install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
+#  install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
 
   echo "Installing headers..."
   cp -t "$builddir" -a include
-  cp -t "$builddir/arch/x86" -a arch/x86/include
-  install -Dt "$builddir/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
+  if [ $CARCH == x86_64 ];then
+    cp -t "$builddir/arch/x86" -a arch/x86/include
+    install -Dt "$builddir/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
+  elif [ $CARCH == loong64 ];then
+    cp -t "$builddir/arch/loongarch" -a arch/loongarch/include
+    install -Dt "$builddir/arch/loongarch/kernel" -m644 arch/loongarch/kernel/asm-offsets.s
+  fi
+
 
   install -Dt "$builddir/drivers/md" -m644 drivers/md/*.h
   install -Dt "$builddir/net/mac80211" -m644 net/mac80211/*.h
@@ -166,7 +184,11 @@ _package-headers() {
   echo "Removing unneeded architectures..."
   local arch
   for arch in "$builddir"/arch/*/; do
-    [[ $arch = */x86/ ]] && continue
+    if [ $CARCH == x86_64 ];then
+      [[ $arch = */x86/ ]] && continue
+    elif [ $CARCH == loong64 ];then
+      [[ $arch = */loongarch/ ]] && continue
+    fi
     echo "Removing $(basename "$arch")"
     rm -r "$arch"
   done

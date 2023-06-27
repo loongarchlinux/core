@@ -1,0 +1,262 @@
+diff --git a/functions b/functions
+index cc47594..8d9453f 100644
+--- a/functions
++++ b/functions
+@@ -210,9 +210,71 @@ detect_compression() {
+         return
+     fi
+ 
++    read -rd '' bytes < <(hexdump -s "$((0x04))" -n 4 -v -e '"%c"' "$1")
++    if [[ "$bytes" == 'zimg' ]]; then
++        echo 'zimg'
++        return
++    fi
++
+     # out of ideas, assuming uncompressed
+ }
+ 
++kver_zimage() {
++    # Generic EFI zboot added since kernel 6.1
++    # https://elixir.bootlin.com/linux/v6.1/source/drivers/firmware/efi/libstub/Makefile.zboot
++    # https://elixir.bootlin.com/linux/v6.1/source/drivers/firmware/efi/libstub/zboot-header.S
++
++    local kver='' reader start size comp_type
++
++    # Reading 4 bytes from address 0x08 is the starting offset of compressed data
++    start="$(od -An -j0x08 -N4 --endian=little -tu4 "$1" | tr -dc [0-9])"
++
++    # Reading 4 bytes from address 0x0c is the size of compressed data,
++    # but it needs to be corrected according to the compressed type.
++    size="$(od -An -j0x0c -N4 --endian=little -tu4 "$1" | tr -dc [0-9])"
++
++    # Read 36 bytes (before 0x3c) from address 0x18,
++    # which is a nul-terminated string representing the compressed type.
++    read -rd '' comp_type < <(hexdump -s "$((0x18))" -n 36 -v -e '"%c"' "$1")
++
++    [[ "$start" =~ ^[0-9]+$ ]] || return 1
++    [[ "$size" =~ ^[0-9]+$ ]] || return 1
++
++    case "$comp_type" in
++        'gzip')
++            reader='zcat'
++            ;;
++        'lz4')
++            reader='lz4cat'
++            size="$(( $size+4 ))"
++            ;;
++        'lzma')
++            reader='xzcat'
++            size="$(( $size+4 ))"
++            ;;
++        'lzo')
++            reader="lzop -d"
++            size="$(( $size+4 ))"
++            ;;
++        'xzkern')
++            reader='xzcat'
++            size="$(( $size+4 ))"
++            ;;
++        'zstd22')
++            reader='zstdcat'
++            size="$(( $size+4 ))"
++            ;;
++        *)
++            reader="$comp_type"
++            size="$(( $size+4 ))"
++            ;;
++    esac
++
++    read _ _ kver _ < <(dd if="$1" bs=1 count="$size" skip="$start" 2>/dev/null | $reader - | grep -m1 -aoE  'Linux version .(\.[-[:alnum:]+]+)+')
++
++    printf '%s' "$kver"
++}
++
+ kver_generic() {
+     # For unknown architectures, we can try to grep the uncompressed or gzipped
+     # image for the boot banner.
+@@ -224,7 +286,15 @@ kver_generic() {
+     # https://elixir.bootlin.com/linux/v5.7.2/source/init/version.c#L46
+     local kver='' reader='cat'
+ 
+-    [[ "$(detect_compression "$1")" == 'gzip' ]] && reader='zcat'
++    local comp_type="$(detect_compression "$1")"
++
++    if [[ "$comp_type" == 'zimg' ]]; then
++        # Generic EFI zboot image
++        kver_zimage "$1"
++        return 0
++    elif [[ "$comp_type" == 'gzip' ]]; then
++        reader=zcat
++    fi
+ 
+     read -r _ _ kver _ < <($reader "$1" | grep -m1 -aoE 'Linux version .(\.[-[:alnum:]+]+)+')
+ 
+diff --git a/test/cases/functions.bats b/test/cases/functions.bats
+index 43e3b9d..cf11877 100644
+--- a/test/cases/functions.bats
++++ b/test/cases/functions.bats
+@@ -76,6 +76,12 @@ setup() {
+     assert_output "zstd"
+ }
+ 
++@test "detect_compression zimg" {
++    local tmp_img="$(__gen_test_image 'zimg')"
++    run detect_compression "$tmp_img"
++    assert_output "zimg"
++}
++
+ @test "kver_x86" {
+     local kernel_ver tmp_knl
+     kernel_ver="6.0.9-arch1-1 #1 SMP PREEMPT_DYNAMIC Wed, 16 Nov 2022 17:01:17 +0000 x86_64 GNU/Linux"
+@@ -84,6 +90,54 @@ setup() {
+     assert_output "6.0.9-arch1-1"
+ }
+ 
++@test "kver_zimage gzip" {
++    local kernel_ver tmp_knl
++    kernel_ver="Linux version 6.1.0-rc5-5 #1 SMP Sat, 17 Dec 2022 05:05:29 +0000 loongarch64 GNU/Linux"
++    local tmp_img="$(__gen_test_zboot_kernel "$kernel_ver" 'gzip')"
++    run kver_zimage "$tmp_img"
++    assert_output "6.1.0-rc5-5"
++}
++
++@test "kver_zimage lz4" {
++    local kernel_ver tmp_knl
++    kernel_ver="Linux version 6.1.0-rc5-5 #1 SMP Sat, 17 Dec 2022 05:05:29 +0000 loongarch64 GNU/Linux"
++    local tmp_img="$(__gen_test_zboot_kernel "$kernel_ver" 'lz4')"
++    run kver_zimage "$tmp_img"
++    assert_output "6.1.0-rc5-5"
++}
++
++@test "kver_zimage lzma" {
++    local kernel_ver tmp_knl
++    kernel_ver="Linux version 6.1.0-rc5-5 #1 SMP Sat, 17 Dec 2022 05:05:29 +0000 loongarch64 GNU/Linux"
++    local tmp_img="$(__gen_test_zboot_kernel "$kernel_ver" 'lzma')"
++    run kver_zimage "$tmp_img"
++    assert_output "6.1.0-rc5-5"
++}
++
++@test "kver_zimage lzo" {
++    local kernel_ver tmp_knl
++    kernel_ver="Linux version 6.1.0-rc5-5 #1 SMP Sat, 17 Dec 2022 05:05:29 +0000 loongarch64 GNU/Linux"
++    local tmp_img="$(__gen_test_zboot_kernel "$kernel_ver" 'lzo')"
++    run kver_zimage "$tmp_img"
++    assert_output "6.1.0-rc5-5"
++}
++
++@test "kver_zimage xz" {
++    local kernel_ver tmp_knl
++    kernel_ver="Linux version 6.1.0-rc5-5 #1 SMP Sat, 17 Dec 2022 05:05:29 +0000 loongarch64 GNU/Linux"
++    local tmp_img="$(__gen_test_zboot_kernel "$kernel_ver" 'xzkern')"
++    run kver_zimage "$tmp_img"
++    assert_output "6.1.0-rc5-5"
++}
++
++@test "kver_zimage zstd" {
++    local kernel_ver tmp_knl
++    kernel_ver="Linux version 6.1.0-arch1-2 #1 SMP Sat, 17 Dec 2022 05:05:29 +0000 loongarch64 GNU/Linux"
++    local tmp_img="$(__gen_test_zboot_kernel "$kernel_ver" 'zstd22')"
++    run kver_zimage "$tmp_img"
++    assert_output "6.1.0-arch1-2"
++}
++
+ @test "add_binary script" {
+     local tmp_bin BUILDROOT="${BATS_RUN_TMPDIR}/buildroot.${BATS_TEST_NAME}/" interpreter="/usr/local/${BATS_TEST_NAME}.${RANDOM}" _optquiet=1
+ 
+diff --git a/test/helpers/common.bash b/test/helpers/common.bash
+index b6b2a22..b930369 100644
+--- a/test/helpers/common.bash
++++ b/test/helpers/common.bash
+@@ -9,8 +9,15 @@ __gen_test_image() {
+     tmp_file="$(mktemp --tmpdir="$BATS_RUN_TMPDIR" tmp_file.XXXXXX)"
+     trap '{ rm -f -- "$tmp_img"; }' EXIT
+     trap '{ rm -f -- "$tmp_file"; }' EXIT
+-    echo "this is a test file" >"$tmp_file"
+-    bsdtar -cf - "$tmp_file" | "${compress_opts[@]}" >"$tmp_img"
++    echo "this is a test file" > "$tmp_file"
++
++    if [ ${compress_opts[0]} == "zimg" ]; then
++        bsdtar -cf - "$tmp_file" > "$tmp_img"
++        # write "zimg" into image at 0x04
++        printf "zimg" | dd of=$tmp_img seek=$((0x4)) bs=1 count=4 status=none conv=notrunc
++    else
++        bsdtar -cf - "$tmp_file" | "${compress_opts[@]}" > "$tmp_img"
++    fi
+     rm -f -- "$tmp_file"
+     echo "$tmp_img"
+ }
+@@ -31,7 +38,73 @@ __gen_test_kernel() {
+     echo "$tmp_knl"
+ }
+ 
+-__check_binary() {
++# Generates a temporary zboot dummy kernel, with the passed string as kernel version and specified compression type
++__gen_test_zboot_kernel() {
++    local kernel_ver="$1"
++    local comp_type="$2"
++    local tmp_img tmp_file
++    local num count size start
++    local compress_opts
++
++    tmp_img="$(mktemp --tmpdir="$BATS_RUN_TMPDIR" tmp_img.XXXXXX)"
++    tmp_file="$(mktemp --tmpdir="$BATS_RUN_TMPDIR" tmp_file.XXXXXX)"
++
++    # generate image with random size between 256 to 1024, 4 bytes align
++    num=$(cat /dev/urandom | head -n 10 | cksum | awk -F ' ' '{print $1}')
++    count=$(($num%192*4+512))
++    dd if=/dev/zero of="$tmp_img" count=$count bs=1 status=none
++
++    trap '{ rm -f -- "$tmp_img"; }' EXIT
++    trap '{ rm -f -- "$tmp_file"; }' EXIT
++
++    case $comp_type in
++        gzip)
++            compress_opts=("gzip")
++            ;;
++        lz4)
++            compress_opts=("lz4")
++            ;;
++        lzma)
++            compress_opts=("lzma")
++            ;;
++        lzo)
++            compress_opts=("lzop")
++            ;;
++        xzkern)
++            compress_opts=("xz" "--check=crc32")
++            ;;
++        zstd22)
++            compress_opts=("zstd" "-T0")
++            ;;
++        *)
++            echo "Compress type is not supported"
++            return 1
++            ;;
++    esac
++
++    echo "$kernel_ver" | "${compress_opts[@]}" > "$tmp_file"
++    cat "$tmp_file" >> "$tmp_img"
++    size=`stat -c %s $tmp_file`
++
++    # write "zimg" into image at 0x04
++    printf "zimg" | dd of=$tmp_img seek="$((0x4))" bs=1 count=4 status=none conv=notrunc
++
++    # write COMP_TYPE string into image at 0x18
++    printf $comp_type | dd of=$tmp_img seek="$((0x18))" bs=1 count=36 status=none conv=notrunc
++
++    # write compress data start offset at 0x08
++    start=`printf "%08x" "$count"`
++    echo -n -e "\\x${start:6:2}\\x${start:4:2}\\x${start:2:2}\\x${start:0:2}" | dd of=$tmp_img seek=$((0x8)) bs=1 count=4 status=none conv=notrunc
++
++    # write compress data size offset at 0x0c
++    size=`printf "%08x\n" "$size"`
++    echo -n -e "\\x${size:6:2}\\x${size:4:2}\\x${size:2:2}\\x${size:0:2}" | dd of=$tmp_img seek=$((0xc)) bs=1 count=4 status=none conv=notrunc
++
++    rm -f -- "$tmp_file"
++    echo "$tmp_img"
++}
++
++__check_binary(){
+     local binary="$1"
+     if ! command -v "${binary}" &>/dev/null; then
+         skip "${binary} not installed"
