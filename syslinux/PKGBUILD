@@ -18,6 +18,7 @@ license=(GPL2)
 # efi32/com32 do not like Arch cflags/ldflags, though it would be nice to have the flags for userspace tools
 options=(!makeflags !buildflags)
 makedepends=(git python nasm upx asciidoc)
+makedepends+=(x86_64-linux-gnu-gcc)
 makedepends_x86_64=(lib32-glibc) # efi32 needs it
 optdepends=('perl-crypt-passwdmd5: For md5pass'
             'perl-digest-sha1:     For sha1pass'
@@ -39,8 +40,11 @@ source=(git+https://repo.or.cz/syslinux.git#commit=$_commit
         0016-strip-gnu-property.patch
         0018-prevent-pow-optimization.patch
         0025-reproducible-build.patch
+        syslinux-build-la64.patch
         0005-Workaround-multiple-definition-of-symbol-errors.patch
         0006-Replace-builtin-strlen-that-appears-to-get-optimized.patch
+        util-linux-libs.tar.zst::https://archlinux.org/packages/core/x86_64/util-linux-libs/download/
+)
 )
 sha256sums=('SKIP'
             'b9692be0cce43811c1b04053072ac50dd7b39bbc2ba7bcbe0e4387668af8df08'
@@ -55,7 +59,7 @@ sha256sums=('SKIP'
             '7e41e17e8cbc7287d6c3c9eb0a7b682cd8d3252030856b338050c21dff9bf05a'
             'd7410d0ff89a15e2a100faf1546d730e043dde15c295974564144e00a93f03a3')
 
-_targets='bios efi64 efi32'
+_targets='bios'
 
 pkgver() {
   cd syslinux
@@ -75,6 +79,9 @@ prepare() {
   # patch -p1 < ../0005-gnu-efi-version-compatibility.patch
 
   patch -p1 < ../0025-reproducible-build.patch
+  patch -p1 < ../syslinux-build-la64.patch
+  patch -p1 < ../0005-Workaround-multiple-definition-of-symbol-errors.patch
+  patch -p1 < ../0006-Replace-builtin-strlen-that-appears-to-get-optimized.patch
 
   patch -p1 < ../0005-Workaround-multiple-definition-of-symbol-errors.patch
   patch -p1 < ../0006-Replace-builtin-strlen-that-appears-to-get-optimized.patch
@@ -84,6 +91,8 @@ prepare() {
 
   # disable debug and development flags to reduce bootloader size
   truncate --size 0 mk/devel.mk
+  #cp -r $srcdir/usr/include/uuid/ /usr/x86_64-linux-gnu/include/
+  #cp $srcdir/usr/lib/libuuid.so* /usr/x86_64-linux-gnu/lib/
 }
 
 build() {
