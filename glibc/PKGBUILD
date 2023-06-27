@@ -7,14 +7,14 @@
 # NOTE: valgrind requires rebuilt with each major glibc version
 
 pkgbase=glibc
-pkgname=(glibc lib32-glibc)
+pkgname=glibc
 pkgver=2.38
 _commit=6b99458d197ab779ebb6ff632c168e2cbfa4f543
 pkgrel=3
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/libc'
 license=(GPL LGPL)
-makedepends=(git gd lib32-gcc-libs python)
+makedepends=(git gd python)
 options=(staticlibs !lto)
 source=(git+https://sourceware.org/git/glibc.git#commit=${_commit}
         locale.gen.txt
@@ -24,6 +24,7 @@ source=(git+https://sourceware.org/git/glibc.git#commit=${_commit}
         reenable_DT_HASH.patch
         fix-malloc-p1.patch
         fix-malloc-p2.patch
+        elf-loong.patch
 )
 validpgpkeys=(7273542B39962DF7B299931416792B4EA25340F8 # Carlos O'Donell
               BC7C7372637EC10C57D7AA6579C43DFBF1CF2187) # Siddhesh Poyarekar
@@ -35,10 +36,11 @@ b2sums=('SKIP'
         '214e995e84b342fe7b2a7704ce011b7c7fc74c2971f98eeb3b4e677b99c860addc0a7d91b8dc0f0b8be7537782ee331999e02ba48f4ccc1c331b60f27d715678'
         '35e03ed912e1b0cd23783ab83ce919412885c141344905b8b67bbad4a86c48cf3e893806060e48d5737514ff80cea0b58b0e1f15707c32224579c416dcd810c0'
         '28c983bcebc0eeeb37a60756ccee50d587a99d5e2100430d5c0ee51a19d9b2176a4013574a7d72b5857302fbb60d371bbf0b3cdb4fc700a1dbe3aae4a42b04b9'
-        'c3e94f5b0999878ff472e32f49dc13c20eb9db68c633017cb7824617eb824cf6cff7ea53b92962926e0ee84fd39736616298dcb926356625dd124f3754e79932')
+        'c3e94f5b0999878ff472e32f49dc13c20eb9db68c633017cb7824617eb824cf6cff7ea53b92962926e0ee84fd39736616298dcb926356625dd124f3754e79932'
+        'bf02c50e00f8b32360b4956fc777df378c191fd72c3f949b81a51a875a0f150885f2a9452da7c1bd195e91fd3ce2d87913bab27c7b24b73ea0eb46bbb3db4595')
 
 prepare() {
-  mkdir -p glibc-build lib32-glibc-build
+  mkdir -p glibc-build
 
   [[ -d glibc-$pkgver ]] && ln -s glibc-$pkgver glibc
   cd glibc
@@ -50,6 +52,7 @@ prepare() {
 
   patch -Np1 -i "${srcdir}"/fix-malloc-p1.patch
   patch -Np1 -i "${srcdir}"/fix-malloc-p2.patch
+  patch -Np1 -i "${srcdir}"/elf-loong.patch
 }
 
 build() {
@@ -61,7 +64,7 @@ build() {
       --enable-cet
       --enable-fortify-source
       --enable-kernel=4.4
-      --enable-multi-arch
+      --disable-multi-arch
       --enable-stack-protector=strong
       --enable-systemtap
       --disable-profile
@@ -90,22 +93,22 @@ build() {
   # build info pages manually for reproducibility
   make info
 
-  cd "${srcdir}"/lib32-glibc-build
-  export CC="gcc -m32 -mstackrealign"
-  export CXX="g++ -m32 -mstackrealign"
-
-  echo "slibdir=/usr/lib32" >> configparms
-  echo "rtlddir=/usr/lib32" >> configparms
-  echo "sbindir=/usr/bin" >> configparms
-  echo "rootsbindir=/usr/bin" >> configparms
-
-  "${srcdir}"/glibc/configure \
-      --host=i686-pc-linux-gnu \
-      --libdir=/usr/lib32 \
-      --libexecdir=/usr/lib32 \
-      "${_configure_flags[@]}"
-
-  make -O
+#  cd "${srcdir}"/lib32-glibc-build
+#  export CC="gcc -m32 -mstackrealign"
+#  export CXX="g++ -m32 -mstackrealign"
+#
+#  echo "slibdir=/usr/lib32" >> configparms
+#  echo "rtlddir=/usr/lib32" >> configparms
+#  echo "sbindir=/usr/bin" >> configparms
+#  echo "rootsbindir=/usr/bin" >> configparms
+#
+#  "${srcdir}"/glibc/configure \
+#      --host=i686-pc-linux-gnu \
+#      --libdir=/usr/lib32 \
+#      --libexecdir=/usr/lib32 \
+#      "${_configure_flags[@]}"
+#
+#  make -O
 
   # pregenerate C.UTF-8 locale until it is built into glibc
   # (https://sourceware.org/glibc/wiki/Proposals/C.UTF-8, FS#74864)-
@@ -190,6 +193,9 @@ package_glibc() {
   # libraries too. Useful for gdb's catch command.
   install -Dm644 "${srcdir}"/sdt.h "${pkgdir}"/usr/include/sys/sdt.h
   install -Dm644 "${srcdir}"/sdt-config.h "${pkgdir}"/usr/include/sys/sdt-config.h
+
+  # ldconfig comes from current system
+  install -Dm755 /usr/bin/ldconfig "${pkgdir}"/usr/bin/ldconfig
 }
 
 package_lib32-glibc() {

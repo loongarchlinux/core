@@ -1,8 +1,10 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
 pkgbase=linux
-pkgver=6.4.12.arch1
-pkgrel=1
+_ver=6.5.0
+_rdate=20230831
+pkgver=${_ver}.arch1
+pkgrel=5
 pkgdesc='Linux'
 _srctag=v${pkgver%.*}-${pkgver##*.}
 url="https://github.com/archlinux/linux/commits/$_srctag"
@@ -27,10 +29,10 @@ makedepends=(
   texlive-latexextra
 )
 options=('!strip')
-_srcname=archlinux-linux
-source=(
-  "$_srcname::git+https://github.com/archlinux/linux?signed#tag=$_srctag"
-  config  # the main kernel config file
+_srcname=${pkgbase}-${_ver}
+source=(https://github.com/loongarchlinux/linux/releases/download/v${_rdate}/linux-${_ver}-${_rdate}.tar.xz
+        config         # the main kernel config file
+        config.la64
 )
 validpgpkeys=(
   ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
@@ -38,8 +40,9 @@ validpgpkeys=(
   A2FF3A36AAA56654109064AB19802F8B0D70FC30  # Jan Alexander Steffens (heftig)
   C7E7849466FE2358343588377258734B41C31549  # David Runge <dvzrv@archlinux.org>
 )
-b2sums=('SKIP'
-        'edfe3c41fcecef398197215663240ec15f1c30c35aa789e39bd02194ed3cda5582b61e9696825fe663b23750d717583d94c8443c3d8d065985c53194a0753280')
+b2sums=('6b70678f8a8c3787ce3dc75a7f738362eb828d9416b1a1358d685ce9bad234244ed31764b4b0bcb3c854f1d999adb51a92739455ccda66f195fec35b88baca99'
+        'f88acad5026c671bdf0ca671f0a7fd063f7ef3b395a949991f369a73e1dde89f8d47aff3bb2cdad8f1e5c71acd48d0988136be3d9ed11832ec184dea0d922b08'
+        '610f1697dc6cb7c2073acd2b5b934bcb78250af29580c6d0a4c5f9382e2d22734a204a906eb9035fe88513004bb820a2880816b437b7f3c68823b3e83a1ebac0')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -70,17 +73,24 @@ prepare() {
   done
 
   echo "Setting config..."
-  cp ../config .config
-  _make olddefconfig
+  if [ $CARCH == loong64 ];then
+    cp ../config.la64 .config
+  else
+    cp ../config .config
+  fi
+  make olddefconfig
+  if [ $CARCH == loong64 ];then
+  diff -u ../config.la64 .config || :
+  else
   diff -u ../config .config || :
+  fi
 
   echo "Prepared $pkgbase version $(<version)"
 }
 
 build() {
   cd $_srcname
-  _make all
-  _make htmldocs
+  _make htmldocs all
 }
 
 _package() {
@@ -134,19 +144,30 @@ _package-headers() {
   install -Dt "$builddir" -m644 .config Makefile Module.symvers System.map \
     localversion.* version vmlinux
   install -Dt "$builddir/kernel" -m644 kernel/Makefile
-  install -Dt "$builddir/arch/x86" -m644 arch/x86/Makefile
+  if [ $CARCH == x86_64 ];then
+    install -Dt "$builddir/arch/x86" -m644 arch/x86/Makefile
+  elif [ $CARCH == loong64 ];then
+    install -Dt "$builddir/arch/loongarch" -m644 arch/loongarch/Makefile
+  fi
+
   cp -t "$builddir" -a scripts
 
   # required when STACK_VALIDATION is enabled
-  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
+#  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
 
   # required when DEBUG_INFO_BTF_MODULES is enabled
-  install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
+  #install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
 
   echo "Installing headers..."
   cp -t "$builddir" -a include
-  cp -t "$builddir/arch/x86" -a arch/x86/include
-  install -Dt "$builddir/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
+  if [ $CARCH == x86_64 ];then
+    cp -t "$builddir/arch/x86" -a arch/x86/include
+    install -Dt "$builddir/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
+  elif [ $CARCH == loong64 ];then
+    cp -t "$builddir/arch/loongarch" -a arch/loongarch/include
+    install -Dt "$builddir/arch/loongarch/kernel" -m644 arch/loongarch/kernel/asm-offsets.s
+  fi
+
 
   install -Dt "$builddir/drivers/md" -m644 drivers/md/*.h
   install -Dt "$builddir/net/mac80211" -m644 net/mac80211/*.h
@@ -168,7 +189,11 @@ _package-headers() {
   echo "Removing unneeded architectures..."
   local arch
   for arch in "$builddir"/arch/*/; do
-    [[ $arch = */x86/ ]] && continue
+    if [ $CARCH == x86_64 ];then
+      [[ $arch = */x86/ ]] && continue
+    elif [ $CARCH == loong64 ];then
+      [[ $arch = */loongarch/ ]] && continue
+    fi
     echo "Removing $(basename "$arch")"
     rm -r "$arch"
   done

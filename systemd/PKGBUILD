@@ -45,7 +45,9 @@ source=("git+https://github.com/systemd/systemd-stable#tag=${_tag}?signed"
         '30-systemd-sysctl.hook'
         '30-systemd-tmpfiles.hook'
         '30-systemd-udev-reload.hook'
-        '30-systemd-update.hook')
+        '30-systemd-update.hook'
+        'v253-loong64.patch'
+        )
 sha512sums=('SKIP'
             'SKIP'
             '3ccf783c28f7a1c857120abac4002ca91ae1f92205dcd5a84aff515d57e706a3f9240d75a0a67cff5085716885e06e62597baa86897f298662ec36a940cf410e'
@@ -65,7 +67,8 @@ sha512sums=('SKIP'
             '9426829605bbb9e65002437e02ed54e35c20fdf94706770a3dc1049da634147906d6b98bf7f5e7516c84068396a12c6feaf72f92b51bdf19715e0f64620319de'
             'da7a97d5d3701c70dd5388b0440da39006ee4991ce174777931fea2aa8c90846a622b2b911f02ae4d5fffb92680d9a7e211c308f0f99c04896278e2ee0d9a4dc'
             'a50d202a9c2e91a4450b45c227b295e1840cc99a5e545715d69c8af789ea3dd95a03a30f050d52855cabdc9183d4688c1b534eaa755ebe93616f9d192a855ee3'
-            '825b9dd0167c072ba62cabe0677e7cd20f2b4b850328022540f122689d8b25315005fa98ce867cf6e7460b2b26df16b88bb3b5c9ebf721746dce4e2271af7b97')
+            '825b9dd0167c072ba62cabe0677e7cd20f2b4b850328022540f122689d8b25315005fa98ce867cf6e7460b2b26df16b88bb3b5c9ebf721746dce4e2271af7b97'
+            'd312fbd12833f58c769551deb16048a9dc0357c378028dc9771e7fd6a1b24af4417acc987df4956f762969e875f079014f29ae1fa94eb8995b3e99537506b62d')
 
 _backports=(
 )
@@ -93,6 +96,7 @@ prepare() {
 
   # Replace cdrom/dialout/tape groups with optical/uucp/storage
   patch -Np1 -i ../0001-Use-Arch-Linux-device-access-groups.patch
+  patch -Np1 -i ../v253-loong64.patch
 }
 
 build() {
@@ -126,7 +130,7 @@ build() {
 
     # We disable DNSSEC by default, it still causes trouble:
     # https://github.com/systemd/systemd/issues/10579
-    
+
     -Ddbuspolicydir=/usr/share/dbus-1/system.d
     -Ddefault-dnssec=no
     -Ddefault-hierarchy=unified
@@ -146,7 +150,7 @@ build() {
     -Dsbat-distro-summary='Arch Linux'
     -Dsbat-distro-pkgname="${pkgname}"
     -Dsbat-distro-version="${pkgver}"
-    -Dsbat-distro-url="https://archlinux.org/packages/core/x86_64/${pkgname}/"
+    -Dsbat-distro-url="https://archlinux.org/packages/core/loong64/${pkgname}/"
   )
 
   # this uses malloc_usable_size, which is incompatible with fortification level 3
