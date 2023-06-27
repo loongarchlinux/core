@@ -1,0 +1,11 @@
+--- a/src/libkfont/kfont.h	2023-07-30 21:20:00.035448962 +0800
++++ b/src/libkfont/kfont.h	2023-07-30 21:20:25.606575443 +0800
+@@ -241,7 +241,7 @@
+ #include <stdio.h>
+ 
+ /* Maximum font size that we try to handle */
+-#define MAXFONTSIZE (512*64*128)
++#define MAXFONTSIZE (16384*64*128)
+ 
+ /**
+  * readpsffont reads a PSF font.

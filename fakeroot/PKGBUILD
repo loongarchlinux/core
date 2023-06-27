@@ -13,8 +13,17 @@ install=fakeroot.install
 depends=('glibc' 'filesystem' 'sed' 'util-linux' 'sh')
 makedepends=('systemd' 'po4a')
 checkdepends=('sharutils')
-source=("https://deb.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.orig.tar.gz")
-sha256sums=('c072b0f65bafc4cc5b6112f7c61185f5170ce4cb0c410d1681c1af4a183e94e6')
+source=("https://deb.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.orig.tar.gz"
+        4.patch)
+sha256sums=('c072b0f65bafc4cc5b6112f7c61185f5170ce4cb0c410d1681c1af4a183e94e6'
+            'b0a3c9d0958c857915a3d8a0597dc0464b5bb22a519bae0ef228107c5e83bd8a')
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  patch -p1 -i $srcdir/4.patch
+  ./bootstrap
+}
 
 build() {
   cd $pkgname-$pkgver

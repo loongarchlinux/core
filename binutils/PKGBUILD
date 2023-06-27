@@ -8,7 +8,7 @@
 pkgname=binutils
 pkgver=2.40
 _commit=0dc8f96598ae1facd1933323e0c633b1ed3ca4e7
-pkgrel=6
+pkgrel=7
 pkgdesc='A set of programs to assemble and manipulate binary and object files'
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/binutils/'
@@ -22,9 +22,11 @@ replaces=(binutils-multilib)
 backup=('etc/gprofng.rc')
 options=(staticlibs !distcc !ccache)
 source=(git+https://sourceware.org/git/binutils-gdb.git#commit=${_commit}
-        gold-warn-unsupported.patch)
+        gold-warn-unsupported.patch
+        0001-LoongArch-Add-LoongArch-vector-support.patch)
 sha256sums=('SKIP'
-            '2d430b66f84a19c154725ec535280c493be1d34f1a90f95208dce02fecd0e4e4')
+            '2d430b66f84a19c154725ec535280c493be1d34f1a90f95208dce02fecd0e4e4'
+            'e1ac4d69e9ed9a7797917f89bdc356506f4c42271806fcae411c452cc39a40fd')
 validpgpkeys=(3A24BC1E8FB409FA9F14371813FCEF89DD9E3C4F)
 
 prepare() {
@@ -41,6 +43,7 @@ prepare() {
   # unsupported targets.  This allows the binutils to be built with
   # BPF support enabled.
   patch -Np1 -i "${srcdir}"/gold-warn-unsupported.patch
+  patch -Np1 -i "${srcdir}"/0001-LoongArch-Add-LoongArch-vector-support.patch
 }
 
 build() {
@@ -55,7 +58,7 @@ build() {
     --enable-colored-disassembly \
     --enable-default-execstack=no \
     --enable-deterministic-archives \
-    --enable-gold \
+    --disable-gold \
     --enable-install-libiberty \
     --enable-jansson \
     --enable-ld=default \
@@ -64,7 +67,6 @@ build() {
     --enable-plugins \
     --enable-relro \
     --enable-shared \
-    --enable-targets=x86_64-pep,bpf-unknown-none \
     --enable-threads \
     --disable-gdb \
     --disable-gdbserver \

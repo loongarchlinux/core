@@ -56,7 +56,7 @@ build() {
     --opt
     --system-nspr
     --system-sqlite
-    --target x64
+    --target loongarch64
   )
 
   cd certs
