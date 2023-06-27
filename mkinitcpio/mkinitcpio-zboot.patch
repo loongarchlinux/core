@@ -1,8 +1,8 @@
 diff --git a/functions b/functions
-index f920c3d..554bcde 100644
+index cc47594..8d9453f 100644
 --- a/functions
 +++ b/functions
-@@ -205,9 +205,71 @@ detect_compression() {
+@@ -210,9 +210,71 @@ detect_compression() {
          return
      fi
  
@@ -74,10 +74,10 @@ index f920c3d..554bcde 100644
  kver_generic() {
      # For unknown architectures, we can try to grep the uncompressed or gzipped
      # image for the boot banner.
-@@ -219,7 +281,15 @@ kver_generic() {
+@@ -224,7 +286,15 @@ kver_generic() {
      # https://elixir.bootlin.com/linux/v5.7.2/source/init/version.c#L46
      local kver='' reader='cat'
-     
+ 
 -    [[ "$(detect_compression "$1")" == 'gzip' ]] && reader='zcat'
 +    local comp_type="$(detect_compression "$1")"
 +
@@ -92,7 +92,7 @@ index f920c3d..554bcde 100644
      read -r _ _ kver _ < <($reader "$1" | grep -m1 -aoE 'Linux version .(\.[-[:alnum:]+]+)+')
  
 diff --git a/test/cases/functions.bats b/test/cases/functions.bats
-index bac17cb..83da3a7 100644
+index 43e3b9d..cf11877 100644
 --- a/test/cases/functions.bats
 +++ b/test/cases/functions.bats
 @@ -76,6 +76,12 @@ setup() {
@@ -164,14 +164,16 @@ index bac17cb..83da3a7 100644
      local tmp_bin BUILDROOT="${BATS_RUN_TMPDIR}/buildroot.${BATS_TEST_NAME}/" interpreter="/usr/local/${BATS_TEST_NAME}.${RANDOM}" _optquiet=1
  
 diff --git a/test/helpers/common.bash b/test/helpers/common.bash
-index 9c46ef4..de7f896 100644
+index b6b2a22..b930369 100644
 --- a/test/helpers/common.bash
 +++ b/test/helpers/common.bash
-@@ -10,7 +10,14 @@ __gen_test_image() {
+@@ -9,8 +9,15 @@ __gen_test_image() {
+     tmp_file="$(mktemp --tmpdir="$BATS_RUN_TMPDIR" tmp_file.XXXXXX)"
      trap '{ rm -f -- "$tmp_img"; }' EXIT
      trap '{ rm -f -- "$tmp_file"; }' EXIT
-     echo "this is a test file" > "$tmp_file"
--    bsdtar -cf - "$tmp_file" | "${compress_opts[@]}" > "$tmp_img"
+-    echo "this is a test file" >"$tmp_file"
+-    bsdtar -cf - "$tmp_file" | "${compress_opts[@]}" >"$tmp_img"
++    echo "this is a test file" > "$tmp_file"
 +
 +    if [ ${compress_opts[0]} == "zimg" ]; then
 +        bsdtar -cf - "$tmp_file" > "$tmp_img"
@@ -183,10 +185,11 @@ index 9c46ef4..de7f896 100644
      rm -f -- "$tmp_file"
      echo "$tmp_img"
  }
-@@ -31,6 +38,72 @@ __gen_test_kernel() {
+@@ -31,7 +38,73 @@ __gen_test_kernel() {
      echo "$tmp_knl"
  }
  
+-__check_binary() {
 +# Generates a temporary zboot dummy kernel, with the passed string as kernel version and specified compression type
 +__gen_test_zboot_kernel() {
 +    local kernel_ver="$1"
@@ -253,6 +256,7 @@ index 9c46ef4..de7f896 100644
 +    echo "$tmp_img"
 +}
 +
- __check_binary(){
++__check_binary(){
      local binary="$1"
      if ! command -v "${binary}" &>/dev/null; then
+         skip "${binary} not installed"
