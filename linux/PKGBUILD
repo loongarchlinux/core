@@ -1,8 +1,10 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
 pkgbase=linux
-pkgver=6.7.2.arch1
-pkgrel=2
+_ver=6.7.0
+_rdate=20240125
+pkgver=${_ver}.arch1
+pkgrel=7
 pkgdesc='Linux'
 url='https://github.com/archlinux/linux'
 arch=(loong64 x86_64)
@@ -22,15 +24,15 @@ makedepends=(
   graphviz
   imagemagick
   python-sphinx
+  python-yaml
   texlive-latexextra
 )
 options=('!strip')
-_srcname=linux-${pkgver%.*}
-_srctag=v${pkgver%.*}-${pkgver##*.}
-source=(
-  https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/${_srcname}.tar.{xz,sign}
-  $url/releases/download/$_srctag/linux-$_srctag.patch.zst{,.sig}
-  config  # the main kernel config file
+_srcname=${pkgbase}-${_ver}
+source=(https://github.com/loongarchlinux/linux/releases/download/v${_rdate}/linux-${_ver}-${_rdate}.tar.xz
+        config         # the main kernel config file
+        config.la64
+        pixart.patch
 )
 validpgpkeys=(
   ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
@@ -38,16 +40,14 @@ validpgpkeys=(
   83BC8889351B5DEBBB68416EB8AC08600F108CDF  # Jan Alexander Steffens (heftig)
 )
 # https://www.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc
-sha256sums=('c34de41baa29c475c0834e88a3171e255ff86cd32d83c6bffc2b797e60bfa671'
-            'SKIP'
-            'ec7ea7c4d28951d1ea22419dce75f245894a2aebb13df4dbc87a09d2d2c08a95'
-            'SKIP'
-            '8f276a6245223b4bd7911a0a09e039d07ee91e6ee98f0ae83ebe19ac27e3a344')
-b2sums=('4c1f480de0c1458aa67379cd02d35708f63850adb84a85061088de1f82b5d084bc7cf7da459a3f1e415544351d1f36a9a832277240774ae461cdde11687cbadd'
-        'SKIP'
-        '05262b7de0651e7f27b36e7d19b0a0df80282f3a087301c81e524f8a991b238c6a9ec461c2f529d0100ce340150b0f378203c0cd6f9387a7757114f88995d65e'
-        'SKIP'
-        '3b1bdc6fe810cdf17ad8726af27f5abc0bcba49a2399b5ba863b462494b9af88daa2f6e7ca0a2017c76a747a9aef7ada855eab11299be5ae289537e8d5e84b2c')
+sha256sums=('a63569f38af02a866d804fc8c7b2190a2a813e6e06a0e3a3192f67c4056a6f46'
+            '253fc57fe5e9f7dd3cf5bd10e07cf7080e04417557026359e21266033b5a5c54'
+            'e676cd523be78645df3a2e6061555d6e1e0e6f3c3e066b6e1c385b8c8d5a40ad'
+            '3c3fbbb7f8ec7eb28e6cf96ecc5ab1c7279eac5d2738a960efd1b9ec9f618c30')
+b2sums=('adbfe2c705da23b765921bdd4b617952efddff1f9aaecab12fd9f444da91740649c6312333cececd9ca221bca3cd017797e92c945e1fb45bd5dd2b01e9f2e39a'
+        'c0a97ec39545b8a6e535de0fb3b9dd6d086c50326c911251936a5153faf00b4c012c250757761dc4cd3935b7d560c1e2da9fb05b57df84df0d130722eeca41c0'
+        'e60ae20c8bb55b4c2099722bbc73091faf655cffb89f102a1366beb50bc18e30aeee8cf6021c1ca8bf58e61c94d475b3fb8c50096f3034b8055383045bf9b801'
+        '723294c391c4b1810e3786f2b002b865c3c96f588dca58d003ea4901aa5d02ca61a02e6987543c6ea2a6324526133ad0bbbb6274fe8d406b9f324dfef50e6793')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -71,9 +71,17 @@ prepare() {
   done
 
   echo "Setting config..."
-  cp ../config .config
+  if [ $CARCH == loong64 ];then
+    cp ../config.la64 .config
+  else
+    cp ../config .config
+  fi
   make olddefconfig
+  if [ $CARCH == loong64 ];then
+  diff -u ../config.la64 .config || :
+  else
   diff -u ../config .config || :
+  fi
 
   make -s kernelrelease > version
   echo "Prepared $pkgbase version $(<version)"
@@ -136,19 +144,30 @@ _package-headers() {
   install -Dt "$builddir" -m644 .config Makefile Module.symvers System.map \
     localversion.* version vmlinux
   install -Dt "$builddir/kernel" -m644 kernel/Makefile
-  install -Dt "$builddir/arch/x86" -m644 arch/x86/Makefile
+  if [ $CARCH == x86_64 ];then
+    install -Dt "$builddir/arch/x86" -m644 arch/x86/Makefile
+  elif [ $CARCH == loong64 ];then
+    install -Dt "$builddir/arch/loongarch" -m644 arch/loongarch/Makefile
+  fi
+
   cp -t "$builddir" -a scripts
 
   # required when STACK_VALIDATION is enabled
-  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
+#  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
 
   # required when DEBUG_INFO_BTF_MODULES is enabled
-  install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
+  #install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
 
   echo "Installing headers..."
   cp -t "$builddir" -a include
-  cp -t "$builddir/arch/x86" -a arch/x86/include
-  install -Dt "$builddir/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
+  if [ $CARCH == x86_64 ];then
+    cp -t "$builddir/arch/x86" -a arch/x86/include
+    install -Dt "$builddir/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
+  elif [ $CARCH == loong64 ];then
+    cp -t "$builddir/arch/loongarch" -a arch/loongarch/include
+    install -Dt "$builddir/arch/loongarch/kernel" -m644 arch/loongarch/kernel/asm-offsets.s
+  fi
+
 
   install -Dt "$builddir/drivers/md" -m644 drivers/md/*.h
   install -Dt "$builddir/net/mac80211" -m644 net/mac80211/*.h
@@ -170,7 +189,11 @@ _package-headers() {
   echo "Removing unneeded architectures..."
   local arch
   for arch in "$builddir"/arch/*/; do
-    [[ $arch = */x86/ ]] && continue
+    if [ $CARCH == x86_64 ];then
+      [[ $arch = */x86/ ]] && continue
+    elif [ $CARCH == loong64 ];then
+      [[ $arch = */loongarch/ ]] && continue
+    fi
     echo "Removing $(basename "$arch")"
     rm -r "$arch"
   done

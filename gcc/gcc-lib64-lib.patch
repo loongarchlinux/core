@@ -1,0 +1,48 @@
+commit f6f888e29e4f6e88a5c362815803120b2a1599c3
+Author: Xiaotian Wu <wuxiaotian@loongson.cn>
+Date:   Thu Mar 24 17:15:03 2022 +0800
+
+    change lib64->lib directory
+
+diff --git a/gcc/config/loongarch/linux.h b/gcc/config/loongarch/linux.h
+index 9059d2441..329115e72 100644
+--- a/gcc/config/loongarch/linux.h
++++ b/gcc/config/loongarch/linux.h
+@@ -24,11 +24,11 @@ along with GCC; see the file COPYING3.  If not see
+ #if defined(LA_DISABLE_MULTILIB) && defined(LA_DISABLE_MULTIARCH)
+ 
+   #if DEFAULT_ABI_BASE == ABI_BASE_LP64D
+-    #define ABI_LIBDIR "lib64"
++    #define ABI_LIBDIR "lib"
+   #elif DEFAULT_ABI_BASE == ABI_BASE_LP64F
+-    #define ABI_LIBDIR "lib64/f32"
++    #define ABI_LIBDIR "lib/f32"
+   #elif DEFAULT_ABI_BASE == ABI_BASE_LP64S
+-    #define ABI_LIBDIR "lib64/sf"
++    #define ABI_LIBDIR "lib/sf"
+   #endif
+ 
+ #endif
+diff --git a/gcc/config/loongarch/t-linux b/gcc/config/loongarch/t-linux
+index e40da1792..c354f0a6f 100644
+--- a/gcc/config/loongarch/t-linux
++++ b/gcc/config/loongarch/t-linux
+@@ -39,15 +39,15 @@ endif
+ ifeq ($(filter LA_DISABLE_MULTILIB,$(tm_defines)),)
+ 
+     MULTILIB_OSDIRNAMES = \
+-      mabi.lp64d=../lib64$\
++      mabi.lp64d=../lib$\
+       $(call if_multiarch,:loongarch64-linux-gnu)
+ 
+     MULTILIB_OSDIRNAMES += \
+-      mabi.lp64f=../lib64/f32$\
++      mabi.lp64f=../lib/f32$\
+       $(call if_multiarch,:loongarch64-linux-gnuf32)
+ 
+     MULTILIB_OSDIRNAMES += \
+-      mabi.lp64s=../lib64/sf$\
++      mabi.lp64s=../lib/sf$\
+       $(call if_multiarch,:loongarch64-linux-gnusf)
+ 
+ endif
