@@ -1,8 +1,8 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
 pkgbase=linux
-_ver=6.3.5
-_rdate=20230625
+_ver=6.3.9
+_rdate=20230627
 pkgver=${_ver}.arch1
 pkgrel=1
 pkgdesc='Linux'
@@ -39,10 +39,9 @@ validpgpkeys=(
   A2FF3A36AAA56654109064AB19802F8B0D70FC30  # Jan Alexander Steffens (heftig)
   C7E7849466FE2358343588377258734B41C31549  # David Runge <dvzrv@archlinux.org>
 )
-b2sums=('SKIP'
-        'c2d1c69265adc041dc0364e448f6e86dc4c9ca1207c84071abc1675dd820534a8ab5a230e579e68bfb1bf2b861f23ad34e090f8ceaef5e265ea95e2bc6946013'
-        'c7e50f260dd1c44ae53525f3375e8d46d65f35b1d1f800a0e53a2db87a7480bcb23fe93551b9f0542132dc379d7a5dc5327f10e880a7d6ac1897e87cc3e9127c'
-        'abf25b3ca6fb934dd2b533ae9af1a014e07a45fde28361b1266f54e31ba8c973b0921ae52293b3babdd0a3c0476b3435902642018f712daae23b76b72a1368fc')
+b2sums=('190aee370d2c55533dafbe1010e53ed4cc60767ada55aa83b999b9ba13afd962f1760b5351c77691060ffbada9e1e37e09aeec1c199f7a84af71f58502d4e8d5'
+        '06ad06079c5ad6278d44a83bbe661ae425a60855b94d83d5988c79f830b6593198d5b436d94cfd709fbb8269a5e41b0ba683542a35a6473e4582c80f892ffd16'
+        '5c6e66532dbb60f60647f134b2686eac21c7cbf6c1939d5b6566f8cffc736fad89df4043b65f3038f6fa93406795a4b7b50b275113879f93785d775f7eeac907')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
