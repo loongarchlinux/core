@@ -1,0 +1,81 @@
+Index: syslinux/mk/syslinux.mk
+===================================================================
+--- syslinux.orig/mk/syslinux.mk
++++ syslinux/mk/syslinux.mk
+@@ -46,21 +46,21 @@ UPX	 = upx
+ 
+ CHMOD	 = chmod
+ 
+-CC	 = gcc
++CC	 = x86_64-linux-gnu-gcc
+ gcc_ok   = $(shell tmpf=gcc_ok.$$$$.tmp; \
+ 		   if $(CC) $(GCCOPT) $(1) -c $(topdir)/dummy.c \
+ 			-o $$tmpf 2>/dev/null ; \
+ 		   then echo '$(1)'; else echo '$(2)'; fi; \
+ 		   rm -f $$tmpf)
+ 
+-LD	 = ld
+-OBJDUMP	 = objdump
+-OBJCOPY  = objcopy
+-STRIP    = strip
+-AR       = ar
+-NM       = nm
+-RANLIB   = ranlib
+-STRIP	 = strip
++LD	 = x86_64-linux-gnu-ld
++OBJDUMP	 = x86_64-linux-gnu-objdump
++OBJCOPY  = x86_64-linux-gnu-objcopy
++STRIP    = x86_64-linux-gnu-strip
++AR       = x86_64-linux-gnu-ar
++NM       = x86_64-linux-gnu-nm
++RANLIB   = x86_64-linux-gnu-ranlib
++STRIP	 = x86_64-linux-gnu-strip
+ GZIPPROG = gzip
+ XZ	 = xz
+ PNGTOPNM = pngtopnm
+@@ -73,7 +73,7 @@ WGET	 = wget
+ com32    = $(topdir)/com32
+ 
+ # Architecture definition
+-SUBARCH := $(shell uname -m | sed -e s/i.86/i386/) 
++SUBARCH := $(shell echo x86_64 | sed -e s/i.86/i386/) 
+ # on x86_64, ARCH has trailing whitespace
+ # strip white spaces in ARCH
+ ARCH ?= $(strip $(SUBARCH))
+Index: syslinux/lzo/Makefile
+===================================================================
+--- syslinux.orig/lzo/Makefile	2023-07-07 15:21:22.664000000 +0000
++++ syslinux/lzo/Makefile	2023-07-07 15:21:34.408000000 +0000
+@@ -24,13 +24,16 @@
+ makeoutputdirs:
+ 	@mkdir -p $(OBJ)/src
+ 
++%.o: %.c
++	gcc $(UMAKEDEPS) $(CFLAGS) -c -o $@ $<
++
+ $(LIB) : $(LIBOBJS)
+ 	rm -f $@
+-	$(AR) cq $@ $^
+-	$(RANLIB) $@
++	ar cq $@ $^
++	ranlib $@
+ 
+ prepcore : prepcore.o $(LIB)
+-	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
++	gcc -static $(LDFLAGS) -o $@ $^ $(LIBS)
+ 
+ tidy dist clean spotless:
+ 	rm -f $(BINS)
+--- syslinux.orig/lzo/prepcore.c	2023-07-08 01:31:45.240000000 +0000
++++ syslinux/lzo/prepcore.c	2023-07-08 01:31:30.140000000 +0000
+@@ -208,8 +208,8 @@
+ /*
+  * Step 1: initialize the LZO library
+  */
+-    if (lzo_init() != LZO_E_OK)
+-	error("internal error - lzo_init() failed!");
++//    if (lzo_init() != LZO_E_OK)
++//	error("internal error - lzo_init() failed!");
+ 
+ /*
+  * Step 3: open the input file
