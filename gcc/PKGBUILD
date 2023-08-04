@@ -11,7 +11,7 @@ pkgname=(gcc gcc-libs gcc-fortran gcc-objc lto-dump libgccjit)
 pkgver=13.1.1
 _majorver=${pkgver%%.*}
 _commit=bef95ba085b0ae9bf3eb79a8eed685236d773116
-pkgrel=2
+pkgrel=3
 pkgdesc='The GNU Compiler Collection'
 arch=(loong64 x86_64)
 license=(GPL3 LGPL FDL custom)
@@ -35,10 +35,6 @@ checkdepends=(
 options=(!emptydirs !lto)
 _libdir=usr/lib/gcc/$CHOST/${pkgver%%+*}
 source=(git+https://sourceware.org/git/gcc.git#commit=${_commit}
-# _commit=6beb39ee6c465c21d0cc547fd66b445100cdcc35
-# source=(git://gcc.gnu.org/git/gcc.git#commit=$_commit
-#https://ftp.fu-berlin.de/unix/languages/gcc/snapshots/13-20230129/gcc-13-20230129.tar.xz
-#source=(https://gcc.gnu.org/pub/gcc/releases/gcc-$pkgver/gcc-$pkgver.tar.xz
         c89 c99
         gcc-ada-repro.patch
         gcc-lib64-lib.patch
