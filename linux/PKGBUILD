@@ -4,7 +4,7 @@ pkgbase=linux
 _ver=6.4.7
 _rdate=20230808
 pkgver=${_ver}.arch1
-pkgrel=3
+pkgrel=5
 pkgdesc='Linux'
 _srctag=v${pkgver%.*}-${pkgver##*.}
 url="https://github.com/archlinux/linux/commits/$_srctag"
@@ -40,7 +40,7 @@ validpgpkeys=(
   A2FF3A36AAA56654109064AB19802F8B0D70FC30  # Jan Alexander Steffens (heftig)
   C7E7849466FE2358343588377258734B41C31549  # David Runge <dvzrv@archlinux.org>
 )
-b2sums=('8b22990e951741f60c911ab7fae6dbe343cd0b5b8246f3db8bdedd45b0e18f5be6f46b6db65fb1847661168828795d28324c08645d47f45dca2208ac25ce2fda'
+b2sums=('60676fa6482746a3262c51f272122a0d5f421e232ac8faa5226e7e43341af29bfd8c9cc3790e36e848abee53da6fd19545e4d96dd3d0ae05466765048e4a2ee6'
         'f88acad5026c671bdf0ca671f0a7fd063f7ef3b395a949991f369a73e1dde89f8d47aff3bb2cdad8f1e5c71acd48d0988136be3d9ed11832ec184dea0d922b08'
         '4281f2391940d4f1f374a07f57cc38583a4e8782c2db1a5890099f5b74505615ab389a7763fe4f161a9f927fc4b77ed9513f9e097cd5c473c618e2ca9de629e4')
 
