@@ -6,9 +6,9 @@
 # toolchain build order: linux-api-headers->glibc->binutils->gcc->glibc->binutils->gcc
 
 pkgname=binutils
-pkgver=2.40
-_commit=0dc8f96598ae1facd1933323e0c633b1ed3ca4e7
-pkgrel=7
+pkgver=2.41
+_commit=31b78cc991781265d9404bd55151691bedd6d556
+pkgrel=1
 pkgdesc='A set of programs to assemble and manipulate binary and object files'
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/binutils/'
@@ -19,18 +19,21 @@ checkdepends=(dejagnu debuginfod bc)
 optdepends=('debuginfod: for debuginfod server/client functionality')
 conflicts=(binutils-multilib)
 replaces=(binutils-multilib)
+provides=(
+  libctf.so
+  libgprofng.so
+  libsframe.so
+)
 backup=('etc/gprofng.rc')
 options=(staticlibs !distcc !ccache)
 source=(git+https://sourceware.org/git/binutils-gdb.git#commit=${_commit}
-        gold-warn-unsupported.patch
-        0001-LoongArch-Add-LoongArch-vector-support.patch)
+        gold-warn-unsupported.patch)
 sha256sums=('SKIP'
-            '2d430b66f84a19c154725ec535280c493be1d34f1a90f95208dce02fecd0e4e4'
-            'e1ac4d69e9ed9a7797917f89bdc356506f4c42271806fcae411c452cc39a40fd')
+            '2d430b66f84a19c154725ec535280c493be1d34f1a90f95208dce02fecd0e4e4')
 validpgpkeys=(3A24BC1E8FB409FA9F14371813FCEF89DD9E3C4F)
 
 prepare() {
-  [[ ! -d binutils-gdb ]] && ln -s binutils-${pkgver} binutils-gdb
+  #[[ ! -d binutils-gdb ]] && ln -s binutils-${pkgver} binutils-gdb
   mkdir -p binutils-build
 
   cd binutils-gdb
@@ -43,7 +46,6 @@ prepare() {
   # unsupported targets.  This allows the binutils to be built with
   # BPF support enabled.
   patch -Np1 -i "${srcdir}"/gold-warn-unsupported.patch
-  patch -Np1 -i "${srcdir}"/0001-LoongArch-Add-LoongArch-vector-support.patch
 }
 
 build() {
