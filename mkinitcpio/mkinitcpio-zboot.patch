@@ -6,7 +6,7 @@ index cc47594..8d9453f 100644
          return
      fi
  
-+    bytes="$(od -An -c -j0x04 -N4 "$1" | tr -d [:space:])"
++    read -rd '' bytes < <(hexdump -s "$((0x04))" -n 4 -v -e '"%c"' "$1")
 +    if [[ "$bytes" == 'zimg' ]]; then
 +        echo 'zimg'
 +        return
