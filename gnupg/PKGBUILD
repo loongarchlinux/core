@@ -8,7 +8,7 @@
 
 pkgname=gnupg
 pkgver=2.2.41
-pkgrel=1
+pkgrel=2
 pkgdesc='Complete and free implementation of the OpenPGP standard'
 arch=('loong64' 'x86_64')
 url='https://www.gnupg.org/'
@@ -21,18 +21,19 @@ depends=(
   'libgpg-error'
   'libksba'
   'libassuan' 'libassuan.so'
+  'libldap'
+  'libusb'
   'npth' 'libnpth.so'
   'pinentry'
   'readline' 'libreadline.so'
+  'sh'
   'sqlite'
   'zlib'
 )
-makedepends=('libldap' 'libusb-compat' 'pcsclite')
+makedepends=('pcsclite')
 checkdepends=('openssh')
 optdepends=(
-  'libldap: gpg2keys_ldap'
-  'libusb-compat: scdaemon'
-  'pcsclite: scdaemon'
+  'pcsclite: for using scdaemon not with the gnupg internal card driver'
 )
 install=$pkgname.install
 source=(

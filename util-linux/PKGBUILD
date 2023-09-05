@@ -4,8 +4,8 @@
 
 pkgbase=util-linux
 pkgname=(util-linux util-linux-libs)
-_tag='722ea47989cef5d892711614c4a2767213b177d8' # git rev-parse v${_tag_name}
-_tag_name=2.39.1
+_tag='d32d74bf433a419f2a8976530fb03669bde722cd' # git rev-parse v${_tag_name}
+_tag_name=2.39.2
 pkgver=${_tag_name/-/}
 pkgrel=1
 pkgdesc='Miscellaneous system utilities for Linux'

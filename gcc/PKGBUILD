@@ -8,10 +8,10 @@
 # NOTE: libtool requires rebuilt with each new gcc version
 
 pkgname=(gcc gcc-libs lib32-gcc-libs gcc-ada gcc-d gcc-fortran gcc-go gcc-objc lto-dump libgccjit)
-pkgver=13.1.1
+pkgver=13.2.1
 _majorver=${pkgver%%.*}
-_commit=bef95ba085b0ae9bf3eb79a8eed685236d773116
-pkgrel=2
+_commit=860b0f0ef787f756c0e293671b4c4622dff63a79
+pkgrel=3
 pkgdesc='The GNU Compiler Collection'
 arch=(loong64 x86_64)
 license=(GPL3 LGPL FDL custom)
