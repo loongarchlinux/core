@@ -10,8 +10,8 @@
 pkgname=(gcc gcc-libs gcc-fortran gcc-objc lto-dump libgccjit)
 pkgver=13.2.1
 _majorver=${pkgver%%.*}
-_commit=860b0f0ef787f756c0e293671b4c4622dff63a79
-pkgrel=3
+_commit=78f63dd9fa9ff299499539d46bbefab0897dcf55
+pkgrel=4
 pkgdesc='The GNU Compiler Collection'
 arch=(loong64 x86_64)
 license=(GPL3 LGPL FDL custom)
@@ -38,6 +38,7 @@ source=(git+https://sourceware.org/git/gcc.git#commit=${_commit}
         c89 c99
         gcc-ada-repro.patch
         gcc-lib64-lib.patch
+        gcc-loong64.patch # backport from master to add lsx/lasx support
 )
 validpgpkeys=(F3691687D867B81B51CE07D9BBE43771487328A9  # bpiotrowski@archlinux.org
               86CFFCA918CF3AF47147588051E8B148A9999C34  # evangelos@foutrelis.com
@@ -47,7 +48,8 @@ sha256sums=('SKIP'
             'de48736f6e4153f03d0a5d38ceb6c6fdb7f054e8f47ddd6af0a3dbf14f27b931'
             '2513c6d9984dd0a2058557bf00f06d8d5181734e41dcfe07be7ed86f2959622a'
             '1773f5137f08ac1f48f0f7297e324d5d868d55201c03068670ee4602babdef2f'
-            'a5904483163c3086f24088a2b422988bb3bc55f493d946e6a54f95ac48d83fb9')
+            'a5904483163c3086f24088a2b422988bb3bc55f493d946e6a54f95ac48d83fb9'
+            '029cdd3f8933c2ae518b0024b78ef6632da539f9053cb8c33d1b873848ff2a9b')
 
 prepare() {
   [[ ! -d gcc ]] && ln -s gcc-${pkgver/+/-} gcc
@@ -62,6 +64,7 @@ prepare() {
   # Reproducible gcc-ada
   patch -Np0 < "$srcdir/gcc-ada-repro.patch"
   patch -p1 -i $srcdir/gcc-lib64-lib.patch
+  patch -p1 -i $srcdir/gcc-loong64.patch
 
   mkdir -p "$srcdir/gcc-build"
   mkdir -p "$srcdir/libgccjit-build"
