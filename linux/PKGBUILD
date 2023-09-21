@@ -1,10 +1,10 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
 pkgbase=linux
-_ver=6.5.0
-_rdate=20230831
+_ver=6.6.0
+_rdate=20230918
 pkgver=${_ver}.arch1
-pkgrel=5
+pkgrel=3
 pkgdesc='Linux'
 _srctag=v${pkgver%.*}-${pkgver##*.}
 url="https://github.com/archlinux/linux/commits/$_srctag"
@@ -40,9 +40,9 @@ validpgpkeys=(
   A2FF3A36AAA56654109064AB19802F8B0D70FC30  # Jan Alexander Steffens (heftig)
   C7E7849466FE2358343588377258734B41C31549  # David Runge <dvzrv@archlinux.org>
 )
-b2sums=('6b70678f8a8c3787ce3dc75a7f738362eb828d9416b1a1358d685ce9bad234244ed31764b4b0bcb3c854f1d999adb51a92739455ccda66f195fec35b88baca99'
+b2sums=('41de1f1363776f1527b314d9f4c65c61c426cda83ff0ce7d6424fd6d93e507c52a981f5ffc41053dc6bf72c998faf1c8c5f57dfd87fbf5ed0b51334ad7057cb7'
         'f59191e4e7ecbc39e873fc761f78617145bf3c974e1b267566763ad93cfb245778e729b343026cb2d5c544a12bb2d5875371fbc56d38c356dfb29b7119826688'
-        '610f1697dc6cb7c2073acd2b5b934bcb78250af29580c6d0a4c5f9382e2d22734a204a906eb9035fe88513004bb820a2880816b437b7f3c68823b3e83a1ebac0')
+        'ce0d0241b36008b2824b66ec6d54c0f5d894028856c8ea7ee0d5a05066c50366a013428aeb5a8fe0b85587410f65ac57b0bc96f3f060be611d6289fe7cf4f45b')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -90,7 +90,8 @@ prepare() {
 
 build() {
   cd $_srcname
-  _make htmldocs all
+  _make all
+  _make htmldocs
 }
 
 _package() {
@@ -130,7 +131,7 @@ _package() {
     DEPMOD=/doesnt/exist modules_install  # Suppress depmod
 
   # remove build and source links
-  rm "$modulesdir"/{source,build}
+  rm -f "$modulesdir"/{source,build}
 }
 
 _package-headers() {
