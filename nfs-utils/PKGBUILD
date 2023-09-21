@@ -50,8 +50,6 @@ build() {
     --enable-mountconfig \
     --with-systemd
   sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
-  CFLAGS=${CFLAGS/-Werror=format-security/}
-  CXXFLAGS=${CXXFLAGS/-Werror=format-security/}
   make
 }
 
