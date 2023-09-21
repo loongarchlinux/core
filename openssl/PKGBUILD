@@ -15,7 +15,7 @@ provides=('libcrypto.so' 'libssl.so')
 backup=('etc/ssl/openssl.cnf')
 source=("https://www.openssl.org/source/${pkgname}-${pkgver}.tar.gz"{,.asc}
         'ca-dir.patch'
-        "openssl-la64.patch")
+        'openssl-la64.patch')
 sha256sums=('a0ce69b8b97ea6a35b96875235aa453b966ba3cba8af2de23657d8b6767d6539'
             'SKIP'
             '0a32d9ca68e8d985ce0bfef6a4c20b46675e06178cc2d0bf6d91bd6865d648b7'
@@ -36,7 +36,6 @@ prepare() {
 build() {
 	cd "$srcdir/$pkgname-$pkgver"
 
-#shared no-ssl3-method enable-ec_nistp_64_gcc_128 linux-`uname -m` \
 	# mark stack as non-executable: http://bugs.archlinux.org/task/12434
 	./Configure --prefix=/usr --openssldir=/etc/ssl --libdir=lib \
 		shared enable-ktls enable-ec_nistp_64_gcc_128 linux-`uname -m` \
