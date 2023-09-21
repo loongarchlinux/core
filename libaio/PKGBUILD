@@ -24,7 +24,7 @@ build() {
   # libaio is a thin wrapper around kernel syscalls, it does not use stdlib and
   # other helpers like stack protection libraries
   if [ ${CARCH} == "loong64" ]; then
-      CFLAGS="-mabi=lp64d -march=la464 -O2 -pipe"
+      CFLAGS="-march=loongarch64 -mabi=lp64d -O2 -pipe"
   else
       CFLAGS="-march=${CARCH/_/-} -mtune=generic -O2 -pipe"
   fi
