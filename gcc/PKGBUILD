@@ -24,6 +24,7 @@ makedepends=(
   libmpc
   python
   zstd
+  gettext
 )
 checkdepends=(
   dejagnu
