@@ -1,7 +1,7 @@
 From 74c692f6e7efbd6d0f3078324fb2176c6e6431e4 Mon Sep 17 00:00:00 2001
 From: Xi Ruoyao <xry111@xry111.site>
 Date: Sun, 27 Aug 2023 00:36:51 +0800
-Subject: [PATCH 13/20] LoongArch: Micro-optimize LD_PCREL
+Subject: [PATCH 13/25] LoongArch: Micro-optimize LD_PCREL
 
 We are requiring Binutils >= 2.41, so explicit relocation syntax is
 always supported by the assembler.  Use it to reduce one instruction.
@@ -38,5 +38,5 @@ index b25e353b37..d6c78687d4 100644
  #if (IS_IN (rtld) \
       || (!defined SHARED && (IS_IN (libc) \
 -- 
-2.41.0
+2.42.0
 

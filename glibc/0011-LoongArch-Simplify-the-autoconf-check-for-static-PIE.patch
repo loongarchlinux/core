@@ -1,7 +1,7 @@
 From 2e6a6569d60f5ebbf7fa6f3d8f68fb8eaba41e04 Mon Sep 17 00:00:00 2001
 From: Xi Ruoyao <xry111@xry111.site>
 Date: Sun, 27 Aug 2023 00:36:49 +0800
-Subject: [PATCH 11/20] LoongArch: Simplify the autoconf check for static PIE
+Subject: [PATCH 11/25] LoongArch: Simplify the autoconf check for static PIE
 
 We are strictly requiring GAS >= 2.41 now, so we don't need to check
 assembler capability anymore.
@@ -143,5 +143,5 @@ index 0219c66c3f..28a8ae5486 100644
      libc_cv_static_pie_on_loongarch=yes
    fi
 -- 
-2.41.0
+2.42.0
 

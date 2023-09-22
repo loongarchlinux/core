@@ -1,7 +1,7 @@
 From 75084e121c6a5b136b5c9a1825022541ade880bd Mon Sep 17 00:00:00 2001
 From: dengjianbo <dengjianbo@loongson.cn>
 Date: Thu, 24 Aug 2023 16:50:17 +0800
-Subject: [PATCH 08/20] LoongArch: Add ifunc support for strnlen{aligned, lsx,
+Subject: [PATCH 08/25] LoongArch: Add ifunc support for strnlen{aligned, lsx,
  lasx}
 
 Based on the glibc microbenchmark, strnlen-aligned implementation could
@@ -458,5 +458,5 @@ index 0000000000..38b7a25a7a
 +# endif
 +#endif
 -- 
-2.41.0
+2.42.0
 

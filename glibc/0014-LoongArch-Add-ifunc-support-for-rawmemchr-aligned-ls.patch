@@ -1,7 +1,7 @@
 From 50a78e9418faa751bc00382b0baae71ef840db34 Mon Sep 17 00:00:00 2001
 From: dengjianbo <dengjianbo@loongson.cn>
 Date: Mon, 28 Aug 2023 10:08:35 +0800
-Subject: [PATCH 14/20] LoongArch: Add ifunc support for rawmemchr{aligned,
+Subject: [PATCH 14/25] LoongArch: Add ifunc support for rawmemchr{aligned,
  lsx, lasx}
 
 According to glibc rawmemchr microbenchmark, A few cases tested with
@@ -441,5 +441,5 @@ index 0000000000..89c7ffff8f
 +# endif
 +#endif
 -- 
-2.41.0
+2.42.0
 

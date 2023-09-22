@@ -1,7 +1,7 @@
 From f2998aa8de95a7c31bad55a1654ed11d7be9f141 Mon Sep 17 00:00:00 2001
 From: caiyinyu <caiyinyu@loongson.cn>
 Date: Mon, 11 Sep 2023 10:34:01 +0000
-Subject: [PATCH 20/20] LoongArch: Add lasx/lsx support for
+Subject: [PATCH 20/25] LoongArch: Add lasx/lsx support for
  _dl_runtime_profile.
 
 ---
@@ -556,5 +556,5 @@ index 02375286f8..cb4a287c65 100644
 +
 +END (_dl_runtime_profile)
 -- 
-2.41.0
+2.42.0
 

@@ -1,7 +1,7 @@
 From 8c5626fb6b51aa4aeb0353b132cdc4c659fde898 Mon Sep 17 00:00:00 2001
 From: dengjianbo <dengjianbo@loongson.cn>
 Date: Mon, 28 Aug 2023 10:08:39 +0800
-Subject: [PATCH 18/20] LoongArch: Add ifunc support for memcmp{aligned, lsx,
+Subject: [PATCH 18/25] LoongArch: Add ifunc support for memcmp{aligned, lsx,
  lasx}
 
 According to glibc memcmp microbenchmark test results(Add generic
@@ -939,5 +939,5 @@ index 0000000000..32eccac2a3
 +
 +#endif
 -- 
-2.41.0
+2.42.0
 

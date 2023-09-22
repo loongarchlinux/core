@@ -1,7 +1,7 @@
 From bfe5afd797d2c4cfd785c293ae65be014a8c0884 Mon Sep 17 00:00:00 2001
 From: dengjianbo <dengjianbo@loongson.cn>
 Date: Mon, 28 Aug 2023 10:08:37 +0800
-Subject: [PATCH 16/20] LoongArch: Add ifunc support for memrchr{lsx, lasx}
+Subject: [PATCH 16/25] LoongArch: Add ifunc support for memrchr{lsx, lasx}
 
 According to glibc memrchr microbenchmark, this implementation could reduce
 the runtime as following:
@@ -410,5 +410,5 @@ index 0000000000..8baba9ab7e
 +
 +#endif
 -- 
-2.41.0
+2.42.0
 

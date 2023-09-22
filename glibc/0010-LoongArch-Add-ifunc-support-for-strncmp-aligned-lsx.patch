@@ -1,7 +1,7 @@
 From 452628d5d103d64f3cbbe078a38169f3070506ef Mon Sep 17 00:00:00 2001
 From: dengjianbo <dengjianbo@loongson.cn>
 Date: Thu, 24 Aug 2023 16:50:19 +0800
-Subject: [PATCH 10/20] LoongArch: Add ifunc support for strncmp{aligned, lsx}
+Subject: [PATCH 10/25] LoongArch: Add ifunc support for strncmp{aligned, lsx}
 
 Based on the glibc microbenchmark, only a few short inputs with this
 strncmp-aligned and strncmp-lsx implementation experience performance
@@ -576,5 +576,5 @@ index 0000000000..af6d0bc4a7
 +# endif
 +#endif
 -- 
-2.41.0
+2.42.0
 

@@ -1,7 +1,7 @@
 From b8e2a2725d2583890d7da24bbc629df3a7057ce7 Mon Sep 17 00:00:00 2001
 From: dengjianbo <dengjianbo@loongson.cn>
 Date: Mon, 28 Aug 2023 10:08:36 +0800
-Subject: [PATCH 15/20] LoongArch: Add ifunc support for memchr{aligned, lsx,
+Subject: [PATCH 15/25] LoongArch: Add ifunc support for memchr{aligned, lsx,
  lasx}
 
 According to glibc memchr microbenchmark, this implementation could reduce
@@ -478,5 +478,5 @@ index 0000000000..059479c0ce
 +
 +#endif
 -- 
-2.41.0
+2.42.0
 

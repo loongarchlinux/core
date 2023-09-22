@@ -1,7 +1,7 @@
 From aa2e8682ebc4a006c0e3483400287f2661665c46 Mon Sep 17 00:00:00 2001
 From: dengjianbo <dengjianbo@loongson.cn>
 Date: Mon, 28 Aug 2023 10:08:38 +0800
-Subject: [PATCH 17/20] LoongArch: Add ifunc support for memset{aligned,
+Subject: [PATCH 17/25] LoongArch: Add ifunc support for memset{aligned,
  unaligned, lsx, lasx}
 
 According to glibc memset microbenchmark test results, for LSX and LASX
@@ -777,5 +777,5 @@ index 0000000000..3ff60d8ac7
 +
 +#endif
 -- 
-2.41.0
+2.42.0
 

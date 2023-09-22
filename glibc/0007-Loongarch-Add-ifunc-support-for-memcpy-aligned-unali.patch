@@ -1,7 +1,7 @@
 From d9f7479920b178bb944568af1c753d638286d945 Mon Sep 17 00:00:00 2001
 From: dengjianbo <dengjianbo@loongson.cn>
 Date: Tue, 15 Aug 2023 09:11:53 +0800
-Subject: [PATCH 07/20] Loongarch: Add ifunc support for memcpy{aligned,
+Subject: [PATCH 07/25] Loongarch: Add ifunc support for memcpy{aligned,
  unaligned, lsx, lasx} and memmove{aligned, unaligned, lsx, lasx}
 
 These implementations improve the time to copy data in the glibc
@@ -2563,5 +2563,5 @@ index 0000000000..7e3ca4c47b
 +
 +#endif
 -- 
-2.41.0
+2.42.0
 

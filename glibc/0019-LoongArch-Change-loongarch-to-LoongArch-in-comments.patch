@@ -1,7 +1,7 @@
 From d4861cbcadc2467a56338a981e8dde6b13c47a19 Mon Sep 17 00:00:00 2001
 From: dengjianbo <dengjianbo@loongson.cn>
 Date: Mon, 28 Aug 2023 10:08:40 +0800
-Subject: [PATCH 19/20] LoongArch: Change loongarch to LoongArch in comments
+Subject: [PATCH 19/25] LoongArch: Change loongarch to LoongArch in comments
 
 ---
  sysdeps/loongarch/lp64/multiarch/memcpy-aligned.S    | 2 +-
@@ -271,5 +271,5 @@ index b769a89584..d0febe3eb0 100644
  
     This file is part of the GNU C Library.
 -- 
-2.41.0
+2.42.0
 

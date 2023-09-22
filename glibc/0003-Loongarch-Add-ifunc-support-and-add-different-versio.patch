@@ -1,7 +1,7 @@
 From d713b7d09a0b551ed59c22b0f3907fc1ab65054e Mon Sep 17 00:00:00 2001
 From: dengjianbo <dengjianbo@loongson.cn>
 Date: Tue, 8 Aug 2023 14:15:44 +0800
-Subject: [PATCH 03/20] Loongarch: Add ifunc support and add different versions
+Subject: [PATCH 03/25] Loongarch: Add ifunc support and add different versions
  of strlen
 
 strlen-lasx is implemeted by LASX simd instructions(256bit)
@@ -521,5 +521,5 @@ index e371e13b15..d1a280a5ee 100644
  #endif /* _CPU_FEATURES_LOONGARCH64_H  */
  
 -- 
-2.41.0
+2.42.0
 

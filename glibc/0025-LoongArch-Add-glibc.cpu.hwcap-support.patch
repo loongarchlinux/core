@@ -1,0 +1,496 @@
+From eea1011fc2983c75287ca636158481833f0d7a10 Mon Sep 17 00:00:00 2001
+From: caiyinyu <caiyinyu@loongson.cn>
+Date: Fri, 15 Sep 2023 17:35:19 +0800
+Subject: [PATCH 25/25] LoongArch: Add glibc.cpu.hwcap support.
+
+Key Points:
+1. On lasx & lsx platforms, We must use _dl_runtime_{profile, resolve}_{lsx, lasx}
+   to save vector registers.
+2. Via "tunables", users can choose str/mem_{lasx,lsx,unaligned} functions with
+   `export GLIBC_TUNABLES=glibc.cpu.hwcaps=LASX,...`.
+   Note: glibc.cpu.hwcaps doesn't affect _dl_runtime_{profile, resolve}_{lsx, lasx}
+   selection.
+
+Usage Notes:
+1. Only valid inputs: LASX, LSX, UAL. Case-sensitive, comma-separated, no spaces.
+2. Example: `export GLIBC_TUNABLES=glibc.cpu.hwcaps=LASX,UAL` turns on LASX & UAL.
+   Unmentioned features turn off. With default ifunc: lasx > lsx > unaligned >
+   aligned > generic, effect is: lasx > unaligned > aligned > generic; lsx off.
+3. Incorrect GLIBC_TUNABLES settings will show error messages.
+   For example: On lsx platforms, you cannot enable lasx features. If you do
+   that, you will get error messages.
+4. Valid input examples:
+   - GLIBC_TUNABLES=glibc.cpu.hwcaps=LASX: lasx > aligned > generic.
+   - GLIBC_TUNABLES=glibc.cpu.hwcaps=LSX,UAL: lsx > unaligned > aligned > generic.
+   - GLIBC_TUNABLES=glibc.cpu.hwcaps=LASX,UAL,LASX,UAL,LSX,LASX,UAL: Repetitions
+     allowed but not recommended. Results in: lasx > lsx > unaligned > aligned >
+     generic.
+---
+ sysdeps/loongarch/Makefile                    |  4 +
+ sysdeps/loongarch/Versions                    |  5 ++
+ sysdeps/loongarch/cpu-tunables.c              | 89 +++++++++++++++++++
+ sysdeps/loongarch/dl-get-cpu-features.c       | 25 ++++++
+ sysdeps/loongarch/dl-machine.h                | 27 +++++-
+ sysdeps/loongarch/dl-tunables.list            | 25 ++++++
+ .../unix/sysv/linux/loongarch/cpu-features.c  | 29 ++++++
+ .../unix/sysv/linux/loongarch/cpu-features.h  | 18 +++-
+ .../unix/sysv/linux/loongarch/dl-procinfo.c   | 60 +++++++++++++
+ sysdeps/unix/sysv/linux/loongarch/dl-sysdep.c | 21 +++++
+ .../unix/sysv/linux/loongarch/libc-start.c    | 34 +++++++
+ 11 files changed, 329 insertions(+), 8 deletions(-)
+ create mode 100644 sysdeps/loongarch/Versions
+ create mode 100644 sysdeps/loongarch/cpu-tunables.c
+ create mode 100644 sysdeps/loongarch/dl-get-cpu-features.c
+ create mode 100644 sysdeps/loongarch/dl-tunables.list
+ create mode 100644 sysdeps/unix/sysv/linux/loongarch/cpu-features.c
+ create mode 100644 sysdeps/unix/sysv/linux/loongarch/dl-procinfo.c
+ create mode 100644 sysdeps/unix/sysv/linux/loongarch/dl-sysdep.c
+ create mode 100644 sysdeps/unix/sysv/linux/loongarch/libc-start.c
+
+diff --git a/sysdeps/loongarch/Makefile b/sysdeps/loongarch/Makefile
+index 43d2f583cd..30a1f4a802 100644
+--- a/sysdeps/loongarch/Makefile
++++ b/sysdeps/loongarch/Makefile
+@@ -6,6 +6,10 @@ ifeq ($(subdir),elf)
+ gen-as-const-headers += dl-link.sym
+ endif
+ 
++ifeq ($(subdir),elf)
++  sysdep-dl-routines += dl-get-cpu-features
++endif
++
+ # LoongArch's assembler also needs to know about PIC as it changes the
+ # definition of some assembler macros.
+ ASFLAGS-.os += $(pic-ccflag)
+diff --git a/sysdeps/loongarch/Versions b/sysdeps/loongarch/Versions
+new file mode 100644
+index 0000000000..33ae2cc079
+--- /dev/null
++++ b/sysdeps/loongarch/Versions
+@@ -0,0 +1,5 @@
++ld {
++  GLIBC_PRIVATE {
++    _dl_larch_get_cpu_features;
++  }
++}
+diff --git a/sysdeps/loongarch/cpu-tunables.c b/sysdeps/loongarch/cpu-tunables.c
+new file mode 100644
+index 0000000000..8e9fab938b
+--- /dev/null
++++ b/sysdeps/loongarch/cpu-tunables.c
+@@ -0,0 +1,89 @@
++/* LoongArch CPU feature tuning.
++   This file is part of the GNU C Library.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++# include <stdbool.h>
++# include <stdint.h>
++# include <unistd.h>		/* Get STDOUT_FILENO for _dl_printf.  */
++# include <elf/dl-tunables.h>
++# include <string.h>
++# include <cpu-features.h>
++# include <ldsodefs.h>
++# include <sys/auxv.h>
++
++# define HWCAP_LOONGARCH_IFUNC \
++  (HWCAP_LOONGARCH_UAL | HWCAP_LOONGARCH_LSX | HWCAP_LOONGARCH_LASX)
++
++# define CHECK_GLIBC_IFUNC_CPU_OFF(f, name, len)			\
++  _Static_assert (sizeof (#name) - 1 == len, #name " != " #len);	\
++  if (!memcmp (f, #name, len) &&					\
++      (GLRO (dl_hwcap) & HWCAP_LOONGARCH_##name))			\
++    {									\
++      hwcap |= (HWCAP_LOONGARCH_##name | (~HWCAP_LOONGARCH_IFUNC));	\
++      break;								\
++    }									\
++
++attribute_hidden
++void
++TUNABLE_CALLBACK (set_hwcaps) (tunable_val_t *valp)
++{
++  const char *p = valp->strval;
++  size_t len;
++  unsigned long hwcap = 0;
++  const char *c;
++
++  do {
++      for (c = p; *c != ','; c++)
++	if (*c == '\0')
++	  break;
++
++      len = c - p;
++
++      switch(len)
++      {
++	default:
++	  _dl_fatal_printf (
++	    "The valid values of glibc.cpu.hwcaps is UAL, LASX, LSX!!\n"
++			    );
++	  break;
++	case 3:
++	  {
++	    CHECK_GLIBC_IFUNC_CPU_OFF (p, LSX, 3);
++	    CHECK_GLIBC_IFUNC_CPU_OFF (p, UAL, 3);
++	    _dl_fatal_printf (
++		"Some features are invalid or not supported on this machine!!\n"
++		"The valid values of glibc.cpu.hwcaps is UAL, LASX, LSX!!\n"
++                       );
++	  }
++	  break;
++	case 4:
++	  {
++	    CHECK_GLIBC_IFUNC_CPU_OFF (p, LASX, 4);
++	    _dl_fatal_printf (
++		"Some features are invalid or not supported on this machine!!\n"
++		"The valid values of glibc.cpu.hwcaps is UAL, LASX, LSX!!\n"
++                       );
++	  }
++	  break;
++      }
++
++      p += len + 1;
++    }
++  while (*c != '\0');
++
++  GLRO (dl_larch_cpu_features).hwcap &= hwcap;
++}
+diff --git a/sysdeps/loongarch/dl-get-cpu-features.c b/sysdeps/loongarch/dl-get-cpu-features.c
+new file mode 100644
+index 0000000000..7cd9bc15c3
+--- /dev/null
++++ b/sysdeps/loongarch/dl-get-cpu-features.c
+@@ -0,0 +1,25 @@
++/* Define _dl_larch_get_cpu_features.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++
++#include <ldsodefs.h>
++
++const struct cpu_features *
++_dl_larch_get_cpu_features (void)
++{
++  return &GLRO(dl_larch_cpu_features);
++}
+diff --git a/sysdeps/loongarch/dl-machine.h b/sysdeps/loongarch/dl-machine.h
+index 57913cefaa..b395a9283e 100644
+--- a/sysdeps/loongarch/dl-machine.h
++++ b/sysdeps/loongarch/dl-machine.h
+@@ -29,6 +29,8 @@
+ #include <dl-static-tls.h>
+ #include <dl-machine-rel.h>
+ 
++#include <cpu-features.c>
++
+ #ifndef _RTLD_PROLOGUE
+ # define _RTLD_PROLOGUE(entry)					\
+ 	".globl\t" __STRING (entry) "\n\t"			\
+@@ -53,6 +55,23 @@
+ #define ELF_MACHINE_NO_REL 1
+ #define ELF_MACHINE_NO_RELA 0
+ 
++#define DL_PLATFORM_INIT dl_platform_init ()
++
++static inline void __attribute__ ((unused))
++dl_platform_init (void)
++{
++  if (GLRO(dl_platform) != NULL && *GLRO(dl_platform) == '\0')
++    /* Avoid an empty string which would disturb us.  */
++    GLRO(dl_platform) = NULL;
++
++#ifdef SHARED
++  /* init_cpu_features has been called early from __libc_start_main in
++     static executable.  */
++  init_cpu_features (&GLRO(dl_larch_cpu_features));
++#endif
++}
++
++
+ /* Return nonzero iff ELF header is compatible with the running host.  */
+ static inline int
+ elf_machine_matches_host (const ElfW (Ehdr) *ehdr)
+@@ -290,9 +309,9 @@ elf_machine_runtime_setup (struct link_map *l, struct r_scope_elem *scope[],
+       if (profile != 0)
+ 	{
+ #if !defined __loongarch_soft_float
+-	  if (SUPPORT_LASX)
++	  if (RTLD_SUPPORT_LASX)
+ 	    gotplt[0] = (ElfW(Addr)) &_dl_runtime_profile_lasx;
+-	  else if (SUPPORT_LSX)
++	  else if (RTLD_SUPPORT_LSX)
+ 	    gotplt[0] = (ElfW(Addr)) &_dl_runtime_profile_lsx;
+ 	  else
+ #endif
+@@ -310,9 +329,9 @@ elf_machine_runtime_setup (struct link_map *l, struct r_scope_elem *scope[],
+ 	     indicated by the offset on the stack, and then jump to
+ 	     the resolved address.  */
+ #if !defined __loongarch_soft_float
+-	  if (SUPPORT_LASX)
++	  if (RTLD_SUPPORT_LASX)
+ 	    gotplt[0] = (ElfW(Addr)) &_dl_runtime_resolve_lasx;
+-	  else if (SUPPORT_LSX)
++	  else if (RTLD_SUPPORT_LSX)
+ 	    gotplt[0] = (ElfW(Addr)) &_dl_runtime_resolve_lsx;
+ 	  else
+ #endif
+diff --git a/sysdeps/loongarch/dl-tunables.list b/sysdeps/loongarch/dl-tunables.list
+new file mode 100644
+index 0000000000..66b3427516
+--- /dev/null
++++ b/sysdeps/loongarch/dl-tunables.list
+@@ -0,0 +1,25 @@
++# LoongArch specific tunables.
++# Copyright (C) 2023 Free Software Foundation, Inc.
++# This file is part of the GNU C Library.
++
++# The GNU C Library is free software; you can redistribute it and/or
++# modify it under the terms of the GNU Lesser General Public
++# License as published by the Free Software Foundation; either
++# version 2.1 of the License, or (at your option) any later version.
++
++# The GNU C Library is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++# Lesser General Public License for more details.
++
++# You should have received a copy of the GNU Lesser General Public
++# License along with the GNU C Library; if not, see
++# <http://www.gnu.org/licenses/>.
++
++glibc {
++  cpu {
++    hwcaps {
++      type: STRING
++    }
++  }
++}
+diff --git a/sysdeps/unix/sysv/linux/loongarch/cpu-features.c b/sysdeps/unix/sysv/linux/loongarch/cpu-features.c
+new file mode 100644
+index 0000000000..1290c4ce9f
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/loongarch/cpu-features.c
+@@ -0,0 +1,29 @@
++/* Initialize CPU feature data.  LoongArch64 version.
++   This file is part of the GNU C Library.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++#include <cpu-features.h>
++#include <elf/dl-hwcaps.h>
++#include <elf/dl-tunables.h>
++extern void TUNABLE_CALLBACK (set_hwcaps) (tunable_val_t *) attribute_hidden;
++
++static inline void
++init_cpu_features (struct cpu_features *cpu_features)
++{
++    GLRO (dl_larch_cpu_features).hwcap = GLRO (dl_hwcap);
++    TUNABLE_GET (glibc, cpu, hwcaps, tunable_val_t *, TUNABLE_CALLBACK (set_hwcaps));
++}
+diff --git a/sysdeps/unix/sysv/linux/loongarch/cpu-features.h b/sysdeps/unix/sysv/linux/loongarch/cpu-features.h
+index d1a280a5ee..450963cebc 100644
+--- a/sysdeps/unix/sysv/linux/loongarch/cpu-features.h
++++ b/sysdeps/unix/sysv/linux/loongarch/cpu-features.h
+@@ -19,13 +19,23 @@
+ #ifndef _CPU_FEATURES_LOONGARCH64_H
+ #define _CPU_FEATURES_LOONGARCH64_H
+ 
++#include <stdint.h>
+ #include <sys/auxv.h>
+ 
+-#define SUPPORT_UAL (GLRO (dl_hwcap) & HWCAP_LOONGARCH_UAL)
+-#define SUPPORT_LSX (GLRO (dl_hwcap) & HWCAP_LOONGARCH_LSX)
+-#define SUPPORT_LASX (GLRO (dl_hwcap) & HWCAP_LOONGARCH_LASX)
++struct cpu_features
++ {
++    uint64_t hwcap;
++ };
+ 
++/* Get a pointer to the CPU features structure.  */
++extern const struct cpu_features *_dl_larch_get_cpu_features (void)
++     __attribute__ ((pure));
++
++#define SUPPORT_UAL (GLRO (dl_larch_cpu_features).hwcap & HWCAP_LOONGARCH_UAL)
++#define SUPPORT_LSX (GLRO (dl_larch_cpu_features).hwcap & HWCAP_LOONGARCH_LSX)
++#define SUPPORT_LASX (GLRO (dl_larch_cpu_features).hwcap & HWCAP_LOONGARCH_LASX)
++#define RTLD_SUPPORT_LSX (GLRO (dl_hwcap) & HWCAP_LOONGARCH_LSX)
++#define RTLD_SUPPORT_LASX (GLRO (dl_hwcap) & HWCAP_LOONGARCH_LASX)
+ #define INIT_ARCH()
+ 
+ #endif /* _CPU_FEATURES_LOONGARCH64_H  */
+-
+diff --git a/sysdeps/unix/sysv/linux/loongarch/dl-procinfo.c b/sysdeps/unix/sysv/linux/loongarch/dl-procinfo.c
+new file mode 100644
+index 0000000000..6217fda983
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/loongarch/dl-procinfo.c
+@@ -0,0 +1,60 @@
++/* Data for LoongArch64 version of processor capability information.
++   Linux version.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++/* If anything should be added here check whether the size of each string
++   is still ok with the given array size.
++
++   All the #ifdefs in the definitions are quite irritating but
++   necessary if we want to avoid duplicating the information.  There
++   are three different modes:
++
++   - PROCINFO_DECL is defined.  This means we are only interested in
++     declarations.
++
++   - PROCINFO_DECL is not defined:
++
++     + if SHARED is defined the file is included in an array
++       initializer.  The .element = { ... } syntax is needed.
++
++     + if SHARED is not defined a normal array initialization is
++       needed.
++  */
++
++#ifndef PROCINFO_CLASS
++# define PROCINFO_CLASS
++#endif
++
++#if !IS_IN (ldconfig)
++# if !defined PROCINFO_DECL && defined SHARED
++  ._dl_larch_cpu_features
++# else
++PROCINFO_CLASS struct cpu_features _dl_larch_cpu_features
++# endif
++# ifndef PROCINFO_DECL
++= { }
++# endif
++# if !defined SHARED || defined PROCINFO_DECL
++;
++# else
++,
++# endif
++#endif
++
++#undef PROCINFO_DECL
++#undef PROCINFO_CLASS
+diff --git a/sysdeps/unix/sysv/linux/loongarch/dl-sysdep.c b/sysdeps/unix/sysv/linux/loongarch/dl-sysdep.c
+new file mode 100644
+index 0000000000..455fd71abc
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/loongarch/dl-sysdep.c
+@@ -0,0 +1,21 @@
++/* Operating system support for run-time dynamic linker.  LoongArch version.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++#include <config.h>
++#include <sysdeps/loongarch/cpu-tunables.c>
++#include <sysdeps/unix/sysv/linux/dl-sysdep.c>
+diff --git a/sysdeps/unix/sysv/linux/loongarch/libc-start.c b/sysdeps/unix/sysv/linux/loongarch/libc-start.c
+new file mode 100644
+index 0000000000..f1346ece0a
+--- /dev/null
++++ b/sysdeps/unix/sysv/linux/loongarch/libc-start.c
+@@ -0,0 +1,34 @@
++/* Override csu/libc-start.c on LoongArch64.
++   Copyright (C) 2023 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++#ifndef SHARED
++
++/* Mark symbols hidden in static PIE for early self relocation to work.  */
++# if BUILD_PIE_DEFAULT
++#  pragma GCC visibility push(hidden)
++# endif
++
++# include <ldsodefs.h>
++# include <cpu-features.c>
++
++extern struct cpu_features _dl_larch_cpu_features;
++
++# define ARCH_INIT_CPU_FEATURES() init_cpu_features (&_dl_larch_cpu_features)
++
++#endif
++#include <csu/libc-start.c>
+-- 
+2.42.0
+
