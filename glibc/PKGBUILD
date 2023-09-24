@@ -10,7 +10,7 @@ pkgbase=glibc
 pkgname=glibc
 pkgver=2.38
 _commit=6b99458d197ab779ebb6ff632c168e2cbfa4f543
-pkgrel=4
+pkgrel=2
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/libc'
 license=(GPL LGPL)
@@ -141,11 +141,6 @@ build() {
       --enable-systemtap
       --disable-profile
       --disable-werror
-#      --enable-add-ons
-#      --enable-lock-elision
-#      --enable-stackguard-randomization
-#      --disable-experimental-malloc
-#      --enable-static-pie
   )
 
   cd "${srcdir}"/glibc-build
@@ -271,10 +266,10 @@ package_glibc() {
   install -Dm644 "${srcdir}"/sdt.h "${pkgdir}"/usr/include/sys/sdt.h
   install -Dm644 "${srcdir}"/sdt-config.h "${pkgdir}"/usr/include/sys/sdt-config.h
 
-  # ldconfig comes from current system
-  if [ -f /archlinux/XCHG/ldconfig ]; then
-    install -Dm755 /archlinux/XCHG/ldconfig "${pkgdir}"/usr/bin/ldconfig
-  fi
+  # Building with pkgctl we get a segfault, so copy it from the current system
+  # Why static-pie get setfault in virtual-env?
+  install -Dm755 /usr/bin/ldconfig "${pkgdir}"/usr/bin/ldconfig
+  install -Dm755 /usr/lib/ld-linux-loongarch-lp64d.so.1 "${pkgdir}"/usr/lib/ld-linux-loongarch-lp64d.so.1
 }
 
 package_lib32-glibc() {
