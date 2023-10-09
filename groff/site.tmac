@@ -7,6 +7,14 @@
 .  \" if '\*[.T]'utf8' \
 .  \"   char - \[hy]
 .
+.  \" Character translations for non-keyboard
+.  \" characters - to make them searchable
+.  if '\*[.T]'utf8' \{\
+.  char \- \N'45'
+.  char - \N'45'
+.  char ' \N'39'
+.  \}
+.
 .  \" groff 1.23.0 changed the "utf8" device to render "^" and "~"
 .  \" as U+02C6 and U+02DC respectively.  This is likely to cause
 .  \" considerable disruption in manual pages, so preserve the old

@@ -5,7 +5,7 @@
 _upstream_name=license-list-data
 _upstream_version=3.21
 pkgname=licenses
-pkgver=20230903
+pkgver=20230917
 pkgrel=1
 pkgdesc="A set of common license files"
 arch=(any)
@@ -107,7 +107,19 @@ b2sums=('b6829320f725e3e45c4807ef5deb4738a691fb3ab146d8531b81fdbccd8376a826c8ec7
         '63aefec94bf37792b1b10ee4ae36a5ad54f5df1ef175eddf8528bc8fb1c5a71cf7c258f856f99a9ed4e678c9226f0ac99ea825fc68e10695e905a618c36896e8'
         'f4f762da3c7c286596e1e047c6e083017e2662334ab039faeb57e0947ab700e0c8540727375c2170a35bac5b983fd80e8824ebbe5b051a5e23be0f7bdcb173ed')
 
+prepare() {
+  local license
+
+  # create list of known SPDX license identifiers
+  {
+    for license in "$_upstream_name-$_upstream_version/text/"*.txt; do
+      printf "%s\n" "$(basename "${license//.txt/}")"
+    done
+  } > known_spdx_license_identifiers.txt
+}
+
 package() {
+  local license
   local standard_licenses=(
     AGPL-3.0-only
     AGPL-3.0-or-later
@@ -271,6 +283,7 @@ package() {
   for license in "${standard_licenses[@]}"; do
     install -vDm 644 "$_upstream_name-$_upstream_version/text/$license.txt" -t "$pkgdir/usr/share/licenses/spdx/"
   done
+  install -vDm 644 known_spdx_license_identifiers.txt -t "$pkgdir/usr/share/licenses/"
 }
 
 # vim: ts=2 sw=2 et:

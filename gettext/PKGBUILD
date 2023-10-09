@@ -1,7 +1,7 @@
 # Maintainer:
 
 pkgname=gettext
-pkgver=0.22
+pkgver=0.22.2
 pkgrel=1
 pkgdesc="GNU internationalization library"
 url="https://www.gnu.org/software/gettext/"
@@ -13,13 +13,12 @@ optdepends=('git: for autopoint infrastructure updates')
 options=(!docs)
 source=(https://ftp.gnu.org/pub/gnu/gettext/$pkgname-$pkgver.tar.gz{,.sig}
         gettext-0.22-disable-libtextstyle.patch)
-sha256sums=('49f089be11b490170bbf09ed2f51e5f5177f55be4cc66504a5861820e0fb06ab'
+sha256sums=('a99662bafc1cc683ec7740844b465c7f30ccb044967f157f74697df9a9306b0e'
             'SKIP'
-            'd751adc12a1f1d0b7556b1045f0f427b11345242f2a245542d8baade74177f97')
+            'a28a27192f336f0b0908bdbf840d3b19d7b587c4ac52cad635cb43e95eb3c78d')
 validpgpkeys=('462225C3B46F34879FC8496CD605848ED7E69871'  # Daiki Ueno
               '68D94D8AAEEAD48AE7DC5B904F494A942E4616C2'
               '9001B85AF9E1B83DF1BDA942F5BE8B267C6A406D') # Bruno Haible (Open Source Development)
-
 
 prepare() {
   cd $pkgname-$pkgver
@@ -27,12 +26,12 @@ prepare() {
   # Do not build libtextstyle, as it depends on libcroco
   # which is now unmaintained and has known security bugs.
   # patch from Fedora	
-  patch -p1 -i $srcdir/gettext-0.22-disable-libtextstyle.patch
+   patch -p1 -i $srcdir/gettext-0.22-disable-libtextstyle.patch
 }
 
 build() {
   cd $pkgname-$pkgver
-
+LTOFLAGS=""
   autoreconf --force
 
   ./configure \
