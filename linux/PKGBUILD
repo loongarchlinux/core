@@ -31,6 +31,7 @@ _srcname=${pkgbase}-${_ver}
 source=(https://github.com/loongarchlinux/linux/releases/download/v${_rdate}/linux-${_ver}-${_rdate}.tar.xz
         config         # the main kernel config file
         config.la64
+        remove_shm_align_mask.diff
 )
 validpgpkeys=(
   ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
@@ -40,10 +41,12 @@ validpgpkeys=(
 # https://www.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc
 sha256sums=('5f92d37f6b00df86642b251cf8c98e14326712825e71b69b4531bed6abb48d52'
             '0d2577c76b9a8e1835dd46e787a7cba59eb379024f30c29dce088ca4e8ceff3a'
-            'a6a17b8fc520d8aa8fed90e37d21e03d3ed0d4c5ef4e3134d527a0952ff988b0')
+            'a6a17b8fc520d8aa8fed90e37d21e03d3ed0d4c5ef4e3134d527a0952ff988b0'
+            'c625401b90b1fad013ac800116bb7b7a320be7ab5fdf39f7f70be5a23de9ad34')
 b2sums=('1ce30a8105b5e73eb3c5c2e5cfb2b09a5fdb57515d244145dda80defb1634bcdc9fb649ecc9bebc4dcbcd7ced09c110c0a6432a984f76ccb861517ae14c7be56'
         '53d4ee0143c1d53f714cf590673c15551f5a5f36828aa1bb0462b0e763df15c0756ac389cd72c70c7cd3b4e4018e8e3680981adcb3e7e7f57a015f1a74d26cd1'
-        '749ea4855d06e73d7c196d52308cff6b386a42c3c389b96ffa637102d99627fbf174dd71dd9d2d231bdc6e15624d73db11346c7d21e3916e8d6d12527e0d15dd')
+        '749ea4855d06e73d7c196d52308cff6b386a42c3c389b96ffa637102d99627fbf174dd71dd9d2d231bdc6e15624d73db11346c7d21e3916e8d6d12527e0d15dd'
+        'b1ef46cc74704a995c7252d655817f1b54d67ea6b23705e42df9db5941de6bd269e5958cf1747163b9b43f4c6a1d56797c4ed2117ac5490f99fbc7aa8a45ed66')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -65,6 +68,7 @@ prepare() {
     echo "Applying patch $src..."
     patch -Np1 < "../$src"
   done
+  patch -R -p1 -i $srcdir/remove_shm_align_mask.diff
 
   echo "Setting config..."
   if [ $CARCH == loong64 ];then
