@@ -3,7 +3,7 @@
 
 pkgname=pacman-mirrorlist
 pkgver=20230712
-pkgrel=3
+pkgrel=4
 pkgdesc="Arch Linux mirror list for use by pacman"
 arch=('any')
 url="https://www.archlinux.org/mirrorlist/"
