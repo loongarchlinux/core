@@ -24,7 +24,7 @@ sha256sums=('SKIP'
             'a5e0167b6a82a9eb4d581d56baab930c2d80f5541dc34630460b73e1115384b8'
             '5c2d377a87121e7c399534fb91e2ffc0cc1e75d44a8f07ee6f55c9c089bc81e4'
             '2f7a9cf2461d2910fc036d4f7bc0e24c3bf1587d5238b480edcaa0ddd22eb330'
-            '2fdfa263c2795ee8bd8b46244cb9d497e73c5767dfe9ab57a222b06058282689')
+            '44f554ae63f3e0a4c9dc9c88caa0f974c71147636eb409da6534af00a91fecb9')
 validpgpkeys=(
               '7F2A3D07298149A0793C9A4EA45ABA544CFFD434' #Alexey Gladkov 
              )
