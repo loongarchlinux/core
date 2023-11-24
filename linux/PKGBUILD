@@ -2,7 +2,7 @@
 
 pkgbase=linux
 _ver=6.6.0
-_rdate=20231113
+_rdate=20231123
 pkgver=${_ver}.arch1
 pkgrel=7
 pkgdesc='Linux'
@@ -33,6 +33,7 @@ source=(https://github.com/loongarchlinux/linux/releases/download/v${_rdate}/lin
         config.la64
         remove_shm_align_mask.diff
         remove_left-over_code_from_gsgpu_device_resume.patch
+        pixart.patch
 )
 validpgpkeys=(
   ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
@@ -40,16 +41,18 @@ validpgpkeys=(
   A2FF3A36AAA56654109064AB19802F8B0D70FC30  # Jan Alexander Steffens (heftig)
 )
 # https://www.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc
-sha256sums=('069f1c8f99321e3824792c371789a96439d617a7f05e129c1f9c0629f618c920'
+sha256sums=('531c827e7a156b30bc43ec813968506de2807584228d2f4690e7439ce24ea600'
             '0d2577c76b9a8e1835dd46e787a7cba59eb379024f30c29dce088ca4e8ceff3a'
             'fda5227f12c64f9c3a7471e44552c688080a25d2ad69febf62858faa551c934b'
             'c625401b90b1fad013ac800116bb7b7a320be7ab5fdf39f7f70be5a23de9ad34'
-            '45692ddbb58f21b596310b7954c4cd8143e14e2d0a46f3541f82d1dfded1f4c6')
-b2sums=('bad99e442768cdc442c686c745fab03baca2e765b315aa8927a8d7b368d7056fd876c7855ec2398da4ec52d8d825df4c78793ccade947356ea9f0f6c43fb6242'
+            '45692ddbb58f21b596310b7954c4cd8143e14e2d0a46f3541f82d1dfded1f4c6'
+            '3c3fbbb7f8ec7eb28e6cf96ecc5ab1c7279eac5d2738a960efd1b9ec9f618c30')
+b2sums=('e7d8bec5f19c9fb45ee48853680db5608e96e67e495ee891a447ca2dc9ce95daae90ba2bee4451b5c98380963c4d2b460fea7f200efda4c903f28a0f077c4d47'
         '53d4ee0143c1d53f714cf590673c15551f5a5f36828aa1bb0462b0e763df15c0756ac389cd72c70c7cd3b4e4018e8e3680981adcb3e7e7f57a015f1a74d26cd1'
         '1e31ec4ecf1795664f35205ac5ed29101a10245dab4829f2d9171d76693e20e7fd47147e23256e1911223002aa2a31dc5295436059d49679c58b2bbe32eccf06'
         'b1ef46cc74704a995c7252d655817f1b54d67ea6b23705e42df9db5941de6bd269e5958cf1747163b9b43f4c6a1d56797c4ed2117ac5490f99fbc7aa8a45ed66'
-        '3d3fcf5280bb8e8b994348275ed12fed57aae7e5044c54cc60eb521fe8e8450c970be1c4847e01545f566b9eb44745ce09b7d060b5d2d61ec1928e833c5d13f5')
+        '3d3fcf5280bb8e8b994348275ed12fed57aae7e5044c54cc60eb521fe8e8450c970be1c4847e01545f566b9eb44745ce09b7d060b5d2d61ec1928e833c5d13f5'
+        '723294c391c4b1810e3786f2b002b865c3c96f588dca58d003ea4901aa5d02ca61a02e6987543c6ea2a6324526133ad0bbbb6274fe8d406b9f324dfef50e6793')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
