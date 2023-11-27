@@ -1,10 +1,10 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
 pkgbase=linux
-_ver=6.6.0
-_rdate=20231123
+_ver=6.7.0
+_rdate=20231124
 pkgver=${_ver}.arch1
-pkgrel=7
+pkgrel=1
 pkgdesc='Linux'
 url='https://github.com/archlinux/linux'
 arch=(loong64 x86_64)
@@ -32,7 +32,6 @@ source=(https://github.com/loongarchlinux/linux/releases/download/v${_rdate}/lin
         config         # the main kernel config file
         config.la64
         remove_shm_align_mask.diff
-        remove_left-over_code_from_gsgpu_device_resume.patch
         pixart.patch
 )
 validpgpkeys=(
@@ -41,17 +40,15 @@ validpgpkeys=(
   A2FF3A36AAA56654109064AB19802F8B0D70FC30  # Jan Alexander Steffens (heftig)
 )
 # https://www.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc
-sha256sums=('531c827e7a156b30bc43ec813968506de2807584228d2f4690e7439ce24ea600'
+sha256sums=('dc6b06f6de7d81ed61dbeb25f5bae4b260258901ef2b671490dc3e213fc83852'
             '0d2577c76b9a8e1835dd46e787a7cba59eb379024f30c29dce088ca4e8ceff3a'
-            'fda5227f12c64f9c3a7471e44552c688080a25d2ad69febf62858faa551c934b'
+            'ce9cc563350f5342ed595c3c19897a35253a710f1111d167c209df4c20e0738b'
             'c625401b90b1fad013ac800116bb7b7a320be7ab5fdf39f7f70be5a23de9ad34'
-            '45692ddbb58f21b596310b7954c4cd8143e14e2d0a46f3541f82d1dfded1f4c6'
             '3c3fbbb7f8ec7eb28e6cf96ecc5ab1c7279eac5d2738a960efd1b9ec9f618c30')
-b2sums=('e7d8bec5f19c9fb45ee48853680db5608e96e67e495ee891a447ca2dc9ce95daae90ba2bee4451b5c98380963c4d2b460fea7f200efda4c903f28a0f077c4d47'
+b2sums=('66d670a4ce36796e01614962e9233827020d5618c28e9ad53931c05458f392015eb8b2b7614c7229e17fca687990a075f75477e49369de130f03a41ac0231dba'
         '53d4ee0143c1d53f714cf590673c15551f5a5f36828aa1bb0462b0e763df15c0756ac389cd72c70c7cd3b4e4018e8e3680981adcb3e7e7f57a015f1a74d26cd1'
-        '1e31ec4ecf1795664f35205ac5ed29101a10245dab4829f2d9171d76693e20e7fd47147e23256e1911223002aa2a31dc5295436059d49679c58b2bbe32eccf06'
+        '5614a3788f7920455b2c593b667d98864bfce7db3a811cdbf2a30af666b7072ac28576146b1f5e192ec53d191d9db38da6aa481af76b6b609f00aa73569f42c4'
         'b1ef46cc74704a995c7252d655817f1b54d67ea6b23705e42df9db5941de6bd269e5958cf1747163b9b43f4c6a1d56797c4ed2117ac5490f99fbc7aa8a45ed66'
-        '3d3fcf5280bb8e8b994348275ed12fed57aae7e5044c54cc60eb521fe8e8450c970be1c4847e01545f566b9eb44745ce09b7d060b5d2d61ec1928e833c5d13f5'
         '723294c391c4b1810e3786f2b002b865c3c96f588dca58d003ea4901aa5d02ca61a02e6987543c6ea2a6324526133ad0bbbb6274fe8d406b9f324dfef50e6793')
 
 export KBUILD_BUILD_HOST=archlinux

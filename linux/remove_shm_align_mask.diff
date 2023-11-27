@@ -1,0 +1,67 @@
+commit ad3ff105611b9b06e16ae57e97b48916ff93dd46
+Author: Huacai Chen <chenhuacai@kernel.org>
+Date:   Wed Sep 6 22:53:09 2023 +0800
+
+    LoongArch: Remove shm_align_mask and use SHMLBA instead
+    
+    Both shm_align_mask and SHMLBA want to avoid cache alias. But they are
+    inconsistent: shm_align_mask is (PAGE_SIZE - 1) while SHMLBA is SZ_64K,
+    but PAGE_SIZE is not always equal to SZ_64K.
+    
+    This may cause problems when shmat() twice. Fix this problem by removing
+    shm_align_mask and using SHMLBA (strictly SHMLBA - 1) instead.
+    
+    Reported-by: Jiantao Shan <shanjiantao@loongson.cn>
+    Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+
+diff --git a/arch/loongarch/mm/cache.c b/arch/loongarch/mm/cache.c
+index 72685a48eaf0..6be04d36ca07 100644
+--- a/arch/loongarch/mm/cache.c
++++ b/arch/loongarch/mm/cache.c
+@@ -156,7 +156,6 @@ void cpu_cache_init(void)
+ 
+ 	current_cpu_data.cache_leaves_present = leaf;
+ 	current_cpu_data.options |= LOONGARCH_CPU_PREFETCH;
+-	shm_align_mask = PAGE_SIZE - 1;
+ }
+ 
+ static const pgprot_t protection_map[16] = {
+diff --git a/arch/loongarch/mm/mmap.c b/arch/loongarch/mm/mmap.c
+index fbe1a4856fc4..a9630a81b38a 100644
+--- a/arch/loongarch/mm/mmap.c
++++ b/arch/loongarch/mm/mmap.c
+@@ -8,12 +8,11 @@
+ #include <linux/mm.h>
+ #include <linux/mman.h>
+ 
+-unsigned long shm_align_mask = PAGE_SIZE - 1;	/* Sane caches */
+-EXPORT_SYMBOL(shm_align_mask);
++#define SHM_ALIGN_MASK	(SHMLBA - 1)
+ 
+-#define COLOUR_ALIGN(addr, pgoff)				\
+-	((((addr) + shm_align_mask) & ~shm_align_mask) +	\
+-	 (((pgoff) << PAGE_SHIFT) & shm_align_mask))
++#define COLOUR_ALIGN(addr, pgoff)			\
++	((((addr) + SHM_ALIGN_MASK) & ~SHM_ALIGN_MASK)	\
++	 + (((pgoff) << PAGE_SHIFT) & SHM_ALIGN_MASK))
+ 
+ enum mmap_allocation_direction {UP, DOWN};
+ 
+@@ -40,7 +39,7 @@ static unsigned long arch_get_unmapped_area_common(struct file *filp,
+ 		 * cache aliasing constraints.
+ 		 */
+ 		if ((flags & MAP_SHARED) &&
+-		    ((addr - (pgoff << PAGE_SHIFT)) & shm_align_mask))
++		    ((addr - (pgoff << PAGE_SHIFT)) & SHM_ALIGN_MASK))
+ 			return -EINVAL;
+ 		return addr;
+ 	}
+@@ -63,7 +62,7 @@ static unsigned long arch_get_unmapped_area_common(struct file *filp,
+ 	}
+ 
+ 	info.length = len;
+-	info.align_mask = do_color_align ? (PAGE_MASK & shm_align_mask) : 0;
++	info.align_mask = do_color_align ? (PAGE_MASK & SHM_ALIGN_MASK) : 0;
+ 	info.align_offset = pgoff << PAGE_SHIFT;
+ 
+ 	if (dir == DOWN) {
