@@ -5,11 +5,11 @@
 
 pkgname=libcap
 pkgver=2.69
-pkgrel=1
+pkgrel=2
 pkgdesc="POSIX 1003.1e capabilities"
 arch=(loong64 x86_64)
 url="https://sites.google.com/site/fullycapable/"
-license=(GPL2)
+license=('BSD-3-Clause OR GPL-2.0-only')
 depends=(
   gcc-libs
   glibc

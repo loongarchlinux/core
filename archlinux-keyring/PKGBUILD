@@ -2,8 +2,8 @@
 # Maintainer: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
 
 pkgname=archlinux-keyring
-_tag='016d5e3ff24adac873ad833e4fe84c515fdc19bb' # git rev-parse ${pkgver}
-pkgver=20230918
+_tag='b54e00c17496443c9a344b86ea611a3f3685afde' # git rev-parse ${pkgver}
+pkgver=20231113
 pkgrel=1
 pkgdesc='Arch Linux PGP keyring'
 arch=('any')

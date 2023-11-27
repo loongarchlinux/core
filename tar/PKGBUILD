@@ -4,7 +4,7 @@
 
 pkgname=tar
 pkgver=1.35
-pkgrel=1
+pkgrel=2
 pkgdesc='Utility used to store, backup, and transport files'
 arch=('loong64' 'x86_64')
 url='https://www.gnu.org/software/tar/'
@@ -33,7 +33,11 @@ prepare() {
 
 build() {
   cd $pkgname-$pkgver
-  ./configure --prefix=/usr --libexecdir=/usr/lib/tar
+  ./configure \
+    --prefix=/usr \
+    --sbindir=/usr/bin \
+    --libexecdir=/usr/lib/tar \
+    --enable-backup-scripts
   make
 }
 

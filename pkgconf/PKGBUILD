@@ -5,36 +5,51 @@
 # Contributor: Bartlomiej Piotrowski <nospam@bpiotrowski.pl>
 
 pkgname=pkgconf
-pkgver=1.8.1
+pkgver=2.0.3
 pkgrel=1
 pkgdesc="Package compiler and linker metadata toolkit"
 url="https://gitea.treehouse.systems/ariadne/pkgconf"
 license=(custom:ISC)
 arch=(loong64 x86_64)
-depends=(glibc sh)
-makedepends=(git meson)
-provides=(pkg-config pkgconfig libpkgconf.so)
+depends=(
+  glibc
+  sh
+)
+makedepends=(
+  git
+  meson
+)
+provides=(
+  libpkgconf.so
+  pkg-config
+  pkgconfig
+)
 conflicts=(pkg-config)
 replaces=(pkg-config)
-_commit=5436648cd4c890fa1e99be82adc333dad4f50eff  # tags/pkgconf-1.8.1
-source=("git+$url#commit=$_commit"
-        i686-pc-linux-gnu.personality
-        x86_64-pc-linux-gnu.personality)
-sha256sums=('SKIP'
-            '6697c6db7deaae269ea75624a70e80949241f2cf59a537f31ecfcac726d90bc1'
-            'c8297817ba0b57d003878db247ff34b4c47a7594c9f67dcfe8ff8d6567956cd5')
+_commit=a6fb59a0ed86cfe302a2916cf93e9b032b95c8c5  # tags/pkgconf-2.0.3
+source=(
+  "git+$url#commit=$_commit"
+  {x86_64,i686}-pc-linux-gnu.personality
+)
+b2sums=('SKIP'
+        'c04583e19149c1035cb7777a59f0fbc4988b672d8e45105e33def3d0f9054464e33a400a3e7c7e8b99b334e4fe06aaa9d7e34662e806096d4374bd6b12d803db'
+        '94c8fd12b5f33611fd6dbeae03b20e72bcf2937e764766e2633b2fd4c14925860d57eee234016c81b0563a47b112ac9ef4a8b3bb9fa3fc0dd266f355bc156c58')
 
 pkgver() {
-  cd $pkgname
-  git describe --tags | sed 's/^pkgconf-//;s/-/+/g'
+  cd pkgconf
+  git describe --tags | sed 's/^pkgconf-//;s/[^-]*-g/r&/;s/-/+/g'
 }
 
 prepare() {
-  cd $pkgname
+  cd pkgconf
 }
 
 build() {
-  arch-meson $pkgname build -D tests=false
+  local meson_options=(
+    -D tests=disabled  # Tests need kyua
+  )
+
+  arch-meson pkgconf build "${meson_options[@]}"
   meson compile -C build
 }
 
@@ -45,17 +60,16 @@ check() {
 package() {
   meson install -C build --destdir "$pkgdir"
 
-  install -Dt "$pkgdir/usr/share/pkgconfig/personality.d" -m644 \
-    i686-pc-linux-gnu.personality \
-    x86_64-pc-linux-gnu.personality
+  local p
+  for p in {x86_64,i686}-pc-linux-gnu; do
+    install -Dt "$pkgdir/usr/share/pkgconfig/personality.d" -m644 $p.personality
+    ln -s pkgconf "$pkgdir/usr/bin/$p-pkg-config"
+  done
 
-  ln -s pkgconf "$pkgdir/usr/bin/i686-pc-linux-gnu-pkg-config"
-  ln -s pkgconf "$pkgdir/usr/bin/x86_64-pc-linux-gnu-pkg-config"
   ln -s pkgconf "$pkgdir/usr/bin/pkg-config"
-
   ln -s pkgconf.1 "$pkgdir/usr/share/man/man1/pkg-config.1"
 
-  install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 $pkgname/COPYING
+  install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 pkgconf/COPYING
 }
 
-# vim:set sw=2 et:
+# vim:set sw=2 sts=-1 et:
