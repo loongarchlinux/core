@@ -2,7 +2,7 @@
 
 pkgbase=linux
 _ver=6.7.0
-_rdate=20231127
+_rdate=20231226
 pkgver=${_ver}.arch1
 pkgrel=3
 pkgdesc='Linux'
@@ -31,7 +31,6 @@ _srcname=${pkgbase}-${_ver}
 source=(https://github.com/loongarchlinux/linux/releases/download/v${_rdate}/linux-${_ver}-${_rdate}.tar.xz
         config         # the main kernel config file
         config.la64
-        remove_shm_align_mask.diff
         pixart.patch
 )
 validpgpkeys=(
@@ -40,15 +39,13 @@ validpgpkeys=(
   A2FF3A36AAA56654109064AB19802F8B0D70FC30  # Jan Alexander Steffens (heftig)
 )
 # https://www.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc
-sha256sums=('ba2c4767bd17074bee63d90800a004359d0e82c2b7f4d8e4bb37b77d18191ca7'
+sha256sums=('d0e6ce60f0ccd162aabe130c00509590de790e33642a12ed4249aa08ac14f674'
             '253fc57fe5e9f7dd3cf5bd10e07cf7080e04417557026359e21266033b5a5c54'
             '5fd178be3c1d7a231cb2ebce7c1a40fa8081d63780486b365b0e913acdea4f81'
-            'c625401b90b1fad013ac800116bb7b7a320be7ab5fdf39f7f70be5a23de9ad34'
             '3c3fbbb7f8ec7eb28e6cf96ecc5ab1c7279eac5d2738a960efd1b9ec9f618c30')
-b2sums=('077017615498deda46fec87d81115ff560f4372b5ac2afd7fa0bd3f3cfa5440a441b7a34c8c6274584be67b095c45164fa793770ec0abd9e4ff14536a2be2f91'
+b2sums=('15b6b33c6fdac5329d56424afc09a722053f045ca1a1553d583d80296a20a3e545d6ac1fd7950e575816df3e2d1c1033aeba779aa374ee25406f05d284d56815'
         'c0a97ec39545b8a6e535de0fb3b9dd6d086c50326c911251936a5153faf00b4c012c250757761dc4cd3935b7d560c1e2da9fb05b57df84df0d130722eeca41c0'
         '55548f2bf3fef04f503f074a928789e2fd28372db11c669419b57a3858bd152e89a9f0bbf6329a2246765987ed348a15fd9cb01ad7dd1386d72077e5d103cc72'
-        'b1ef46cc74704a995c7252d655817f1b54d67ea6b23705e42df9db5941de6bd269e5958cf1747163b9b43f4c6a1d56797c4ed2117ac5490f99fbc7aa8a45ed66'
         '723294c391c4b1810e3786f2b002b865c3c96f588dca58d003ea4901aa5d02ca61a02e6987543c6ea2a6324526133ad0bbbb6274fe8d406b9f324dfef50e6793')
 
 export KBUILD_BUILD_HOST=archlinux
@@ -71,7 +68,6 @@ prepare() {
     echo "Applying patch $src..."
     patch -Np1 < "../$src"
   done
-  patch -R -p1 -i $srcdir/remove_shm_align_mask.diff
 
   echo "Setting config..."
   if [ $CARCH == loong64 ];then
