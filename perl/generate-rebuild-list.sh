@@ -4,6 +4,9 @@ set -euo pipefail
 
 echo "vim"
 
+# Just in case, check for updates
+sudo pkgfile -u
+
 pkgfile -rd "^/usr/lib/perl5/" | sed 's#^.*/##' | sort -u
 
 ssh build.archlinux.org sogrep -r
