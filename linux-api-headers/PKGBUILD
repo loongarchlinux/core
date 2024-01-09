@@ -7,15 +7,15 @@
 
 pkgname=linux-api-headers
 pkgver=6.7.0
-_rdate=20231226
-pkgrel=1
+_rdate=20240108
+pkgrel=2
 pkgdesc='Kernel headers sanitized for use in userspace'
 arch=(any)
 url='https://www.gnu.org/software/libc'
 license=(GPL2)
 makedepends=(rsync)
 source=(https://github.com/loongarchlinux/linux/releases/download/v${_rdate}/linux-${pkgver}-${_rdate}.tar.xz)
-sha256sums=('d0e6ce60f0ccd162aabe130c00509590de790e33642a12ed4249aa08ac14f674')
+sha256sums=('0a45439827e4beb8c31bffba169b44da525529234e18e8cb323f282379c70282')
 validpgpkeys=('ABAF11C65A2970B130ABE3C479BE3E4300411886'   # Linus Torvalds
               '647F28654894E3BD457199BE38DBBDC86092693E')  # Greg Kroah-Hartman
 
