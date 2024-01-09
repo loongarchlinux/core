@@ -5,7 +5,7 @@
 
 pkgname=mkinitcpio
 pkgver=37
-pkgrel=1
+pkgrel=2
 pkgdesc="Modular initramfs image creation utility"
 arch=('any')
 url='https://gitlab.archlinux.org/archlinux/mkinitcpio/mkinitcpio'
@@ -23,19 +23,23 @@ optdepends=('gzip: Use gzip compression for the initramfs image'
 provides=('initramfs')
 backup=('etc/mkinitcpio.conf')
 source=("https://sources.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz"{,.sig}
-        "mkinitcpio-la64.patch")
+        "mkinitcpio-la64.patch"
+	"mkinitcpio-fix-error.patch")
 install=mkinitcpio.install
 sha512sums=('45548350cd66de6ba2ba5260db3c72d0b6153be36c068ebbd81725252d1dc62fd5dd798acd4a0245c7b58710fa2fea7c3066bd99ecd498dfc154177459af2038'
             'SKIP'
-            '7e3942f38fcdca9358024b355839e0285503d009e00ae13d9f67f8451ac91622f26781857a70e00e21fff44d90e7771ce23764cfecd5976ee3f853d84d85c9f1')
+            '7e3942f38fcdca9358024b355839e0285503d009e00ae13d9f67f8451ac91622f26781857a70e00e21fff44d90e7771ce23764cfecd5976ee3f853d84d85c9f1'
+            '33e903a41168f156318a9b03809717a07d56911837bee8f2718a21b0e08b6f8ff361a13a26ff202006a00dfa90f00f2e0efa6cf83db1038833f7d600d3438772')
 b2sums=('84c5122c3775f136bb768580519cb91a18769184d947cfe0e2c714607fe3e7f3e210cf4b58252fad831be8b211e18d7bef33acede97fa273775437d11f25fe07'
         'SKIP'
-        '8e1e8a4aa2247df7b32374ba5c0474c1da16a06cf66609729133b5eb2b54250ae581384030e61d7dd4e53689d3d0725315d2e5465902c9368d588ab7ca4e79a1')
+        '8e1e8a4aa2247df7b32374ba5c0474c1da16a06cf66609729133b5eb2b54250ae581384030e61d7dd4e53689d3d0725315d2e5465902c9368d588ab7ca4e79a1'
+        'b9ccc1c97cadf88aec03d549d8bdf89536b95a64b05d316481815faca06c94aa867523c3cbfda352c44956c4c5959b42f70c05e71cb51278446f2389566ef62b')
 validpgpkeys=('ECCAC84C1BA08A6CC8E63FBBF22FB1D78A77AEAB'    # Giancarlo Razzolini
               'C100346676634E80C940FB9E9C02FF419FECBE16')   # Morten Linderud
 
 prepare() {
   patch -p1 -d "$pkgname-$pkgver" -i $srcdir/mkinitcpio-la64.patch
+  patch -p1 -d "$pkgname-$pkgver" -i $srcdir/mkinitcpio-fix-error.patch
 }
 
 check() {
