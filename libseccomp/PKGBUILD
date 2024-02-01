@@ -6,7 +6,7 @@
 pkgbase=libseccomp
 pkgname=(libseccomp python-libseccomp)
 pkgver=2.5.5
-pkgrel=1
+pkgrel=2
 pkgdesc='Enhanced seccomp library'
 arch=('loong64' 'x86_64')
 license=('LGPL2.1')
@@ -50,7 +50,7 @@ package_libseccomp() {
 }
 
 package_python-libseccomp() {
-  depends=('python' 'libseccomp.so')
+  depends=('python')
   cd ${pkgbase}-${pkgver}/src/python
   env VERSION_RELEASE=${pkgver} python setup.py install --root="${pkgdir}" --prefix=/usr -O1 --skip-build
 }

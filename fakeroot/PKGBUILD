@@ -3,8 +3,8 @@
 # Contributor: Jochem Kossen <j.kossen@home.nl>
 
 pkgname=fakeroot
-pkgver=1.32.2
-pkgrel=1
+pkgver=1.33
+pkgrel=2
 pkgdesc='Tool for simulating superuser privileges'
 arch=('loong64' 'x86_64')
 license=('GPL')
@@ -14,7 +14,7 @@ depends=('glibc' 'filesystem' 'sed' 'util-linux' 'sh')
 makedepends=('systemd' 'po4a')
 checkdepends=('sharutils')
 source=("https://deb.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.orig.tar.gz")
-sha256sums=('f0f72b504f288eea5b043cd5fe37585bc163f5acaacd386e1976b1055686116d')
+sha256sums=('e157d8e5c64d3a755707791e9be93296c6d249d5c4478bf941b675d49c47757d')
 
 build() {
   cd $pkgname-$pkgver
@@ -39,8 +39,8 @@ package() {
   cd $pkgname-$pkgver
   make DESTDIR="$pkgdir" install
 
-  install -dm0755 "$pkgdir/etc/ld.so.conf.d/"
-  echo '/usr/lib/libfakeroot' > "$pkgdir/etc/ld.so.conf.d/fakeroot.conf"
+  install -dm0755 "$pkgdir/usr/lib/ld.so.conf.d/"
+  echo '/usr/lib/libfakeroot' > "$pkgdir/usr/lib/ld.so.conf.d/fakeroot.conf"
 
   # install README for sysv/tcp usage
   install -Dm0644 README "$pkgdir/usr/share/doc/$pkgname/README"
