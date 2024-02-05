@@ -15,9 +15,9 @@ depends=('glibc')
 checkdepends=('valgrind')
 makedepends=('gperf' 'cython' 'python-setuptools')
 source=(https://github.com/seccomp/${pkgname}/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz{,.asc})
-sha256sums=('248a2c8a4d9b9858aa6baf52712c34afefcf9c9e94b76dce02c1c9aa25fb3375'
+sha256sums=('cddc499995c5a5efae22ba9ad803d43cd64fa1d5be9fbabec9de91b5132c5661'
             'SKIP')
-b2sums=('d770cee1f3e02fbbcd9f25655b360ab38160ad800e2829a67f2b9da62b095a90be99ac851a67344cf95bd6810a6268da4655dc1d37d996e58239c4999eb41998'
+b2sums=('39cb29c159e08ddadec9ea3568f6cffce838c5dfa4cc1dc449a791b56dd3cf85cb6f7d7c92813b433c83f586a7b49d3a0615d6207d174d0d953b1f12eeb587ac'
         'SKIP')
 validpgpkeys=(
   '7100AADFAE6E6E940D2E0AD655E45A5AE8CA7C8A' # Paul Moore <paul@paul-moore.com>
