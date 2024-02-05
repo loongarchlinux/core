@@ -27,9 +27,13 @@ source=("https://sources.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz"{,
 	"mkinitcpio-fix-error.patch")
 install=mkinitcpio.install
 sha512sums=('edee8dfbc452a0fc6ca9e8c7321beffa4463e504641b99a8d08ab9df665b697a0192f7760994b9917f34ba83d15543dedd3c4690364663b4534724a06a262db7'
-            'SKIP')
+            'SKIP'
+            '7e3942f38fcdca9358024b355839e0285503d009e00ae13d9f67f8451ac91622f26781857a70e00e21fff44d90e7771ce23764cfecd5976ee3f853d84d85c9f1'
+            '33e903a41168f156318a9b03809717a07d56911837bee8f2718a21b0e08b6f8ff361a13a26ff202006a00dfa90f00f2e0efa6cf83db1038833f7d600d3438772')
 b2sums=('f903348aa23983b4de1e095420acc358a09a6fd0c8ed9a9a7b9bd7df0bfde0bb17869996759f8f3c73ada85dd3ee3f83958401e1f9fa15aaacc06b048fe13660'
-        'SKIP')
+        'SKIP'
+        '8e1e8a4aa2247df7b32374ba5c0474c1da16a06cf66609729133b5eb2b54250ae581384030e61d7dd4e53689d3d0725315d2e5465902c9368d588ab7ca4e79a1'
+        'b9ccc1c97cadf88aec03d549d8bdf89536b95a64b05d316481815faca06c94aa867523c3cbfda352c44956c4c5959b42f70c05e71cb51278446f2389566ef62b')
 validpgpkeys=('ECCAC84C1BA08A6CC8E63FBBF22FB1D78A77AEAB'    # Giancarlo Razzolini
               'C100346676634E80C940FB9E9C02FF419FECBE16')   # Morten Linderud
 
