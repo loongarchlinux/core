@@ -4,7 +4,7 @@ pkgbase=linux
 _ver=6.8.0
 _rdate=20240311
 pkgver=${_ver}.arch1
-pkgrel=1
+pkgrel=2
 pkgdesc='Linux'
 url='https://github.com/archlinux/linux'
 arch=(loong64 x86_64)
@@ -27,7 +27,7 @@ makedepends=(
   python-yaml
   texlive-latexextra
 )
-options=('!strip')
+options=('!strip' 'debug')
 _srcname=${pkgbase}-${_ver}
 source=(https://github.com/loongarchlinux/linux/releases/download/v${_rdate}/linux-${_ver}-${_rdate}.tar.xz
         config         # the main kernel config file
