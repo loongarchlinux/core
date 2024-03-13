@@ -8,10 +8,10 @@
 # NOTE: libtool requires rebuilt with each new gcc version
 
 pkgname=(gcc gcc-libs gcc-fortran gcc-m2 gcc-objc lto-dump libgccjit)
-pkgver=13.2.1
+pkgver=14.0.1
 _majorver=${pkgver%%.*}
-_commit=78f63dd9fa9ff299499539d46bbefab0897dcf55
-pkgrel=4
+_commit=4b7d4d8a4af7e37cf510eaa5c705f61fefd31f2c
+pkgrel=1
 pkgdesc='The GNU Compiler Collection'
 arch=(loong64 x86_64)
 license=(GPL-3.0-with-GCC-exception GFDL-1.3-or-later)
@@ -40,7 +40,6 @@ source=(git+https://sourceware.org/git/gcc.git#commit=${_commit}
         gcc-ada-repro.patch
         https://github.com/llvm/llvm-project/commit/fb77ca05ffb4f8e666878f2f6718a9fb4d686839.patch
         gcc-lib64-lib.patch
-        gcc-loong64.patch # backport from master to add lsx/lasx support
 )
 validpgpkeys=(F3691687D867B81B51CE07D9BBE43771487328A9  # bpiotrowski@archlinux.org
               86CFFCA918CF3AF47147588051E8B148A9999C34  # evangelos@foutrelis.com
@@ -50,9 +49,8 @@ sha256sums=('SKIP'
             'de48736f6e4153f03d0a5d38ceb6c6fdb7f054e8f47ddd6af0a3dbf14f27b931'
             '2513c6d9984dd0a2058557bf00f06d8d5181734e41dcfe07be7ed86f2959622a'
             '1773f5137f08ac1f48f0f7297e324d5d868d55201c03068670ee4602babdef2f'
-            '0fab2541ab06d281a0d9d6cfc256499ff0a8638228094f6797580b83704e6e7c'
-            'a5904483163c3086f24088a2b422988bb3bc55f493d946e6a54f95ac48d83fb9'
-            '029cdd3f8933c2ae518b0024b78ef6632da539f9053cb8c33d1b873848ff2a9b')
+            '5ede1f5fec5b664428412a0849b28895be1c8d8982d3c0d246a4e95fd4730d65'
+            'd09cbb949364442a78e886b8f55593f07ad17f1e5369ecc83d6c6826015ba22e')
 
 prepare() {
   [[ ! -d gcc ]] && ln -s gcc-${pkgver/+/-} gcc
@@ -67,10 +65,9 @@ prepare() {
   # Reproducible gcc-ada
   patch -Np0 < "$srcdir/gcc-ada-repro.patch"
   patch -p1 -i $srcdir/gcc-lib64-lib.patch
-  patch -p1 -i $srcdir/gcc-loong64.patch
 
   #ASan: move allocator base to avoid conflict with high-entropy ASLR for x86-64 Linux'
-  patch -Np3 < "$srcdir/fb77ca05ffb4f8e666878f2f6718a9fb4d686839.patch" -d libsanitizer/
+#  patch -Np3 < "$srcdir/fb77ca05ffb4f8e666878f2f6718a9fb4d686839.patch" -d libsanitizer/
 
   mkdir -p "$srcdir/gcc-build"
   mkdir -p "$srcdir/libgccjit-build"
@@ -261,7 +258,7 @@ package_gcc() {
 #  make -C $CHOST/32/libsanitizer/asan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
 
   make -C gcc DESTDIR="$pkgdir" install-man install-info
-  rm -f "$pkgdir"/usr/share/man/man1/{gccgo,gfortran}.1
+  rm -f "$pkgdir"/usr/share/man/man1/{gccgo,gfortran,gm2}.1
   rm -f "$pkgdir"/usr/share/info/{gccgo,gfortran}.info
 
   make -C libcpp DESTDIR="$pkgdir" install
@@ -465,7 +462,6 @@ package_gcc-m2() {
 
   install -Dm755 gcc/cc1gm2 "$pkgdir/$_libdir"/cc1gm2
   install -Dm755 gcc/gm2 "$pkgdir"/usr/bin/gm2
-  install -Dm644 gcc/plugin/m2rte.so "$pkgdir/$_libdir"/plugin/m2rte.so
 
   make -C $CHOST/libgm2 DESTDIR="$pkgdir" install
 
