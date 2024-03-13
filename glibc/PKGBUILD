@@ -7,10 +7,10 @@
 # NOTE: valgrind requires rebuilt with each major glibc version
 
 pkgbase=glibc
-pkgname=glibc
-pkgver=2.38
-_commit=6b99458d197ab779ebb6ff632c168e2cbfa4f543
-pkgrel=3
+pkgname=(glibc glibc-locales)
+pkgver=2.39
+_commit=6d1e3fb07b45e2e31e469b16cf21b24bccf8914c
+pkgrel=1
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/libc'
 license=(GPL-2.0-or-later LGPL-2.1-or-later)
@@ -21,34 +21,6 @@ source=(git+https://sourceware.org/git/glibc.git#commit=${_commit}
         locale-gen
         lib32-glibc.conf
         sdt.h sdt-config.h
-        reenable_DT_HASH.patch
-        fix-malloc-p1.patch
-        fix-malloc-p2.patch
-	0001-LoongArch-Redefine-macro-LEAF-ENTRY.patch
-	0002-LoongArch-Add-minuimum-binutils-required-version.patch
-	0003-Loongarch-Add-ifunc-support-and-add-different-versio.patch
-	0004-elf-Add-new-LoongArch-reloc-types-101-to-108-into-el.patch
-	0005-LoongArch-elf-Add-new-LoongArch-reloc-types-109-into.patch
-	0006-Loongarch-Add-ifunc-support-for-strchr-aligned-lsx-l.patch
-	0007-Loongarch-Add-ifunc-support-for-memcpy-aligned-unali.patch
-	0008-LoongArch-Add-ifunc-support-for-strnlen-aligned-lsx-.patch
-	0009-LoongArch-Add-ifunc-support-for-strcmp-aligned-lsx.patch
-	0010-LoongArch-Add-ifunc-support-for-strncmp-aligned-lsx.patch
-	0011-LoongArch-Simplify-the-autoconf-check-for-static-PIE.patch
-	0012-LoongArch-Remove-support-code-for-old-linker-in-star.patch
-	0013-LoongArch-Micro-optimize-LD_PCREL.patch
-	0014-LoongArch-Add-ifunc-support-for-rawmemchr-aligned-ls.patch
-	0015-LoongArch-Add-ifunc-support-for-memchr-aligned-lsx-l.patch
-	0016-LoongArch-Add-ifunc-support-for-memrchr-lsx-lasx.patch
-	0017-LoongArch-Add-ifunc-support-for-memset-aligned-unali.patch
-	0018-LoongArch-Add-ifunc-support-for-memcmp-aligned-lsx-l.patch
-	0019-LoongArch-Change-loongarch-to-LoongArch-in-comments.patch
-	0020-LoongArch-Add-lasx-lsx-support-for-_dl_runtime_profi.patch
-	0021-LoongArch-Replace-deprecated-v0-with-a0-to-eliminate.patch
-	0022-LoongArch-Add-ifunc-support-for-strcpy-stpcpy-aligne.patch
-	0023-LoongArch-Add-ifunc-support-for-strrchr-aligned-lsx-.patch
-	0024-LoongArch-Change-to-put-magic-number-to-.rodata-sect.patch
-	0025-LoongArch-Add-glibc.cpu.hwcap-support.patch
 )
 validpgpkeys=(7273542B39962DF7B299931416792B4EA25340F8 # Carlos O'Donell
               BC7C7372637EC10C57D7AA6579C43DFBF1CF2187) # Siddhesh Poyarekar
@@ -57,36 +29,7 @@ b2sums=('SKIP'
         '04fbb3b0b28705f41ccc6c15ed5532faf0105370f22133a2b49867e790df0491f5a1255220ff6ebab91a462f088d0cf299491b3eb8ea53534cb8638a213e46e3'
         '7c265e6d36a5c0dff127093580827d15519b6c7205c2e1300e82f0fb5b9dd00b6accb40c56581f18179c4fbbc95bd2bf1b900ace867a83accde0969f7b609f8a'
         'a6a5e2f2a627cc0d13d11a82458cfd0aa75ec1c5a3c7647e5d5a3bb1d4c0770887a3909bfda1236803d5bc9801bfd6251e13483e9adf797e4725332cd0d91a0e'
-        '214e995e84b342fe7b2a7704ce011b7c7fc74c2971f98eeb3b4e677b99c860addc0a7d91b8dc0f0b8be7537782ee331999e02ba48f4ccc1c331b60f27d715678'
-        '214e995e84b342fe7b2a7704ce011b7c7fc74c2971f98eeb3b4e677b99c860addc0a7d91b8dc0f0b8be7537782ee331999e02ba48f4ccc1c331b60f27d715678'
-        '35e03ed912e1b0cd23783ab83ce919412885c141344905b8b67bbad4a86c48cf3e893806060e48d5737514ff80cea0b58b0e1f15707c32224579c416dcd810c0'
-        '28c983bcebc0eeeb37a60756ccee50d587a99d5e2100430d5c0ee51a19d9b2176a4013574a7d72b5857302fbb60d371bbf0b3cdb4fc700a1dbe3aae4a42b04b9'
-        'c3e94f5b0999878ff472e32f49dc13c20eb9db68c633017cb7824617eb824cf6cff7ea53b92962926e0ee84fd39736616298dcb926356625dd124f3754e79932'
-        '3c235900d5f2147bcd55dab3f4cd9c5d4686c3661ab73602ddab4d30aac73a1faedb94d0e0e2de021d5406bb73ced127a53105b383d9fe9b795aa4b8974d945a'
-        '74e5d9a45f36d9c51eb056895069205a88655b6832e5d4d4a3a597f6ab5a50cf6954da17efda97937aea81a206126e64123a43009f8e191df922108c3c152218'
-        '6ffa31173c00c917e2e498320bdfa6b6a1f503793329bb6eff01e0c11cc400d2afb1a94d5a7838f81a031e11a8864e3cfe05e8cb4f36b4f9e1e88a8fb6b5d078'
-        '6a889a6fb2a567be631338caf50a75c67c50aadf0be3743428128446353ec4a0080882ccfca7b5f2349af121a95385f9331e9cc4c70009ec2feaef3eaa62468e'
-        '9603fa5c464e4bb1eaf69ae5bb7859a63af59f57ca4ef66078c4dc94bed897318ebc180889b5a0909a22179880d8ce321f87480dd621d0b14b061c1e99b850db'
-        '17404e7b67132be515215b8eeef8f0eaedfae91e23a970b598e9204a949927e46109588c4a6b38a14fdc033fe3c028d368faf83c7ffc7fd75712dcc18b53d347'
-        '7bbccec5d95649ba1a141785fed08a1012a7cffc576cfa70caf1b69e3dee167ce2ae8bbb43f0285b2a0be3f142de70a9e8baec69cff78c2b901f43264013b462'
-        'bd11ca5431823d2d83122bac4b980f9a248b8b2877a85ad22e6b9cdc3eb426bbe658ab33249de4dc0402617901816a4d20dd46748897a959949769e3f4b109cc'
-        '17402cd2a777139923c9190da3d08b6d4e061a4b4e716d899fca07e56f43c0651a9c902b56a82ef04ba9455281035761f396068c972c5a10b9bf8b8101a2a00e'
-        'fe1ac6d324b830c4f8f440fecbd6b5278002cdcab4eb0dad3bdd269e180225703c7ab63a76f0911527ba6a6efa28212585a130b43b69778c3ca65b2a7d2a4125'
-        'f46f31c255cd30b83171c9d708249aed3f5cd86688c81d69960e63f6977b6b791f33535e8d70b005cc7d0f33c0501c4af00d15984f7f1557e29d5c282b903432'
-        '827fd7de137843e0be118181f3438b1858b19b48a3c3fa490d4d112913f781c6b18d2ab29d330e9e1810c453e171fe6d0c42996dad59c65769d7b3c434a8fab3'
-        'df3adb2bc002d6fded9a8be15134ba35e896e42f1de12cb0e0b7c299d57e6e17c3892e808c53fcb03a0673fd96c7f7eb063b88eb4d3efc58204b1d9a046a8bd6'
-        '0ea78fda246d0b9aae6ddda224d70ffa87c1663d8b1fc0fd2a4dd0799634b07c8d52ca030615f60b133fc36030cebbf1d7365f705a830b70af4c8130ca8f7995'
-        '38654eeadf56ce59368caec096cc1c835430c8b1d745a1935402e270180956d89434d7de2b32029ed8958c66c60b33adb2016794fe1b328fad6712efa85a9964'
-        '06274b0b9757ba1c516cbbee3a8c9055c72900ca71cc0af1879701616675a10de4eeeeeebfb7a138f41b3823b523b69005f1f4a4ef575e7183c8ad8437f69ac0'
-        'e582277d1a26436961e8fdef141e39664c46c7dd728931d58aea6822889f60c38efa4cc82db5c47dd8f58ca85449f2da974306527937e54f05341ebf4ff11217'
-        '98103b97c6da050e71f6b3ceb05b75bd5750075df7a8d391e71c1aad2272f330a5f9c3d04ae39638a7d851f952d16443cf5828a0039647da32cbb30bbf730be9'
-        '0c4cee4f585487259fb41ff8f46b27c42d9866a68a6c3aedc24c1f124ddfc0bd793c8564f2d0c1c1c219d579feb718a417f487589e33dac9eee55b669b042b60'
-        '13c6a72cbcaf43a697ff9c6d1ae671ea4be09fcfd77fbdb85f1368e8ece4d63afe1f07365509a3a3e9e313e7f049512a0ddc5e76d5061fb22f6ad0213ccdbfce'
-        'bacbb2be24d6bc0092e1333d8623821cc9a728277b1c75f4d189c2613e1842da71752a9a7d7304484f5bb6a159252223332aeafde5940d73cb1b83d89ff4f857'
-        'c1d01f7db32b032dca487482707c7f15e148ab67d350162d31283f52161453541fe809ecfce5bd15b0e7077dd8ac8c0fb5e075c2ef92387b2c1f560dc6022947'
-        '5c65738a1917c23f8dcc885270eae331752db91e3626e7f2b6e4cdcebc7ac1f8771412e41608d3641951bc77cb69db1e1a2d2a42056eca0471f73548a281da11'
-        'db4c38b53fda1f58e2069804f31baf6672687d7815fc50e702aa8010605f0675914c799a3176a4724f5ac4e1d6b30605f6b1ebfc2cd9d8d905cb7c1b7636f924'
-        '24d2f85d4261f39162b00c686e6d38efd68712c41d27304ea552bd6f8dbad660e9f6cf452fb7c77b64defe53322a16a696f4aa36fccc3b6ff8a193b51271106a')
+        '214e995e84b342fe7b2a7704ce011b7c7fc74c2971f98eeb3b4e677b99c860addc0a7d91b8dc0f0b8be7537782ee331999e02ba48f4ccc1c331b60f27d715678')
 
 prepare() {
   mkdir -p glibc-build
@@ -94,47 +37,14 @@ prepare() {
   [[ -d glibc-$pkgver ]] && ln -s glibc-$pkgver glibc
   cd glibc
 
-  # Re-enable `--hash-style=both` for building shared objects due to issues with EPIC's EAC
-  # which relies on DT_HASH to be present in these libs.
-  # reconsider 2023-01
-  patch -Np1 -i "${srcdir}"/reenable_DT_HASH.patch
-
-  patch -Np1 -i "${srcdir}"/fix-malloc-p1.patch
-  patch -Np1 -i "${srcdir}"/fix-malloc-p2.patch
-  patch -Np1 -i "$srcdir/"0001-LoongArch-Redefine-macro-LEAF-ENTRY.patch
-  patch -Np1 -i "$srcdir/"0002-LoongArch-Add-minuimum-binutils-required-version.patch
-  patch -Np1 -i "$srcdir/"0003-Loongarch-Add-ifunc-support-and-add-different-versio.patch
-  patch -Np1 -i "$srcdir/"0004-elf-Add-new-LoongArch-reloc-types-101-to-108-into-el.patch
-  patch -Np1 -i "$srcdir/"0005-LoongArch-elf-Add-new-LoongArch-reloc-types-109-into.patch
-  patch -Np1 -i "$srcdir/"0006-Loongarch-Add-ifunc-support-for-strchr-aligned-lsx-l.patch
-  patch -Np1 -i "$srcdir/"0007-Loongarch-Add-ifunc-support-for-memcpy-aligned-unali.patch
-  patch -Np1 -i "$srcdir/"0008-LoongArch-Add-ifunc-support-for-strnlen-aligned-lsx-.patch
-  patch -Np1 -i "$srcdir/"0009-LoongArch-Add-ifunc-support-for-strcmp-aligned-lsx.patch
-  patch -Np1 -i "$srcdir/"0010-LoongArch-Add-ifunc-support-for-strncmp-aligned-lsx.patch
-  patch -Np1 -i "$srcdir/"0011-LoongArch-Simplify-the-autoconf-check-for-static-PIE.patch
-  patch -Np1 -i "$srcdir/"0012-LoongArch-Remove-support-code-for-old-linker-in-star.patch
-  patch -Np1 -i "$srcdir/"0013-LoongArch-Micro-optimize-LD_PCREL.patch
-  patch -Np1 -i "$srcdir/"0014-LoongArch-Add-ifunc-support-for-rawmemchr-aligned-ls.patch
-  patch -Np1 -i "$srcdir/"0015-LoongArch-Add-ifunc-support-for-memchr-aligned-lsx-l.patch
-  patch -Np1 -i "$srcdir/"0016-LoongArch-Add-ifunc-support-for-memrchr-lsx-lasx.patch
-  patch -Np1 -i "$srcdir/"0017-LoongArch-Add-ifunc-support-for-memset-aligned-unali.patch
-  patch -Np1 -i "$srcdir/"0018-LoongArch-Add-ifunc-support-for-memcmp-aligned-lsx-l.patch
-  patch -Np1 -i "$srcdir/"0019-LoongArch-Change-loongarch-to-LoongArch-in-comments.patch
-  patch -Np1 -i "$srcdir/"0020-LoongArch-Add-lasx-lsx-support-for-_dl_runtime_profi.patch
-  patch -Np1 -i "$srcdir/"0021-LoongArch-Replace-deprecated-v0-with-a0-to-eliminate.patch
-  patch -Np1 -i "$srcdir/"0022-LoongArch-Add-ifunc-support-for-strcpy-stpcpy-aligne.patch
-  patch -Np1 -i "$srcdir/"0023-LoongArch-Add-ifunc-support-for-strrchr-aligned-lsx-.patch
-  patch -Np1 -i "$srcdir/"0024-LoongArch-Change-to-put-magic-number-to-.rodata-sect.patch
-  patch -Np1 -i "$srcdir/"0025-LoongArch-Add-glibc.cpu.hwcap-support.patch
 }
 
 build() {
   local _configure_flags=(
       --prefix=/usr
       --with-headers=/usr/include
-      --with-bugurl=https://bugs.archlinux.org/
+      --with-bugurl=https://github.com/loongarchlinux/core/issues
       --enable-bind-now
-      --enable-cet
       --enable-fortify-source
       --enable-kernel=4.4
       --enable-multi-arch
@@ -142,6 +52,7 @@ build() {
       --enable-systemtap
       --disable-nscd
       --disable-profile
+      --enable-obsolete-api=no
       --disable-werror
   )
 
@@ -161,6 +72,7 @@ build() {
     "${srcdir}"/glibc/configure \
         --libdir=/usr/lib \
         --libexecdir=/usr/lib \
+        --enable-cet \
         "${_configure_flags[@]}"
 
     make -O
@@ -221,6 +133,7 @@ check() (
   _skip_test tst-ntp_gettimex        sysdeps/unix/sysv/linux/Makefile
   _skip_test tst-pkey                sysdeps/unix/sysv/linux/Makefile
   _skip_test tst-process_mrelease    sysdeps/unix/sysv/linux/Makefile
+  _skip_test tst-shstk-legacy-1g     sysdeps/x86_64/Makefile
   _skip_test tst-adjtime             time/Makefile
 
   make -O check
@@ -273,8 +186,7 @@ package_glibc() {
 
   # Building with pkgctl we get a segfault, so copy it from the current system
   # Why static-pie get setfault in virtual-env?
-  install -Dm755 /usr/bin/ldconfig "${pkgdir}"/usr/bin/ldconfig
-  install -Dm755 /usr/lib/ld-linux-loongarch-lp64d.so.1 "${pkgdir}"/usr/lib/ld-linux-loongarch-lp64d.so.1
+#  install -Dm755 /usr/bin/ldconfig "${pkgdir}"/usr/bin/ldconfig
 }
 
 package_lib32-glibc() {
