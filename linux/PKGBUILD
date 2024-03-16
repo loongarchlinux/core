@@ -2,9 +2,9 @@
 
 pkgbase=linux
 _ver=6.8.0
-_rdate=20240311
+_rdate=20240314
 pkgver=${_ver}.arch1
-pkgrel=2
+pkgrel=3
 pkgdesc='Linux'
 url='https://github.com/archlinux/linux'
 arch=(loong64 x86_64)
@@ -27,7 +27,7 @@ makedepends=(
   python-yaml
   texlive-latexextra
 )
-options=('!strip' 'debug')
+options=('!strip')
 _srcname=${pkgbase}-${_ver}
 source=(https://github.com/loongarchlinux/linux/releases/download/v${_rdate}/linux-${_ver}-${_rdate}.tar.xz
         config         # the main kernel config file
@@ -39,10 +39,10 @@ validpgpkeys=(
   83BC8889351B5DEBBB68416EB8AC08600F108CDF  # Jan Alexander Steffens (heftig)
 )
 # https://www.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc
-sha256sums=('71da1341c8f8b2b1f7306770791d199702a7f5806a3339bddd338795bda6ca36'
+sha256sums=('555097656aa8b72522a23092d36a85ea302ba99b85fb10e240005f992798fb44'
             'f8fe2553a83e72393821192f17751ec0d91bc3bfc47c7efd01fdb3c2acc84839'
             '206cb8d817d26ad49b97b25a1fea97d9b5296e724bbb47fb9009767b35eb0ffe')
-b2sums=('b2905d119ba425591b34e54470a7e875a38014e8c71810ac374324fc7fab78a38604b564c2fb211a6507c300dc01f2245874327c61b6afbd29f8417cec36fd16'
+b2sums=('6a31e56f70f4a4591a0b373522477eea2d70043561a9d0b2af996a9ce3ce398c9efec09a259d0da503e95394ce009382641afb4850fb099d8feb9cf213373227'
         'f1605735b5c8735326e881fe4ca66b78441a85b1e09a4633bce8ce62cb27354cb3bce1ee0fd126fe476fbdbf0d35eed042a757159f1c1b068b43c7836bc50209'
         '069428454cd89f2c6bfa5c656d9acec7b8ba55c3de3ffa4eadc2148edc8967d17210d391f3f37516323285f203ea5d8c6679c0a11a95ff2f74348a2f6dd45c9b')
 
