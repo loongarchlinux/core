@@ -10,8 +10,10 @@
 pkgname=(gcc gcc-libs gcc-fortran gcc-m2 gcc-objc lto-dump libgccjit)
 pkgver=14.0.1
 _majorver=${pkgver%%.*}
-_commit=4b7d4d8a4af7e37cf510eaa5c705f61fefd31f2c
-pkgrel=1
+#_commit=4b7d4d8a4af7e37cf510eaa5c705f61fefd31f2c
+#_commit=f6d9426b5bb3592fc33ea91420d13e4a1a64f8ab
+_commit=53fb2cf75965e4dbcf145a12d8ae41f4667a8498
+pkgrel=2
 pkgdesc='The GNU Compiler Collection'
 arch=(loong64 x86_64)
 license=(GPL-3.0-with-GCC-exception GFDL-1.3-or-later)
@@ -164,8 +166,8 @@ package_gcc-libs() {
   pkgdesc='Runtime libraries shipped by GCC'
   depends=('glibc>=2.27')
   options=(!emptydirs !strip)
-  provides=($pkgname-multilib libgfortran.so
-            libubsan.so libasan.so liblsan.so)
+  provides=($pkgname-multilib libgfortran.so libgphobos.so
+            libubsan.so libasan.so libtsan.so liblsan.so)
   replaces=($pkgname-multilib libgphobos)
 
   cd gcc-build
@@ -177,7 +179,7 @@ package_gcc-libs() {
              libgomp \
              libitm \
              libquadmath \
-             libsanitizer/{a,l,ub}san \
+             libsanitizer/{a,l,ub,t}san \
              libstdc++-v3/src \
              libvtv; do
     make -C $CHOST/$lib DESTDIR="$pkgdir" install-toolexeclibLTLIBRARIES
@@ -250,7 +252,7 @@ package_gcc() {
   make -C $CHOST/libquadmath DESTDIR="$pkgdir" install-nodist_libsubincludeHEADERS
   make -C $CHOST/libsanitizer DESTDIR="$pkgdir" install-nodist_{saninclude,toolexeclib}HEADERS
   make -C $CHOST/libsanitizer/asan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
-#  make -C $CHOST/libsanitizer/tsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
+  make -C $CHOST/libsanitizer/tsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
   make -C $CHOST/libsanitizer/lsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
 #  make -C $CHOST/32/libgomp DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
 #  make -C $CHOST/32/libitm DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
