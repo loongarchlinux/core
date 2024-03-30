@@ -2,9 +2,9 @@
 
 pkgbase=linux
 _ver=6.8.0
-_rdate=20240314
+_rdate=20240326
 pkgver=${_ver}.arch1
-pkgrel=3
+pkgrel=4
 pkgdesc='Linux'
 url='https://github.com/archlinux/linux'
 arch=(loong64 x86_64)
@@ -39,10 +39,10 @@ validpgpkeys=(
   83BC8889351B5DEBBB68416EB8AC08600F108CDF  # Jan Alexander Steffens (heftig)
 )
 # https://www.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc
-sha256sums=('555097656aa8b72522a23092d36a85ea302ba99b85fb10e240005f992798fb44'
+sha256sums=('e7b8213f2138e17cb469134dd802ecafe86613d7b84b22d6b6d6896313ef18b4'
             'f8fe2553a83e72393821192f17751ec0d91bc3bfc47c7efd01fdb3c2acc84839'
             '206cb8d817d26ad49b97b25a1fea97d9b5296e724bbb47fb9009767b35eb0ffe')
-b2sums=('6a31e56f70f4a4591a0b373522477eea2d70043561a9d0b2af996a9ce3ce398c9efec09a259d0da503e95394ce009382641afb4850fb099d8feb9cf213373227'
+b2sums=('7ccca66a90758a6338e530bc8b56ffc2fa726b0a69eb909188f5bf3e4621cabe12e6be14987dd15897bf367ec61d3e8029ec19817e24d21f5ef132fe98e6971f'
         'f1605735b5c8735326e881fe4ca66b78441a85b1e09a4633bce8ce62cb27354cb3bce1ee0fd126fe476fbdbf0d35eed042a757159f1c1b068b43c7836bc50209'
         '069428454cd89f2c6bfa5c656d9acec7b8ba55c3de3ffa4eadc2148edc8967d17210d391f3f37516323285f203ea5d8c6679c0a11a95ff2f74348a2f6dd45c9b')
 
