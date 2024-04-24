@@ -10,10 +10,8 @@
 pkgname=(gcc gcc-libs gcc-fortran gcc-m2 gcc-objc lto-dump libgccjit)
 pkgver=14.0.1
 _majorver=${pkgver%%.*}
-#_commit=4b7d4d8a4af7e37cf510eaa5c705f61fefd31f2c
-#_commit=f6d9426b5bb3592fc33ea91420d13e4a1a64f8ab
-_commit=53fb2cf75965e4dbcf145a12d8ae41f4667a8498
-pkgrel=2
+_commit=f17d31e709af9b2d488adecd6cd040dfc1f23b04
+pkgrel=3
 pkgdesc='The GNU Compiler Collection'
 arch=(loong64 x86_64)
 license=(GPL-3.0-with-GCC-exception GFDL-1.3-or-later)
