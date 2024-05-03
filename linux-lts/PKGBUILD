@@ -1,12 +1,11 @@
 # Maintainer: Andreas Radke <andyrtr@archlinux.org>
 
 pkgbase=linux-lts
-pkgver=6.6.14
-pkgrel=2
+pkgver=6.6.29
+pkgrel=1
 pkgdesc='LTS Linux'
 url='https://www.kernel.org'
 arch=(loong64 x86_64)
-license=(GPL2)
 makedepends=(
   bc
   cpio
@@ -32,6 +31,8 @@ source=(
   0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch
   0002-skip-simpledrm-if-nvidia-drm.modeset=1-is.patch
   0003-Default-to-maximum-amount-of-ASLR-bits.patch
+  0005-fix-doc-build.patch
+  0006-docutils.patch
   config  # the main kernel config file
 )
 validpgpkeys=(
@@ -39,18 +40,22 @@ validpgpkeys=(
   647F28654894E3BD457199BE38DBBDC86092693E  # Greg Kroah-Hartman
 )
 # https://www.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc
-sha256sums=('fbe96b2db3f962cd2a96a849d554300e7a4555995160082d4f323c2a1dfa1584'
+sha256sums=('7f26f74c08082c86b1daf866e4d49c5d8276cc1906a89d0e367e457ec167cbd0'
             'SKIP'
             '21195509fded29d0256abfce947b5a8ce336d0d3e192f3f8ea90bde9dd95a889'
             '2f23be91455e529d16aa2bbf5f2c7fe3d10812749828fc752240c21b2b845849'
             '6400a06e6eb3a24b650bc3b1bba9626622f132697987f718e7ed6a5b8c0317bc'
-            '330bed8090bbb715d5be975e68c7feeb5cd0afb17c9d9eb5780374d9c73731e8')
-b2sums=('d4c804f804562db0439e75d0a9605e0da55f80103d11087ced20486cc0813e4840ec928dc55e33ae654509e593236d6a62fc1a0d4b911a1d943b5e13b525267e'
+            '17d8a31e96dfbf5225b12efc35dc757cc129d4d00741b9781b9cd24b1d57f2ab'
+            '9cb73cacbb3633f207d0c30e738cae9965adcd0b0eb5ecd60563fed1394c0f38'
+            '4b5e948449376e73cc87410e439db12c9858f674b74de27eb208b1c18baa51ff')
+b2sums=('9f1d24bb15d4db821f744e270f6eb24db38944afaa7ebeaba000f13e9ec7d560497608ec6e8daaf234344a510bcf1282e95dfc904c2940db4b0970479ca7deff'
         'SKIP'
         '02a10396c92ab93124139fc3e37b1d4d8654227556d0d11486390da35dfc401ff5784ad86d0d2aa7eacac12bc451aa2ff138749748c7e24deadd040d5404734c'
         '5dc21a7a6f0b840e6a671dcf09a865e42f0e2c000d5e45d3f3202c02946a8ab2207858d0b2ef1004648b8c2963efb428298b263c8494be806dfc9b6af66d5413'
         'ba6ebe349b3757411364a9ba2deaa30a8d71a247d518c159385977c2b4782771bda4edfc96bd954808617c9ba984d832471b63c11f5bd6003369bfe4051df31f'
-        '31598ecb26b12a1b4424a67f350b4beb189e571b8599f4b08d174fa9635e670de33380abc3480357a42142f8d2b21f2239118deff45f7c6f96c14512c73cb502')
+        '55a20d84c052c9de3e36514a36689238f970f7956e679a425efbff6ef668fbc56ea096ff2b000f3629ea8ec32cdbcbafc44acd27e4a9dffaa885237811ddc558'
+        '0bb42a22c110f06a45e59a9adc194184a51ff97e5584d6ffabca0aa37e1e65ccaf44f43dc744eaa3861d6f6b00e299d4662bcf0c0d94478af9352b4c4f6b0ffd'
+        'a5db4f15201c7402e19293878dcccbb581c369f85abe1107f90a6ebc0e2fa1a8e543a35ac445d7854697820c5f1c63aaa4b648e8c7731859442cf06575143e21')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -84,12 +89,59 @@ prepare() {
 
 build() {
   cd $_srcname
+
+  make htmldocs &
+  local pid_docs=$!
   make all
-  make htmldocs
+  wait "${pid_docs}"
 }
 
 _package() {
   pkgdesc="The $pkgdesc kernel and modules"
+  license=(
+    'Apache-2.0 OR MIT'
+
+    'BSD-2-Clause OR GPL-2.0-or-later'
+
+    BSD-3-Clause
+    'BSD-3-Clause OR GPL-2.0-only'
+    'BSD-3-Clause OR GPL-2.0-or-later'
+    BSD-3-Clause-Clear
+
+    GPL-1.0-or-later
+    'GPL-1.0-or-later OR BSD-3-Clause'
+
+    GPL-2.0-only
+    'GPL-2.0-only OR Apache-2.0'
+    'GPL-2.0-only OR BSD-2-Clause'
+    'GPL-2.0-only OR BSD-3-Clause'
+    'GPL-2.0-only OR CDDL-1.0'
+    'GPL-2.0-only OR Linux-OpenIB'
+    'GPL-2.0-only OR MIT'
+    'GPL-2.0-only OR MPL-1.1'
+    'GPL-2.0-only OR X11'
+    'GPL-2.0-only WITH Linux-syscall-note'
+
+    GPL-2.0-or-later
+    'GPL-2.0-or-later OR BSD-2-Clause'
+    'GPL-2.0-or-later OR BSD-3-Clause'
+    'GPL-2.0-or-later OR MIT'
+    'GPL-2.0-or-later OR X11'
+    'GPL-2.0-or-later WITH GCC-exception-2.0'
+
+    ISC
+
+    LGPL-2.0-or-later
+    'LGPL-2.1-only'
+    'LGPL-2.1-only OR BSD-2-Clause'
+
+    LGPL-2.1-or-later
+
+    MIT
+    MPL-1.1
+    X11
+    Zlib
+  )
   depends=(
     coreutils
     initramfs
@@ -125,10 +177,67 @@ _package() {
 
   # remove build link
   rm "$modulesdir"/build
+
+  # licenses
+  install -vDm 644 LICENSES/deprecated/{GPL-1.0,ISC,Linux-OpenIB,X11,Zlib} -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 LICENSES/preferred/{BSD,MIT}* -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 LICENSES/exceptions/* -t "$pkgdir/usr/share/licenses/$pkgname/"
 }
 
 _package-headers() {
   pkgdesc="Headers and scripts for building modules for the $pkgdesc kernel"
+  license=(
+    BSD-3-Clause
+    'BSD-3-Clause OR GPL-2.0-only'
+
+    GPL-1.0-or-later
+    'GPL-1.0-or-later WITH Linux-syscall-note'
+
+    GPL-2.0-only
+    'GPL-2.0-only OR Apache-2.0'
+    'GPL-2.0-only OR BSD-2-Clause'
+    'GPL-2.0-only OR BSD-3-Clause'
+    'GPL-2.0-only OR CDDL-1.0'
+    'GPL-2.0-only OR Linux-OpenIB'
+    'GPL-2.0-only OR Linux-OpenIB OR BSD-2-Clause'
+    'GPL-2.0-only OR MIT'
+    'GPL-2.0-only OR MPL-1.1'
+    'GPL-2.0-only OR X11'
+    'GPL-2.0-only WITH Linux-syscall-note'
+    '(GPL-2.0-only WITH Linux-syscall-note) AND MIT'
+    '(GPL-2.0-only WITH Linux-syscall-note) OR BSD-2-Clause'
+    '(GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause'
+    '(GPL-2.0-only WITH Linux-syscall-note) OR CDDL-1.0'
+    '(GPL-2.0-only WITH Linux-syscall-note) OR Linux-OpenIB'
+    '(GPL-2.0-only WITH Linux-syscall-note) OR MIT'
+
+    GPL-2.0-or-later
+    'GPL-2.0-or-later OR BSD-2-Clause'
+    'GPL-2.0-or-later OR BSD-3-Clause'
+    'GPL-2.0-or-later OR MIT'
+    'GPL-2.0-or-later WITH Linux-syscall-note'
+    '(GPL-2.0-or-later WITH Linux-syscall-note) OR BSD-3-Clause'
+    '(GPL-2.0-or-later WITH Linux-syscall-note) OR MIT'
+    'LGPL-2.0-or-later OR BSD-2-Clause'
+    'LGPL-2.0-or-later WITH Linux-syscall-note'
+
+    ISC
+
+    'LGPL-2.0-or-later WITH Linux-syscall-note'
+    'LGPL-2.0-or-later OR BSD-2-Clause'
+
+    LGPL-2.1-only
+    'LGPL-2.1-only OR BSD-2-Clause'
+    'LGPL-2.1-only OR MIT'
+    'LGPL-2.1-only WITH Linux-syscall-note'
+
+    LGPL-2.1-or-later
+    'LGPL-2.1-or-later OR BSD-2-Clause'
+    'LGPL-2.1-or-later WITH Linux-syscall-note'
+
+    MIT
+    Zlib
+  )
   depends=(pahole)
 
   cd $_srcname
@@ -207,10 +316,37 @@ _package-headers() {
   echo "Adding symlink..."
   mkdir -p "$pkgdir/usr/src"
   ln -sr "$builddir" "$pkgdir/usr/src/$pkgbase"
+
+  # licenses
+  install -vDm 644 LICENSES/deprecated/{ISC,Linux-OpenIB,X11,Zlib} -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 LICENSES/preferred/{BSD*,MIT} -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 LICENSES/exceptions/* -t "$pkgdir/usr/share/licenses/$pkgname/"
 }
 
 _package-docs() {
   pkgdesc="Documentation for the $pkgdesc kernel"
+  license=(
+    BSD-3-Clause
+
+    GFDL-1.1-no-invariants-or-later
+
+    GPL-2.0-only
+    'GPL-2.0-only OR BSD-2-Clause'
+    'GPL-2.0-only OR BSD-3-Clause'
+    'GPL-2.0-only OR GFDL-1.1-no-invariants-or-later'
+    'GPL-2.0-only OR GFDL-1.2-no-invariants-only'
+    'GPL-2.0-only OR MIT'
+
+    GPL-2.0-or-later
+    'GPL-2.0-or-later OR BSD-2-Clause'
+    'GPL-2.0-or-later OR CC-BY-4.0'
+    'GPL-2.0-or-later OR MIT'
+    'GPL-2.0-or-later OR X11'
+
+    'LGPL-2.1-only OR BSD-2-Clause'
+
+    MIT
+  )
 
   cd $_srcname
   local builddir="$pkgdir/usr/lib/modules/$(<version)/build"
@@ -226,6 +362,10 @@ _package-docs() {
   echo "Adding symlink..."
   mkdir -p "$pkgdir/usr/share/doc"
   ln -sr "$builddir/Documentation" "$pkgdir/usr/share/doc/$pkgbase"
+
+  # licenses
+  install -vDm 644 LICENSES/deprecated/X11 -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 LICENSES/preferred/{BSD*,MIT} -t "$pkgdir/usr/share/licenses/$pkgname/"
 }
 
 pkgname=(

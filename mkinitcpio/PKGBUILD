@@ -4,7 +4,7 @@
 # Contributor: Thomas Bächler <thomas@archlinux.org>
 
 pkgname=mkinitcpio
-pkgver=37.3
+pkgver=38.1
 pkgrel=1
 pkgdesc="Modular initramfs image creation utility"
 arch=('any')
@@ -13,6 +13,12 @@ license=('GPL')
 depends=('awk' 'mkinitcpio-busybox>=1.19.4-2' 'kmod' 'util-linux>=2.23' 'libarchive' 'coreutils'
          'bash' 'binutils' 'diffutils' 'findutils' 'grep' 'filesystem>=2011.10-1' 'zstd' 'systemd')
 checkdepends=('bats' 'bats-assert' 'lzop')
+conflicts=(
+  'systemd<255.4-2'
+  'cryptsetup<2.7.0-3'
+  'mdadm<4.3-2'
+  'lvm2<2.03.23-3'
+)
 optdepends=('gzip: Use gzip compression for the initramfs image'
             'xz: Use lzma or xz compression for the initramfs image'
             'bzip2: Use bzip2 compression for the initramfs image'
@@ -23,9 +29,9 @@ provides=('initramfs')
 backup=('etc/mkinitcpio.conf')
 source=("https://sources.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz"{,.sig})
 install=mkinitcpio.install
-sha512sums=('edee8dfbc452a0fc6ca9e8c7321beffa4463e504641b99a8d08ab9df665b697a0192f7760994b9917f34ba83d15543dedd3c4690364663b4534724a06a262db7'
+sha512sums=('e727509badc528f45f2b193b3f49c202df41d4e75067bebd44c22ebc59f635d4a9596bc671d609d8941644f3a246267f7a199946730ba474040a1f24b94f663c'
             'SKIP')
-b2sums=('f903348aa23983b4de1e095420acc358a09a6fd0c8ed9a9a7b9bd7df0bfde0bb17869996759f8f3c73ada85dd3ee3f83958401e1f9fa15aaacc06b048fe13660'
+b2sums=('625455bb1140688bcdf04c946eb6fa1da53deaa221b2c8090c173aef1d7fc617227aa0674344f3c18d5b9ab77a093725856f4f0cd3b8a33462a2ac742f0dbf11'
         'SKIP')
 validpgpkeys=('ECCAC84C1BA08A6CC8E63FBBF22FB1D78A77AEAB'    # Giancarlo Razzolini
               'C100346676634E80C940FB9E9C02FF419FECBE16')   # Morten Linderud

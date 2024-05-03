@@ -3,13 +3,13 @@
 # Contributor: judd <jvinet@zeroflux.org>
 
 pkgname=pam
-pkgver=1.6.0
-pkgrel=3
+pkgver=1.6.1
+pkgrel=2
 pkgdesc="PAM (Pluggable Authentication Modules) library"
 arch=('loong64' 'x86_64')
-license=('GPL2')
+license=('GPL-2.0-only')
 url="http://linux-pam.org"
-depends=('glibc' 'libtirpc' 'pambase' 'audit' 'libaudit.so' 'libxcrypt' 'libcrypt.so')
+depends=('glibc' 'libtirpc' 'pambase' 'audit' 'libaudit.so' 'libxcrypt' 'libcrypt.so' 'libnsl')
 makedepends=('flex' 'w3m' 'docbook-xml>=4.4' 'docbook-xsl')
 provides=('libpam.so' 'libpamc.so' 'libpam_misc.so')
 backup=(etc/security/{access.conf,faillock.conf,group.conf,limits.conf,namespace.conf,namespace.init,pwhistory.conf,pam_env.conf,time.conf} etc/environment)
@@ -20,13 +20,26 @@ validpgpkeys=(
         '296D6F29A020808E8717A8842DB5BD89A340AEB7' #Dimitry V. Levin <ldv@altlinux.org>
 )
 
-sha256sums=('fff4a34e5bbee77e2e8f1992f27631e2329bcbf8a0563ddeb5c3389b4e3169ad'
+sha256sums=('f8923c740159052d719dbfc2a2f81942d68dd34fcaf61c706a02c9b80feeef8e'
             'SKIP'
-            '3e82730d3350795c42f3708f6609a92c1df841d518aa17c28fd702fe5ec23a32'
+            'fd7b13b9993c94677e78e84d12387b8da104b5ba668eda3f17360abe4277e79c'
             'SKIP'
             '5631f224e90c4f0459361c2a5b250112e3a91ba849754bb6f67d69d683a2e5ac')
 
 options=('!emptydirs')
+
+prepare() {
+  cd Linux-PAM-$pkgver
+  # apply patch from the source array (should be a pacman feature)
+  local src
+  for src in "${source[@]}"; do
+    src="${src%%::*}"
+    src="${src##*/}"
+    [[ $src = *.patch ]] || continue
+    echo "Applying patch $src..."
+    patch -Np1 < "../$src"
+  done
+}
 
 build() {
   cd Linux-PAM-$pkgver
@@ -34,7 +47,7 @@ build() {
     --libdir=/usr/lib \
     --sbindir=/usr/bin \
     --enable-logind \
-    --disable-db
+    --disable-db 
   make
 }
 

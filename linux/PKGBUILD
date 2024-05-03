@@ -1,12 +1,12 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 
 pkgbase=linux
-pkgver=6.7.2.arch1
-pkgrel=2
+pkgver=6.8.8.arch1
+pkgrel=1
 pkgdesc='Linux'
 url='https://github.com/archlinux/linux'
 arch=(loong64 x86_64)
-license=(GPL2)
+license=(GPL-2.0-only)
 makedepends=(
   bc
   cpio
@@ -22,9 +22,13 @@ makedepends=(
   graphviz
   imagemagick
   python-sphinx
+  python-yaml
   texlive-latexextra
 )
-options=('!strip')
+options=(
+  !debug
+  !strip
+)
 _srcname=linux-${pkgver%.*}
 _srctag=v${pkgver%.*}-${pkgver##*.}
 source=(
@@ -38,16 +42,16 @@ validpgpkeys=(
   83BC8889351B5DEBBB68416EB8AC08600F108CDF  # Jan Alexander Steffens (heftig)
 )
 # https://www.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc
-sha256sums=('c34de41baa29c475c0834e88a3171e255ff86cd32d83c6bffc2b797e60bfa671'
+sha256sums=('1c4cdcb9d560fad1fb95db2cb8afbedc922f9ead848371fe40363b13f9f631ba'
             'SKIP'
-            'ec7ea7c4d28951d1ea22419dce75f245894a2aebb13df4dbc87a09d2d2c08a95'
+            '3328bb421dc41135584adc6295ad64125c217dc57939d5397b29f53d16f02da4'
             'SKIP'
-            '8f276a6245223b4bd7911a0a09e039d07ee91e6ee98f0ae83ebe19ac27e3a344')
-b2sums=('4c1f480de0c1458aa67379cd02d35708f63850adb84a85061088de1f82b5d084bc7cf7da459a3f1e415544351d1f36a9a832277240774ae461cdde11687cbadd'
+            '0e78254fa2d2718e8912a41047266b9a63aa53fb74198da4389b97fa8bf8c40b')
+b2sums=('3c04407c6875d1547c18024db7a020c450b332b10707c847208080819fa92624281fd9b628c1fefe7c16439f60d64dcc80010726a7d4320354b682ccaadb1f35'
         'SKIP'
-        '05262b7de0651e7f27b36e7d19b0a0df80282f3a087301c81e524f8a991b238c6a9ec461c2f529d0100ce340150b0f378203c0cd6f9387a7757114f88995d65e'
+        '019c9263802379310ab5112258bbf46977019183561a8b7170d270d10fd5b90132ab15912de96793a63d61f8cff47ea6059ef278139b39bca9be3d1655fde907'
         'SKIP'
-        '3b1bdc6fe810cdf17ad8726af27f5abc0bcba49a2399b5ba863b462494b9af88daa2f6e7ca0a2017c76a747a9aef7ada855eab11299be5ae289537e8d5e84b2c')
+        '794d6e66bcb977d2232d23dda0836e520115e2b3ade02f6a48f564f130d260f434189d0c77927c8b0a94b7b8720e96d273878a6695d3c2620ec9a83dfdff81d4')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -82,6 +86,7 @@ prepare() {
 build() {
   cd $_srcname
   make all
+  make -C tools/bpf/bpftool vmlinux.h feature-clang-bpf-co-re=1
   make htmldocs
 }
 
@@ -134,7 +139,7 @@ _package-headers() {
 
   echo "Installing build files..."
   install -Dt "$builddir" -m644 .config Makefile Module.symvers System.map \
-    localversion.* version vmlinux
+    localversion.* version vmlinux tools/bpf/bpftool/vmlinux.h
   install -Dt "$builddir/kernel" -m644 kernel/Makefile
   install -Dt "$builddir/arch/x86" -m644 arch/x86/Makefile
   cp -t "$builddir" -a scripts

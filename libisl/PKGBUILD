@@ -6,7 +6,7 @@
 
 pkgname=libisl
 pkgver=0.26
-pkgrel=1
+pkgrel=2
 pkgdesc='Library for manipulating sets and relations of integer points bounded by linear constraints'
 arch=('loong64' 'x86_64')
 url='https://libisl.sourceforge.io'

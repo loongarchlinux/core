@@ -3,11 +3,11 @@
 
 pkgname=jfsutils
 pkgver=1.1.15
-pkgrel=8
+pkgrel=9
 pkgdesc='JFS filesystem utilities'
 url='http://jfs.sourceforge.net'
 arch=('loong64' 'x86_64')
-license=('GPL')
+license=('GPL-3.0-or-later')
 depends=('util-linux')
 source=("http://jfs.sourceforge.net/project/pub/${pkgname}-${pkgver}.tar.gz"
         'jfsutils-1.1.15-missing-includes.patch'
