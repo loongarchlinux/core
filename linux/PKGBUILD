@@ -4,7 +4,7 @@ pkgbase=linux
 _ver=6.8.6
 _rdate=20240424
 pkgver=${_ver}.arch1
-pkgrel=1
+pkgrel=2
 pkgdesc='Linux'
 url='https://github.com/archlinux/linux'
 arch=(loong64 x86_64)
@@ -41,10 +41,10 @@ validpgpkeys=(
 # https://www.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc
 sha256sums=('16533ee5666746c21d76e965cda3a6264f03fc58ada09546f928003890541e18'
             'f8fe2553a83e72393821192f17751ec0d91bc3bfc47c7efd01fdb3c2acc84839'
-            'ae0f14b59b9aa6542102aa8268b351e815f86104202765c55fd163d2a6a01a80')
+            '02b753fde0aa34b6033b7394e4f113d74818fa5ab4a779212a5a198fefc021e6')
 b2sums=('40820d8b5a0c9023313f0a8a54f7bceed5ed7267965b6f0699d5aab267d699900adb66587ee09c1a0dd53d039cd11f4314c42afa32ab31767b82470040e6b116'
         'f1605735b5c8735326e881fe4ca66b78441a85b1e09a4633bce8ce62cb27354cb3bce1ee0fd126fe476fbdbf0d35eed042a757159f1c1b068b43c7836bc50209'
-        '05b872397beade5e39f1f2223af5a728c889c4c5f9d3d97d44f612f51d40210d2dad8f9c5dd1a869b0208383d75bdf75696d457eee5515f5d57d1294a085e8fe')
+        '01ae534e3d2c56c5fc30cefa34752f7f07d784eecf2b34d7feef9e622a8d90ae23b083a22b52251d98a648a7dd9e10e147f87c6491a09bc76c0c40131668c66f')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
