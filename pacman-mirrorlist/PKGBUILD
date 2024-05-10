@@ -13,6 +13,9 @@ source=(mirrorlist)
 md5sums=('b275439b1695e2f7db9c251554d6cd0f')
 sha256sums=('a62f64c8e6e87a55f939475a5d3fa3f73b78c15cf6e1e135c21c08eb3e5ba294')
 
+md5sums=('8fcd9c71e50ede93c6e79c8e2ede799f')
+sha256sums=('7df6392ad105de15a163a64877c7a9b94cf656e22616f1f7da43fee904482625')
+
 # NOTE on building this package:
 # * Run bash -c ". PKGBUILD; updatelist"
 # * Update the checksums, update pkgver
@@ -20,7 +23,7 @@ sha256sums=('a62f64c8e6e87a55f939475a5d3fa3f73b78c15cf6e1e135c21c08eb3e5ba294')
 
 updatelist() {
   rm -f mirrorlist
-  curl -o mirrorlist https://archlinux.org/mirrorlist/all/
+  curl -o mirrorlist https://archapi.zhcn.cc/api/v1/mirrorlist/
 }
 
 package() {

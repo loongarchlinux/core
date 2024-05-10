@@ -12,6 +12,7 @@ url='https://gitlab.archlinux.org/archlinux/mkinitcpio/mkinitcpio'
 license=('GPL-2.0-only')
 depends=('awk' 'mkinitcpio-busybox>=1.19.4-2' 'kmod' 'util-linux>=2.23' 'libarchive' 'coreutils'
          'bash' 'binutils' 'diffutils' 'findutils' 'grep' 'filesystem>=2011.10-1' 'zstd' 'systemd')
+makedepends=('asciidoc')
 checkdepends=('bats' 'bats-assert' 'lzop')
 makedepends=('asciidoc')
 optdepends=('gzip: Use gzip compression for the initramfs image'
@@ -23,7 +24,9 @@ optdepends=('gzip: Use gzip compression for the initramfs image'
 provides=('initramfs')
 backup=('etc/mkinitcpio.conf')
 source=("https://sources.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.xz"{,.sig}
-        '0001-trigger.patch')
+        '0001-trigger.patch'
+	"0001-mkinitcpio-loongarch64-lib64-links.patch"
+	"mkinitcpio-fix-error.patch")
 sha512sums=('e4ba9fe901da56bb116510ec0c6abeba5153e57d9545baccbc466932951b7f324aa75ef7cc3de87f966456b0365b17552f367411d62585d500e88dc5c815058b'
             'SKIP'
             'b21e3961294e80bedd89a7e332ab11fc3b83eebfaf58d8f658e30f7d9caf2f84f4934224173c70f111932de8538fa327f5f6bfe9576b11bcbaf84d2d5ad8e85d')
@@ -36,6 +39,8 @@ validpgpkeys=('ECCAC84C1BA08A6CC8E63FBBF22FB1D78A77AEAB'    # Giancarlo Razzolin
 prepare() {
   cd "$pkgname-$pkgver"
   patch -Np1 < ../0001-trigger.patch
+  patch -p1 -d "$pkgname-$pkgver" -i $srcdir/0001-mkinitcpio-loongarch64-lib64-links.patch
+  patch -p1 -d "$pkgname-$pkgver" -i $srcdir/mkinitcpio-fix-error.patch
 }
 
 check() {

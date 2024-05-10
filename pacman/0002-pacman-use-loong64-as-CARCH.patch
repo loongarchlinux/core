@@ -1,0 +1,29 @@
+From 5fcc2f2ec4b32b90b4b618b90bfbfa67cb2453fe Mon Sep 17 00:00:00 2001
+From: Xiaotian Wu <yetist@gmail.com>
+Date: Sun, 12 May 2024 22:57:04 +0800
+Subject: [PATCH 2/2] pacman use loong64 as CARCH
+
+---
+ src/pacman/conf.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/pacman/conf.c b/src/pacman/conf.c
+index 207ebf7a..1ce14df1 100644
+--- a/src/pacman/conf.c
++++ b/src/pacman/conf.c
+@@ -404,7 +404,11 @@ int config_add_architecture(char *arch)
+ 		struct utsname un;
+ 		char *newarch;
+ 		uname(&un);
+-		newarch = strdup(un.machine);
++		if (strcmp(un.machine, "loongarch64") == 0) {
++		    newarch = strdup("loong64");
++		} else {
++		    newarch = strdup(un.machine);
++		}
+ 		free(arch);
+ 		arch = newarch;
+ 	}
+-- 
+2.43.0
+

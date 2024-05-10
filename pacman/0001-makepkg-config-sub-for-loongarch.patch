@@ -1,0 +1,73 @@
+From ce2be379868b7c98ec8292c00fab15bb31d10003 Mon Sep 17 00:00:00 2001
+From: Xiaotian Wu <wuxiaotian@loongson.cn>
+Date: Sun, 12 May 2024 22:55:44 +0800
+Subject: [PATCH 1/2] makepkg config sub for loongarch
+
+---
+ scripts/makepkg.sh.in | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/makepkg.sh.in b/scripts/makepkg.sh.in
+index 2c36681d..f90b0e8a 100644
+--- a/scripts/makepkg.sh.in
++++ b/scripts/makepkg.sh.in
+@@ -75,6 +75,7 @@ REPRODUCIBLE=0
+ RMDEPS=0
+ SKIPCHECKSUMS=0
+ SKIPPGPCHECK=0
++SKIPCONFIG=0
+ SIGNPKG=''
+ SPLITPKG=0
+ SOURCEONLY=0
+@@ -408,6 +409,12 @@ run_function_safe() {
+ 	eval "$restoreshopt"
+ }
+ 
++replace_config_sub()
++{
++	for c_s in $(find -type f -name config.sub -o -name configure.sub); do cp -f /usr/share/automake-1.16/config.sub "$c_s"; done
++	for c_g in $(find -type f -name config.guess -o -name configure.guess); do cp -f /usr/share/automake-1.16/config.guess "$c_g"; done
++}
++
+ run_function() {
+ 	if [[ -z $1 ]]; then
+ 		return 1
+@@ -420,6 +427,10 @@ run_function() {
+ 	fi
+ 	cd_safe "$workingdir"
+ 
++	if [ $SKIPCONFIG -eq 0 ]; then
++	    replace_config_sub
++	fi
++
+ 	local ret=0
+ 	if (( LOGGING )); then
+ 		local fullver=$(get_full_version)
+@@ -909,6 +920,7 @@ usage() {
+ 	printf -- "$(gettext "  --skipchecksums  Do not verify checksums of the source files")\n"
+ 	printf -- "$(gettext "  --skipinteg      Do not perform any verification checks on source files")\n"
+ 	printf -- "$(gettext "  --skippgpcheck   Do not verify source files with PGP signatures")\n"
++	printf -- "$(gettext "  --skipconfig     Do not replace config.{guess,sub}")\n"
+ 	printf -- "$(gettext "  --verifysource   Download source files (if needed) and perform integrity checks")\n"
+ 	echo
+ 	printf -- "$(gettext "These options can be passed to %s:")\n" "pacman"
+@@ -952,7 +964,7 @@ OPT_LONG=('allsource' 'check' 'clean' 'cleanbuild' 'config:' 'dir:' 'force' 'gen
+           'help' 'holdver' 'ignorearch' 'install' 'key:' 'log' 'noarchive' 'nobuild'
+           'nocolor' 'nocheck' 'nodeps' 'noextract' 'noprepare' 'nosign' 'packagelist'
+           'printsrcinfo' 'repackage' 'rmdeps' 'sign' 'skipchecksums' 'skipinteg'
+-          'skippgpcheck' 'source' 'syncdeps' 'verifysource' 'version')
++          'skipconfig' 'skippgpcheck' 'source' 'syncdeps' 'verifysource' 'version')
+ 
+ # Pacman Options
+ OPT_LONG+=('asdeps' 'noconfirm' 'needed' 'noprogressbar')
+@@ -1005,6 +1017,7 @@ while true; do
+ 		--skipchecksums)  SKIPCHECKSUMS=1 ;;
+ 		--skipinteg)      SKIPCHECKSUMS=1; SKIPPGPCHECK=1 ;;
+ 		--skippgpcheck)   SKIPPGPCHECK=1;;
++		--skipconfig)     SKIPCONFIG=1;;
+ 		-s|--syncdeps)    DEP_BIN=1 ;;
+ 		-S|--source)      BUILDPKG=0 SOURCEONLY=1 ;;
+ 		--verifysource)   BUILDPKG=0 VERIFYSOURCE=1 ;;
+-- 
+2.43.0
+

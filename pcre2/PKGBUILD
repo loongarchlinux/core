@@ -26,6 +26,7 @@ validpgpkeys=('45F68D54BBE23FB3039B46E59766E084FB0F43D8')  # Philip Hazel <ph10@
 build() {
   local configure_options=(
     --enable-jit
+#    --disable-jit
     --enable-pcre2-16
     --enable-pcre2-32
     --enable-pcre2grep-libbz2
