@@ -27,9 +27,11 @@ provides=(
 backup=('etc/gprofng.rc')
 options=(staticlibs !distcc !ccache)
 source=(git+https://sourceware.org/git/binutils-gdb.git#commit=${_commit}
-        gold-warn-unsupported.patch)
-sha256sums=('a36780f5918bf383520f44374b2daa2bc737f55aa2601458b9b35d576b4aa7df'
-            '2d430b66f84a19c154725ec535280c493be1d34f1a90f95208dce02fecd0e4e4')
+        gold-warn-unsupported.patch
+        tls-relax.patch)
+sha256sums=('SKIP'
+            '2d430b66f84a19c154725ec535280c493be1d34f1a90f95208dce02fecd0e4e4'
+            '23d1c29cf0bfcc3b2d21aaa4be6f0bf2459e8eecc7aad120a07ab71b490162f2')
 validpgpkeys=(3A24BC1E8FB409FA9F14371813FCEF89DD9E3C4F)
 
 pkgver() {
@@ -38,7 +40,7 @@ pkgver() {
 }
 
 prepare() {
-  [[ ! -d binutils-gdb ]] && ln -s binutils-${pkgver} binutils-gdb
+  #[[ ! -d binutils-gdb ]] && ln -s binutils-${pkgver} binutils-gdb
   mkdir -p binutils-build
 
   cd binutils-gdb
@@ -51,6 +53,7 @@ prepare() {
   # unsupported targets.  This allows the binutils to be built with
   # BPF support enabled.
   patch -Np1 -i "${srcdir}"/gold-warn-unsupported.patch
+  patch -Np1 -i "${srcdir}"/tls-relax.patch
 }
 
 build() {
@@ -65,7 +68,7 @@ build() {
     --enable-colored-disassembly \
     --enable-default-execstack=no \
     --enable-deterministic-archives \
-    --enable-gold \
+    --disable-gold \
     --enable-install-libiberty \
     --enable-jansson \
     --enable-ld=default \
@@ -74,7 +77,6 @@ build() {
     --enable-plugins \
     --enable-relro \
     --enable-shared \
-    --enable-targets=x86_64-pep,bpf-unknown-none \
     --enable-threads \
     --disable-gdb \
     --disable-gdbserver \

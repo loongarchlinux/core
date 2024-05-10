@@ -26,7 +26,7 @@ makedepends=('acl' 'cryptsetup' 'docbook-xsl' 'gperf' 'lz4' 'xz' 'pam' 'libelf'
              'meson' 'libseccomp' 'pcre2' 'audit' 'kexec-tools' 'libxkbcommon'
              'bash-completion' 'p11-kit' 'systemd' 'libfido2' 'tpm2-tss' 'rsync'
              'bpf' 'libbpf' 'clang' 'llvm' 'curl' 'gnutls' 'python-pyelftools'
-             'libpwquality' 'qrencode' 'lib32-gcc-libs' 'python-pefile')
+             'libpwquality' 'qrencode' 'python-pefile')
 conflicts=("mkinitcpio<38-1")
 validpgpkeys=('63CDA1E5D3FC22B998D20DD6327F26951A015CC4'  # Lennart Poettering <lennart@poettering.net>
               'A9EA9081724FFAE0484C35A1A81CEA22BC8C7E2E'  # Luca Boccassi <luca.boccassi@gmail.com>
@@ -35,6 +35,7 @@ validpgpkeys=('63CDA1E5D3FC22B998D20DD6327F26951A015CC4'  # Lennart Poettering <
 source=("git+https://github.com/systemd/systemd-stable#tag=v${_tag}?signed"
         "git+https://github.com/systemd/systemd#tag=v${_tag%.*}?signed"
         '0001-Use-Arch-Linux-device-access-groups.patch'
+        '0001-loongarch64-disable-simd-when-build-efi.patch'
         # bootloader files
         'arch.conf'
         'loader.conf'
@@ -91,6 +92,12 @@ if ((_systemd_UPSTREAM)); then
 fi
 
 _backports=(
+  # resolved: always progress DS queries #32552
+  'd840783db5208219c78d73b9b46ef5daae9fea0a'
+  # resolved: probe for dnssec support in allow-downgrade mode
+  '5237ffdf2b63a5afea77c3470d9981a2c29643cc'
+  # resolved: validate authentic insecure delegation to CNAME
+  '414a9b8e5e1e772261b0ffaedc853f5c0aba5719'
 )
 
 _reverts=(
@@ -116,6 +123,7 @@ prepare() {
 
   # Replace cdrom/dialout/tape groups with optical/uucp/storage
   patch -Np1 -i ../0001-Use-Arch-Linux-device-access-groups.patch
+  patch -Np1 -i ../0001-loongarch64-disable-simd-when-build-efi.patch
 }
 
 build() {
@@ -174,10 +182,13 @@ build() {
     -Dsbat-distro-summary='Arch Linux'
     -Dsbat-distro-pkgname="${pkgname}"
     -Dsbat-distro-version="${pkgver}"
-    -Dsbat-distro-url="https://archlinux.org/packages/core/x86_64/${pkgname}/"
+    -Dsbat-distro-url="https://loongarchlinux.org/packages/core/loong64/${pkgname}/"
   )
 
   arch-meson "$pkgbase-stable" build "${_meson_options[@]}" $MESON_EXTRA_CONFIGURE_OPTIONS
+# dont build systemd with -mlsx, else linuxloongach64.stub does not work in edk2
+  CFLAGS=${CFLAGS/-mlsx /}
+  CXXFLAGS=${CXXFLAGS/-mlsx /}
 
   meson compile -C build "${_meson_compile[@]}"
 }
