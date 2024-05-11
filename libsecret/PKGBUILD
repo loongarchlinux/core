@@ -6,12 +6,12 @@ pkgname=(
   libsecret
   libsecret-docs
 )
-pkgver=0.21.2
+pkgver=0.21.4
 pkgrel=1
 pkgdesc="Library for storing and retrieving passwords and other secrets"
 url="https://gnome.pages.gitlab.gnome.org/libsecret/"
 arch=(loong64 x86_64)
-license=(LGPL)
+license=(LGPL-2.1-or-later)
 depends=(
   glib2
   libgcrypt
@@ -32,7 +32,7 @@ checkdepends=(
   swtpm
   tpm2-abrmd
 )
-_commit=39a3d141691af7353df9bb5bdd81d66c1cd0fb37  # tags/0.21.2^0
+_commit=6b5a6c28afc6dd93c232a4907a87c881079ff91b  # tags/0.21.4^0
 source=("git+https://gitlab.gnome.org/GNOME/libsecret.git#commit=$_commit")
 b2sums=('SKIP')
 

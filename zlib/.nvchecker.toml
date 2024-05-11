@@ -1,0 +1,4 @@
+[zlib]
+source = "git"
+git = "https://github.com/madler/zlib.git"
+prefix = "v"

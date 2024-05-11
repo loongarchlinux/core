@@ -5,11 +5,11 @@
 # Contributor: Bartlomiej Piotrowski <nospam@bpiotrowski.pl>
 
 pkgname=pkgconf
-pkgver=2.1.0
-pkgrel=2
+pkgver=2.1.1
+pkgrel=1
 pkgdesc="Package compiler and linker metadata toolkit"
 url="https://gitea.treehouse.systems/ariadne/pkgconf"
-license=(custom:ISC)
+license=(ISC)
 arch=(loong64 x86_64)
 depends=(
   glibc
@@ -26,7 +26,7 @@ provides=(
 )
 conflicts=(pkg-config)
 replaces=(pkg-config)
-_commit=61d39ad899867713e73752cf23c40f0275bf71c3  # tags/pkgconf-2.1.0
+_commit=b6e04e2d47b4ca093632b9efde6303a137ea0634  # tags/pkgconf-2.1.1
 source=(
   "git+$url#commit=$_commit"
   {x86_64,i686}-pc-linux-gnu.personality
@@ -42,11 +42,6 @@ pkgver() {
 
 prepare() {
   cd pkgconf
-
-  # Fix --modversion (broke WebKitGTK build)
-  # https://github.com/pkgconf/pkgconf/issues/317
-  # https://github.com/pkgconf/pkgconf/issues/332
-  git revert -n 97d907ba93b7e4eef67e4c0a80939421ad3183f0
 }
 
 build() {

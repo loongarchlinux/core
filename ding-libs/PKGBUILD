@@ -4,11 +4,11 @@
 
 pkgname=ding-libs
 pkgver=0.6.2
-pkgrel=1
+pkgrel=2
 pkgdesc="\"DING is not GNU\" helper libraries for SSSD and FreeIPA"
 arch=('loong64' 'x86_64')
 url="https://github.com/SSSD/ding-libs"
-license=('GPL3' 'LGPL3')
+license=('GPL-3.0-or-later' 'LGPL-3.0-or-later')
 depends=('glibc')
 makedepends=('doxygen')
 checkdepends=('check')

@@ -1,12 +1,12 @@
 # Maintainer: Pierre Schmitz <pierre@archlinux.de>
 
 pkgname=openssl
-pkgver=3.2.0
+pkgver=3.3.0
 pkgrel=1
 pkgdesc='The Open Source toolkit for Secure Sockets Layer and Transport Layer Security'
 arch=('loong64' 'x86_64')
 url='https://www.openssl.org'
-license=('Apache')
+license=('Apache-2.0')
 depends=('glibc')
 makedepends=('perl')
 optdepends=('ca-certificates' 'perl')
@@ -15,7 +15,7 @@ provides=('libcrypto.so' 'libssl.so')
 backup=('etc/ssl/openssl.cnf')
 source=("https://www.openssl.org/source/${pkgname}-${pkgver}.tar.gz"{,.asc}
         'ca-dir.patch')
-sha256sums=('14c826f07c7e433706fb5c69fa9e25dab95684844b4c962a2cf1bf183eb4690e'
+sha256sums=('53e66b043322a606abf0087e7699a0e033a37fa13feb9742df35c3a33b18fb02'
             'SKIP'
             '0a32d9ca68e8d985ce0bfef6a4c20b46675e06178cc2d0bf6d91bd6865d648b7')
 validpgpkeys=('8657ABB260F056B1E5190839D9C4D26D0E604491'

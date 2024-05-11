@@ -1,0 +1,5 @@
+[libverto]
+source = "github"
+github = "latchset/libverto"
+use_max_tag = true
+#prefix = "v"

@@ -4,15 +4,21 @@
 
 pkgbase=util-linux
 pkgname=(util-linux util-linux-libs)
-_tag='bc0e318941a0539be1205ea1ac1dbfa834b7d033' # git rev-parse v${_tag_name}
-_tag_name=2.39.3
-pkgver=${_tag_name/-/}
+_tag='2.40.1'
+pkgver="${_tag/-/}"
 pkgrel=1
 pkgdesc='Miscellaneous system utilities for Linux'
 url='https://github.com/util-linux/util-linux'
 arch=('loong64' 'x86_64')
-makedepends=('git' 'meson' 'asciidoctor' 'bash-completion' 'libcap-ng'
-             'libutempter' 'libxcrypt' 'python' 'systemd')
+makedepends=('asciidoctor'
+             'bash-completion'
+             'git'
+             'libcap-ng'
+             'libxcrypt'
+             'meson'
+             'python'
+             'sqlite'
+             'systemd')
 license=(
   'BSD-2-Clause'
   'BSD-3-Clause'
@@ -26,14 +32,14 @@ license=(
 )
 options=('strip')
 validpgpkeys=('B0C64D14301CC6EFAEDF60E4E4B71D5EEC39C284')  # Karel Zak
-source=("git+https://github.com/util-linux/util-linux#tag=${_tag}?signed"
+source=("git+https://github.com/util-linux/util-linux#tag=v${_tag}?signed"
         $pkgbase-BSD-2-Clause.txt::https://raw.githubusercontent.com/Cyan4973/xxHash/f035303b8a86c1db9be70cbb638678ef6ef4cb2d/LICENSE
         pam-{login,common,remote,runuser,su}
         'util-linux.sysusers'
         '60-rfkill.rules'
         'rfkill-unblock_.service'
         'rfkill-block_.service')
-sha256sums=('SKIP'
+sha256sums=('c08ac20cf4fb061a0aa0d318a245b269acdfd14f7abf1f272476358878e6862a'
             '6ffedbc0f7878612d2b23589f1ff2ab15633e1df7963a5d9fc750ec5500c7e7a'
             'ee917d55042f78b8bb03f5467e5233e3e2ddc2fe01e302bc53b218003fe22275'
             '57e057758944f4557762c6def939410c04ca5803cbdd2bfa2153ce47ffe7a4af'
@@ -75,6 +81,7 @@ build() {
     -Dfs-search-path=/usr/bin:/usr/local/bin
 
     -Dlibuser=disabled
+    -Dlibutempter=disabled
     -Dncurses=disabled
     -Dncursesw=enabled
     -Deconf=disabled
@@ -96,9 +103,18 @@ package_util-linux() {
   conflicts=('rfkill' 'hardlink')
   provides=('rfkill' 'hardlink')
   replaces=('rfkill' 'hardlink')
-  depends=('glibc' 'pam' 'shadow' 'coreutils' 'systemd-libs' 'libsystemd.so'
-           'libudev.so' 'libcap-ng' 'libutempter' 'libxcrypt' 'libcrypt.so' 'util-linux-libs'
-           'libmagic.so' 'libncursesw.so' 'readline' 'zlib')
+  depends=("util-linux-libs=${pkgver}"
+           'coreutils'
+           'file' 'libmagic.so'
+           'glibc'
+           'libcap-ng'
+           'libxcrypt' 'libcrypt.so'
+           'ncurses' 'libncursesw.so'
+           'pam'
+           'readline'
+           'shadow'
+           'systemd-libs' 'libsystemd.so' 'libudev.so'
+           'zlib')
   optdepends=('words: default dictionary for look')
   backup=(etc/pam.d/chfn
           etc/pam.d/chsh
@@ -158,8 +174,9 @@ package_util-linux() {
 }
 
 package_util-linux-libs() {
-  pkgdesc="util-linux runtime libraries"
-  depends=('glibc')
+  pkgdesc='util-linux runtime libraries'
+  depends=('glibc'
+           'sqlite')
   provides=('libutil-linux' 'libblkid.so' 'libfdisk.so' 'libmount.so' 'libsmartcols.so' 'libuuid.so')
   conflicts=('libutil-linux')
   replaces=('libutil-linux')

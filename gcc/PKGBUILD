@@ -7,11 +7,10 @@
 # toolchain build order: linux-api-headers->glibc->binutils->gcc->glibc->binutils->gcc
 # NOTE: libtool requires rebuilt with each new gcc version
 
-pkgname=(gcc gcc-libs lib32-gcc-libs gcc-ada gcc-d gcc-fortran gcc-go gcc-m2 gcc-objc lto-dump libgccjit)
-pkgver=13.2.1
-_majorver=${pkgver%%.*}
-_commit=860b0f0ef787f756c0e293671b4c4622dff63a79
-pkgrel=4
+pkgname=(gcc gcc-libs lib32-gcc-libs gcc-ada gcc-d gcc-fortran gcc-go gcc-m2 gcc-objc gcc-rust lto-dump libgccjit)
+pkgver=14.1.1+r1+g43b730b9134
+_commit=43b730b9134af60a8f1c5b107d625f7127ff23c5
+pkgrel=1
 pkgdesc='The GNU Compiler Collection'
 arch=(loong64 x86_64)
 license=(GPL-3.0-with-GCC-exception GFDL-1.3-or-later)
@@ -27,6 +26,7 @@ makedepends=(
   libisl
   libmpc
   python
+  rust
   zstd
 )
 checkdepends=(
@@ -41,17 +41,19 @@ _libdir=usr/lib/gcc/$CHOST/${pkgver%%+*}
 source=(git+https://sourceware.org/git/gcc.git#commit=${_commit}
         c89 c99
         gcc-ada-repro.patch
-        https://github.com/llvm/llvm-project/commit/fb77ca05ffb4f8e666878f2f6718a9fb4d686839.patch
 )
 validpgpkeys=(F3691687D867B81B51CE07D9BBE43771487328A9  # bpiotrowski@archlinux.org
               86CFFCA918CF3AF47147588051E8B148A9999C34  # evangelos@foutrelis.com
               13975A70E63C361C73AE69EF6EEB81F8981C74C7  # richard.guenther@gmail.com
               D3A93CAD751C2AF4F8C7AD516C35B99309B5FA62) # Jakub Jelinek <jakub@redhat.com>
-sha256sums=('SKIP'
+sha256sums=('51024affcbc17f4ba5528ad9aad112a9b4d367d796a44b0bc59e3403a4c82ddd'
             'de48736f6e4153f03d0a5d38ceb6c6fdb7f054e8f47ddd6af0a3dbf14f27b931'
             '2513c6d9984dd0a2058557bf00f06d8d5181734e41dcfe07be7ed86f2959622a'
-            '1773f5137f08ac1f48f0f7297e324d5d868d55201c03068670ee4602babdef2f'
-            '0fab2541ab06d281a0d9d6cfc256499ff0a8638228094f6797580b83704e6e7c')
+            '1773f5137f08ac1f48f0f7297e324d5d868d55201c03068670ee4602babdef2f')
+pkgver() {
+  cd gcc
+  echo "$(cat gcc/BASE-VER)+$(git describe --tags | sed 's/[^-]*-[^-]*-//;s/[^-]*-/r&/;s/-/+/g;s/_/./')"
+}
 
 prepare() {
   [[ ! -d gcc ]] && ln -s gcc-${pkgver/+/-} gcc
@@ -66,9 +68,6 @@ prepare() {
   # Reproducible gcc-ada
   patch -Np0 < "$srcdir/gcc-ada-repro.patch"
 
-  #ASan: move allocator base to avoid conflict with high-entropy ASLR for x86-64 Linux'
-  patch -Np3 < "$srcdir/fb77ca05ffb4f8e666878f2f6718a9fb4d686839.patch" -d libsanitizer/
-
   mkdir -p "$srcdir/gcc-build"
   mkdir -p "$srcdir/libgccjit-build"
 }
@@ -80,7 +79,7 @@ build() {
       --libexecdir=/usr/lib
       --mandir=/usr/share/man
       --infodir=/usr/share/info
-      --with-bugurl=https://bugs.archlinux.org/
+      --with-bugurl=https://gitlab.archlinux.org/archlinux/packaging/packages/gcc/-/issues \
       --with-build-config=bootstrap-lto
       --with-linker-hash-style=gnu
       --with-system-zlib
@@ -114,7 +113,7 @@ build() {
   CXXFLAGS=${CXXFLAGS/-Werror=format-security/}
 
   "$srcdir/gcc/configure" \
-    --enable-languages=ada,c,c++,d,fortran,go,lto,m2,objc,obj-c++ \
+    --enable-languages=ada,c,c++,d,fortran,go,lto,m2,objc,obj-c++,rust \
     --enable-bootstrap \
     "${_confflags[@]:?_confflags unset}"
 
@@ -259,7 +258,7 @@ package_gcc() {
   make -C $CHOST/32/libsanitizer/asan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
 
   make -C gcc DESTDIR="$pkgdir" install-man install-info
-  rm "$pkgdir"/usr/share/man/man1/{gccgo,gfortran,lto-dump,gdc}.1
+  rm "$pkgdir"/usr/share/man/man1/{gccgo,gfortran,lto-dump,gdc,gm2}.1
   rm "$pkgdir"/usr/share/info/{gccgo,gfortran,gnat-style,gnat_rm,gnat_ugn,gdc}.info
 
   make -C libcpp DESTDIR="$pkgdir" install
@@ -356,15 +355,15 @@ package_gcc-ada() {
   ln -s gcc "$pkgdir/usr/bin/gnatgcc"
 
   # insist on dynamic linking, but keep static libraries because gnatmake complains
-  mv "$pkgdir"/${_libdir}/adalib/libgna{rl,t}-${_majorver}.so "$pkgdir/usr/lib"
-  ln -s libgnarl-${_majorver}.so "$pkgdir/usr/lib/libgnarl.so"
-  ln -s libgnat-${_majorver}.so "$pkgdir/usr/lib/libgnat.so"
+  mv "$pkgdir"/${_libdir}/adalib/libgna{rl,t}-${pkgver%%.*}.so "$pkgdir/usr/lib"
+  ln -s libgnarl-${pkgver%%.*}.so "$pkgdir/usr/lib/libgnarl.so"
+  ln -s libgnat-${pkgver%%.*}.so "$pkgdir/usr/lib/libgnat.so"
   rm -f "$pkgdir"/${_libdir}/adalib/libgna{rl,t}.so
 
   install -d "$pkgdir/usr/lib32/"
-  mv "$pkgdir"/${_libdir}/32/adalib/libgna{rl,t}-${_majorver}.so "$pkgdir/usr/lib32"
-  ln -s libgnarl-${_majorver}.so "$pkgdir/usr/lib32/libgnarl.so"
-  ln -s libgnat-${_majorver}.so "$pkgdir/usr/lib32/libgnat.so"
+  mv "$pkgdir"/${_libdir}/32/adalib/libgna{rl,t}-${pkgver%%.*}.so "$pkgdir/usr/lib32"
+  ln -s libgnarl-${pkgver%%.*}.so "$pkgdir/usr/lib32/libgnarl.so"
+  ln -s libgnat-${pkgver%%.*}.so "$pkgdir/usr/lib32/libgnat.so"
   rm -f "$pkgdir"/${_libdir}/32/adalib/libgna{rl,t}.so
 
   # Install Runtime Library Exception
@@ -463,7 +462,6 @@ package_gcc-m2() {
 
   install -Dm755 gcc/cc1gm2 "$pkgdir/$_libdir"/cc1gm2
   install -Dm755 gcc/gm2 "$pkgdir"/usr/bin/gm2
-  install -Dm644 gcc/plugin/m2rte.so "$pkgdir/$_libdir"/plugin/m2rte.so
 
   make -C $CHOST/libgm2 DESTDIR="$pkgdir" install
 
@@ -473,21 +471,20 @@ package_gcc-m2() {
     "$pkgdir/usr/share/licenses/$pkgname/"
 }
 
-#package_gcc-rust() {
-#  pkgdesc="Rust frontend for GCC"
-#  depends=("gcc=$pkgver-$pkgrel" libisl.so)
-#
-#  cd gcc-build
-#  make -C gcc DESTDIR="$pkgdir" rust.install-{common,man,info}
-#
-#  install -Dm755 gcc/gccrs "$pkgdir"/usr/bin/gccrs
-#  install -Dm755 gcc/rust1 "$pkgdir"/"$_libdir"/rust1
-#
-#  # Install Runtime Library Exception
-#  install -d "$pkgdir/usr/share/licenses/$pkgname/"
-#  ln -s /usr/share/licenses/gcc-libs/RUNTIME.LIBRARY.EXCEPTION \
-#    "$pkgdir/usr/share/licenses/$pkgname/"
-#}
+package_gcc-rust() {
+ pkgdesc="Rust frontend for GCC"
+ depends=("gcc=$pkgver-$pkgrel" libisl.so)
+
+ cd gcc-build
+ make -C gcc DESTDIR="$pkgdir" rust.install-{common,man,info}
+
+ install -Dm755 gcc/gccrs "$pkgdir"/usr/bin/gccrs
+
+  # Install Runtime Library Exception
+ install -d "$pkgdir/usr/share/licenses/$pkgname/"
+ ln -s /usr/share/licenses/gcc-libs/RUNTIME.LIBRARY.EXCEPTION \
+   "$pkgdir/usr/share/licenses/$pkgname/"
+}
 
 package_lto-dump() {
   pkgdesc="Dump link time optimization object files"
