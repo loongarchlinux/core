@@ -7,7 +7,7 @@
 # NOTE: valgrind requires rebuilt with each major glibc version
 
 pkgbase=glibc
-pkgname=(glibc lib32-glibc glibc-locales)
+pkgname=(glibc glibc-locales)
 pkgver=2.39+r52+gf8e4623421
 _commit=f8e462342189525e4605cf233b8f798d1c7f398d
 pkgrel=1
@@ -191,10 +191,6 @@ package_glibc() {
   # libraries too. Useful for gdb's catch command.
   install -Dm644 "${srcdir}"/sdt.h "${pkgdir}"/usr/include/sys/sdt.h
   install -Dm644 "${srcdir}"/sdt-config.h "${pkgdir}"/usr/include/sys/sdt-config.h
-
-  # Building with pkgctl we get a segfault, so copy it from the current system
-  # Why static-pie get setfault in virtual-env?
-#  install -Dm755 /usr/bin/ldconfig "${pkgdir}"/usr/bin/ldconfig
 }
 
 package_lib32-glibc() {
