@@ -1,0 +1,25 @@
+From ae6389cf067c0e97648980a742f5d11a59b63d7c Mon Sep 17 00:00:00 2001
+From: Xiaotian Wu <yetist@gmail.com>
+Date: Mon, 20 May 2024 20:40:20 +0800
+Subject: [PATCH] mkinitcpio loongarch64 lib64 links
+
+---
+ functions | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/functions b/functions
+index 3dbc2e4..1fdef23 100755
+--- a/functions
++++ b/functions
+@@ -1169,7 +1169,7 @@ initialize_buildroot() {
+         ln -s "../run"  "$root/var/run"
+ 
+         case "$arch" in
+-            x86_64)
++            x86_64|loongarch64)
+                 ln -s "lib"     "$root/usr/lib64"
+                 ln -s "usr/lib" "$root/lib64"
+                 ;;
+-- 
+2.43.0
+
