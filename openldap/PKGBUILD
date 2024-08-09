@@ -48,6 +48,8 @@ prepare() {
 
 build() {
   cd ${pkgbase}-${pkgver}
+  CFLAGS="${CFLAGS} -Wno-incompatible-pointer-types"
+  CXXFLAGS="${CFLAGS} -Wno-incompatible-pointer-types"
   autoconf
   ./configure \
     --prefix=/usr \
