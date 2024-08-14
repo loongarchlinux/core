@@ -9,13 +9,15 @@ pkgname=(
   libxml2
   libxml2-docs
 )
-pkgver=2.12.6
-pkgrel=2
+pkgver=2.13.3
+pkgrel=1
 pkgdesc="XML C parser and toolkit"
 url="https://gitlab.gnome.org/GNOME/libxml2/-/wikis/home"
 arch=(loong64 x86_64)
 license=(MIT)
 depends=(
+  bash
+  glibc
   icu
   ncurses
   readline
@@ -26,20 +28,14 @@ makedepends=(
   git
   python
 )
-_commit=505e2e872e767405be565aa9d47ae9d6d5677f79  # tags/v2.12.6^0
 source=(
-  "git+https://gitlab.gnome.org/GNOME/libxml2.git#commit=$_commit"
-  0001-HACK-Don-t-run-fuzzing-tests.patch
+  "git+https://gitlab.gnome.org/GNOME/libxml2.git#tag=v$pkgver"
   https://www.w3.org/XML/Test/xmlts20130923.tar.gz
+  0001-HACK-Don-t-run-fuzzing-tests.patch
 )
-b2sums=('SKIP'
-        '6931b07a467874c3016deb7a68bab1e9cfaabc88fdeaf0ccf6c9cca02bbce9618b18f8c285f5748089138489d04d7c72a659b2bfd4ea5fe24ad273daacbd6d50'
-        '63a47bc69278ef510cd0b3779aed729e1b309e30efa0015d28ed051cc03f9dfddb447ab57b07b3393e8f47393d15473b0e199c34cb1f5f746b15ddfaa55670be')
-
-pkgver() {
-  cd libxml2
-  git describe --tags | sed 's/-rc/rc/;s/^v//;s/[^-]*-g/r&/;s/-/+/g'
-}
+b2sums=('5b3d8b9981ca7ed336e54094d6b7d10a4fab2d74b548d9cfce52d5fde62b927dc18fde60509e9d69bc00b0dbed709971cfd28fcc30fe825a491d97a9a5775af7'
+        '63a47bc69278ef510cd0b3779aed729e1b309e30efa0015d28ed051cc03f9dfddb447ab57b07b3393e8f47393d15473b0e199c34cb1f5f746b15ddfaa55670be'
+        '151e84ee17051eeecfa8c62a7376ff269860f3ff6d33fb92209ff5f8dc9576a5648bbe9ffc96317695c069760ccfecaa3e6f19fb7a7c2e9f039a146d7fc8a516')
 
 prepare() {
   cd libxml2

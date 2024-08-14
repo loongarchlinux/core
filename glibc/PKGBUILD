@@ -8,15 +8,15 @@
 
 pkgbase=glibc
 pkgname=(glibc lib32-glibc glibc-locales)
-pkgver=2.39+r52+gf8e4623421
-_commit=f8e462342189525e4605cf233b8f798d1c7f398d
-pkgrel=1
+pkgver=2.40+r16+gaa533d58ff
+_commit=aa533d58ff12e27771d9c960a727d74992a3f2a3
+pkgrel=2
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/libc'
 license=(GPL-2.0-or-later LGPL-2.1-or-later)
 makedepends=(git gd lib32-gcc-libs python)
 options=(staticlibs !lto)
-source=(git+https://sourceware.org/git/glibc.git#commit=${_commit}
+source=("git+https://sourceware.org/git/glibc.git#commit=${_commit}"
         locale.gen.txt
         locale-gen
         lib32-glibc.conf
@@ -24,7 +24,7 @@ source=(git+https://sourceware.org/git/glibc.git#commit=${_commit}
 )
 validpgpkeys=(7273542B39962DF7B299931416792B4EA25340F8 # Carlos O'Donell
               BC7C7372637EC10C57D7AA6579C43DFBF1CF2187) # Siddhesh Poyarekar
-b2sums=('a37822e85d99b01b289950bbc3a6ba3c9f88cf2aafe6510a4e3aa9666c35ab4279377b8c706976545a04d94aae888e48e084da54ae117b5f1220cea50e5092bb'
+b2sums=('74c4f1e1231834579d19c96cc60fc370c9c4468e254fe069aad6102c8678d163ab6e58ebf0a11de680483105ba02d362842a817d698e134731f70c2d5b383eed'
         'c859bf2dfd361754c9e3bbd89f10de31f8e81fd95dc67b77d10cb44e23834b096ba3caa65fbc1bd655a8696c6450dfd5a096c476b3abf5c7e125123f97ae1a72'
         '04fbb3b0b28705f41ccc6c15ed5532faf0105370f22133a2b49867e790df0491f5a1255220ff6ebab91a462f088d0cf299491b3eb8ea53534cb8638a213e46e3'
         '7c265e6d36a5c0dff127093580827d15519b6c7205c2e1300e82f0fb5b9dd00b6accb40c56581f18179c4fbbc95bd2bf1b900ace867a83accde0969f7b609f8a'
@@ -41,7 +41,6 @@ prepare() {
 
   [[ -d glibc-$pkgver ]] && ln -s glibc-$pkgver glibc
   cd glibc
-
 }
 
 build() {
@@ -60,6 +59,10 @@ build() {
       --disable-werror
   )
 
+  # _FORTIFY_SOURCE=3 causes testsuite build failure and is unnecessary during
+  # actual builds (support is built-in via --enable-fortify-source).
+  CFLAGS=${CFLAGS/-Wp,-D_FORTIFY_SOURCE=3/}
+
   (
     cd glibc-build
 
@@ -67,11 +70,6 @@ build() {
     echo "rtlddir=/usr/lib" >> configparms
     echo "sbindir=/usr/bin" >> configparms
     echo "rootsbindir=/usr/bin" >> configparms
-
-    # Credits @allanmcrae
-    # https://github.com/allanmcrae/toolchain/blob/f18604d70c5933c31b51a320978711e4e6791cf1/glibc/PKGBUILD
-    # remove fortify for building libraries
-    CFLAGS=${CFLAGS/-Wp,-D_FORTIFY_SOURCE=3/}
 
     "${srcdir}"/glibc/configure \
         --libdir=/usr/lib \
@@ -119,16 +117,15 @@ build() {
 _skip_test() {
   test=${1}
   file=${2}
-  sed -i "/\b${test} /d" "${srcdir}"/glibc/${file}
+  sed -i "/\b${test} /d" "${srcdir}/glibc/${file}"
 }
 
 check() (
   cd glibc-build
 
   # adjust/remove buildflags that cause false-positive testsuite failures
-  sed -i '/FORTIFY/d' configparms                                     # failure to build testsuite
   sed -i 's/-Werror=format-security/-Wformat-security/' config.make   # failure to build testsuite
-  sed -i '/CFLAGS/s/-fno-plt//' config.make                           # 16 failures
+  sed -i '/CFLAGS/s/-fno-plt//' config.make                           # 27 failures
   sed -i '/CFLAGS/s/-fexceptions//' config.make                       # 1 failure
 
   # The following tests fail due to restrictions in the Arch build system

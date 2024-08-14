@@ -10,7 +10,7 @@ pkgname=(
   debuginfod
 )
 pkgver=0.191
-pkgrel=3
+pkgrel=4
 pkgdesc="Handle ELF object files and DWARF debugging information"
 arch=(loong64 x86_64)
 url="https://sourceware.org/elfutils/"

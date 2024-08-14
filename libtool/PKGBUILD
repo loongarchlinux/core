@@ -7,14 +7,14 @@
 # NOTE: requires rebuilt with each new gcc version
 
 pkgname=libtool
-pkgver=2.4.7+83+g7b091831
-_commit=7b0918310776395e1cbafe6a08b8df8f8a8a3e21
-pkgrel=1
-_gccver=14.1.1
+pkgver=2.5.1
+_commit=1354176bbbc939a7d07a0dcf9b2d92e2ac6bcfef
+pkgrel=2
+_gccver=14.2.1
 pkgdesc='A generic library support script'
 arch=(loong64 x86_64)
 url='https://www.gnu.org/software/libtool'
-license=(GPL)
+license=('LGPL-2.0-or-later WITH Libtool-exception')
 depends=(sh tar glibc)
 makedepends=("gcc>=$_gccver" git help2man)
 checkdepends=(gcc-fortran)
@@ -27,7 +27,7 @@ source=(
   gnulib-bootstrap::git+https://github.com/gnulib-modules/bootstrap.git
   disable-lto-link-order2.patch
 )
-b2sums=('4609c9a44262e2ae1133eb62609c2dba06629ae77cfad1746dd086f02f85cdde43bde96dcd1113aac03ddc103c43f4ba5cf44c6390f56e20544433f6b2a5abd8'
+b2sums=('3c5daaa5e6f685284330a9fe91bb518dbe367edca66e7702a0b6791418f9d73c0d3f4c56529079d3fe8d52125dcf98c71ada43c1799ba84df35989b56d8a20d8'
         'SKIP'
         'SKIP'
         '9d1e0460b9ef56ba33ac498814b409d1b1d7c3e8ed41a3aed2a86d86341ed7051ca88a5adfa92bd87da968460514230058c3d490b58537d95722e68d7d1687ff')

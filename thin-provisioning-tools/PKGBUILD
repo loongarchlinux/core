@@ -2,25 +2,25 @@
 # Contributor: Jason Hall <cakersq@gmail.com>
 
 pkgname=thin-provisioning-tools
-pkgver=1.0.12
+pkgver=1.1.0
 pkgrel=1
 pkgdesc='Suite of tools for manipulating the metadata of the dm-thin device-mapper target'
 arch=('loong64' 'x86_64')
 url='https://github.com/jthornber/thin-provisioning-tools'
 license=('GPL3')
-depends=('gcc-libs')
-makedepends=('cargo')
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/jthornber/${pkgname}/archive/v${pkgver}.tar.gz")
-sha256sums=('55f3423c22d3a5716be88d0ae9155c95d8145cb3ee65f89ff96d2d6a9ede6ad5')
+depends=('gcc-libs' 'systemd-libs')
+makedepends=('git' 'cargo' 'clang' 'device-mapper')
+source=("git+https://github.com/jthornber/thin-provisioning-tools#tag=v${pkgver}")
+sha256sums=('652db5ebaa80e9b44ba62ba327aba7e237b12de37e130fee7c3f4fd817e1f103')
 
 build() {
-  cd "${srcdir}/${pkgname}-${pkgver}"
+  cd "${srcdir}/${pkgname}"
 
   cargo build --release
 }
 
 package() {
-  cd "${srcdir}/${pkgname}-${pkgver}"
+  cd "${srcdir}/${pkgname}"
 
   make \
     DESTDIR="${pkgdir}"/usr \

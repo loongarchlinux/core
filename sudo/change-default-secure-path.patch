@@ -1,0 +1,26 @@
+diff --git a/configure b/configure
+index 9ac46b6..de561f1 100755
+--- a/configure
++++ b/configure
+@@ -3729,7 +3729,7 @@ noexec_file="$libexecdir/sudo/sudo_noexec.so"
+ sesh_file="$libexecdir/sudo/sesh"
+ visudo="$sbindir/visudo"
+ nsswitch_conf=/etc/nsswitch.conf
+-secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
++secure_path="/usr/local/sbin:/usr/local/bin:/usr/bin"
+ secure_path_set="disabled"
+ pam_session=on
+ pam_login_service=sudo
+diff --git a/configure.ac b/configure.ac
+index 2f07e7c..d59c04e 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -229,7 +229,7 @@ noexec_file="$libexecdir/sudo/sudo_noexec.so"
+ sesh_file="$libexecdir/sudo/sesh"
+ visudo="$sbindir/visudo"
+ nsswitch_conf=/etc/nsswitch.conf
+-secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
++secure_path="/usr/local/sbin:/usr/local/bin:/usr/bin"
+ secure_path_set="disabled"
+ pam_session=on
+ pam_login_service=sudo

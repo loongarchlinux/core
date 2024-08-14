@@ -6,7 +6,7 @@
 pkgname=dnssec-anchors
 pkgver=20190629
 _trusted_key=trusted-key-${pkgver}.key
-pkgrel=3
+pkgrel=4
 pkgdesc='DNSSEC trust anchors for the root zone'
 url='https://data.iana.org/root-anchors/'
 license=('custom:none')

@@ -1,6 +1,7 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Andrej Shadura <andrew.shadura@collabora.co.uk>
 Date: Fri, 12 Feb 2021 14:28:19 +0100
-Subject: Disable -Werror for eapol_test
+Subject: [PATCH] Disable -Werror for eapol_test
 
 This may make sense for the upstream, but we just want to build
 the tool to be useful to our users; dealing with build errors due
@@ -11,10 +12,10 @@ for Debian and its downstreams.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/wpa_supplicant/Makefile b/wpa_supplicant/Makefile
-index cb66def..26b0c93 100644
+index 743c8acd683f..04f6dd78b580 100644
 --- a/wpa_supplicant/Makefile
 +++ b/wpa_supplicant/Makefile
-@@ -170,7 +170,7 @@ CFLAGS += -DCONFIG_ELOOP_KQUEUE
+@@ -187,7 +187,7 @@ CFLAGS += -DCONFIG_ELOOP_KQUEUE
  endif
  
  ifdef CONFIG_EAPOL_TEST
