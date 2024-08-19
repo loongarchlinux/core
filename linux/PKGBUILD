@@ -45,10 +45,10 @@ validpgpkeys=(
 # https://www.kernel.org/pub/linux/kernel/v6.x/sha256sums.asc
 sha256sums=('ab30a4a350636dc7227dad4765a3b3fe7744ef6e475d58924174847c8bbb4cbe'
             '00dfb807eb7e2eee46ba860137b6d6a390d806ca8b9100b1441d85574ccbc2c4'
-            'c44510f82d0341b2cc2d7b56b3fa57b195e850ea249ddc09818df22a0f360e78')
+            '52ae7b5e32e6cb2efb5c3441980bc693021fd385146f65be69231c89914135a7')
 b2sums=('f780b9397977da17979941b3a287900d3466eface3a7eb2c7fc0487d988c01766559490c43874f3b38692d83a38ffc16d93ddbab24ed019480fa031d052d4042'
         '82bf32cde76c297f267a480918684425b6f7ff4d623c97a84920c67b51907a24dcbafccd3f8443b7af6db574dd03b90270a8ca84dbfeb7419665cd673a658a5c'
-        'f75d54674a0cdfa0b9d739740904c9423121c320518aa0f3e028829725859abbcee0ebcb38c538455eb6a04ab0be86e995150a9a5f9462d46e0f2ed63ba36bac')
+        'c89c391331be3f5da17747a8671b30edd452d3bbae87d217aad52192bb170daae77d5d834473ff43f86b6c55d88cb06108caa8734a58c9ab9c13abad34aeb0c8')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -92,6 +92,7 @@ build() {
   cd $_srcname
   make all
   make -C tools/bpf/bpftool vmlinux.h feature-clang-bpf-co-re=1
+  make -C tools/objtool
   make htmldocs
 }
 
@@ -155,10 +156,10 @@ _package-headers() {
   cp -t "$builddir" -a scripts
 
   # required when STACK_VALIDATION is enabled
-#  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
+  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
 
   # required when DEBUG_INFO_BTF_MODULES is enabled
-  #install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
+  install -Dt "$builddir/tools/bpf/resolve_btfids" tools/bpf/resolve_btfids/resolve_btfids
 
   echo "Installing headers..."
   cp -t "$builddir" -a include
