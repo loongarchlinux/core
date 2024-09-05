@@ -31,12 +31,9 @@ source=(
   0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch
   0002-skip-simpledrm-if-nvidia-drm.modeset=1-is.patch
   0003-Default-to-maximum-amount-of-ASLR-bits.patch
-  0005-fix-doc-build.patch
-  0006-docutils.patch
   0100-loongarch64.patch
   config  # the main kernel config file
   config.la64
-  9d91b004df9a6aa2487661e52a398fd808184955.patch
 )
 validpgpkeys=(
   ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
@@ -48,13 +45,17 @@ sha256sums=('121bed240767e4a0959c1609e78eeaaf3e0620d9d1a5ed1f6e36bdf609c4f179'
             '21195509fded29d0256abfce947b5a8ce336d0d3e192f3f8ea90bde9dd95a889'
             '2f23be91455e529d16aa2bbf5f2c7fe3d10812749828fc752240c21b2b845849'
             '6400a06e6eb3a24b650bc3b1bba9626622f132697987f718e7ed6a5b8c0317bc'
-            'bfaf76f84bd12a70a6c175360611b2139602c135d60fe996d32febb3edf6382d')
+            '982093294a5016e5f7bff6dd09ff9ecfd6509e0926686c6df7e811e0c0b0b4ec'
+            'bfaf76f84bd12a70a6c175360611b2139602c135d60fe996d32febb3edf6382d'
+            'ab7d3ecef3f2669d178a3c549cd3a1fe8485f926031d9d099eb6ac573e0eeca5')
 b2sums=('18a088b694c7fee7e93b819bb31c30a2527f9298b33fa2ad1e60f18e4e2bd9ef86f46b5fb0c96db2bb78026c25a1411bb444b261e5ff2a95c6f8feb02f5625aa'
         'SKIP'
         '02a10396c92ab93124139fc3e37b1d4d8654227556d0d11486390da35dfc401ff5784ad86d0d2aa7eacac12bc451aa2ff138749748c7e24deadd040d5404734c'
         '5dc21a7a6f0b840e6a671dcf09a865e42f0e2c000d5e45d3f3202c02946a8ab2207858d0b2ef1004648b8c2963efb428298b263c8494be806dfc9b6af66d5413'
         'ba6ebe349b3757411364a9ba2deaa30a8d71a247d518c159385977c2b4782771bda4edfc96bd954808617c9ba984d832471b63c11f5bd6003369bfe4051df31f'
-        'dabd631c1c4aad509adea4f470e9df8609e71ee92c0e0b4ed1d2b57a8e1e2a6891c400c2f7302503b269fc29d2912dac8ed6c423ff9bcdacfe97be55d51660b3')
+        '81800e9fa8e38d60044a94a67d680d07d28fb666cb4587719ae05ffeba72bcb707f2d2268adbacf8fb60f688869325e73a9015d46cf995528cf158fa5e6100bb'
+        'dabd631c1c4aad509adea4f470e9df8609e71ee92c0e0b4ed1d2b57a8e1e2a6891c400c2f7302503b269fc29d2912dac8ed6c423ff9bcdacfe97be55d51660b3'
+        'ac5fbbbca3799e654dc732ac2df7efc79490c6bacb284c461655b78d252af472259806d329b4b4b9d97bf9bff3020a5f3e5e535e073b5fde96a3e8afefe6f423')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
