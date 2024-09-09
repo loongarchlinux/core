@@ -30,7 +30,6 @@ validpgpkeys=('63CDA1E5D3FC22B998D20DD6327F26951A015CC4'  # Lennart Poettering <
               '5C251B5FC54EB2F80F407AAAC54CA336CFEB557E') # Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl>
 source=("git+https://github.com/systemd/systemd#tag=v${_tag}?signed"
         '0001-Use-Arch-Linux-device-access-groups.patch'
-        '0001-loongarch64-disable-simd-when-build-efi.patch'
         # bootloader files
         'arch.conf'
         'loader.conf'
@@ -51,7 +50,6 @@ source=("git+https://github.com/systemd/systemd#tag=v${_tag}?signed"
         '30-systemd-update.hook')
 sha512sums=('8ac4d672e4be9f43a6f177cfa0ad91c1d5434e85c6aef633740b6a0e27f6ca15c859b29269a775fe32f14626944db5be87e1a8ebaa7620de7452dd14d902e09e'
             '3ccf783c28f7a1c857120abac4002ca91ae1f92205dcd5a84aff515d57e706a3f9240d75a0a67cff5085716885e06e62597baa86897f298662ec36a940cf410e'
-            '6665385cdf1de62f1b7f0399acb386d9bd5dc31d47de1ceb288e23cb39a7530c679b674f7a80c0ca7eff9cf0cd9d30aa2c43029cbd08bcfbb837afd2272e7d54'
             '61032d29241b74a0f28446f8cf1be0e8ec46d0847a61dadb2a4f096e8686d5f57fe5c72bcf386003f6520bc4b5856c32d63bf3efe7eb0bc0deefc9f68159e648'
             'c416e2121df83067376bcaacb58c05b01990f4614ad9de657d74b6da3efa441af251d13bf21e3f0f71ddcb4c9ea658b81da3d915667dc5c309c87ec32a1cb5a5'
             '5a1d78b5170da5abe3d18fdf9f2c3a4d78f15ba7d1ee9ec2708c4c9c2e28973469bc19386f70b3cf32ffafbe4fcc4303e5ebbd6d5187a1df3314ae0965b25e75'
@@ -115,7 +113,6 @@ prepare() {
 
   # Replace cdrom/dialout/tape groups with optical/uucp/storage
   patch -Np1 -i ../0001-Use-Arch-Linux-device-access-groups.patch
-  patch -Np1 -i ../0001-loongarch64-disable-simd-when-build-efi.patch
 }
 
 build() {
