@@ -3,7 +3,7 @@
 
 pkgname=pacman
 pkgver=6.1.0
-pkgrel=3
+pkgrel=4
 pkgdesc="A library-based package manager with dependency support"
 arch=('loong64' 'x86_64')
 url="https://www.archlinux.org/pacman/"
@@ -45,7 +45,7 @@ sha256sums=('5a60ac6e6bf995ba6140c7d038c34448df1f3daa4ae7141d2cad88eeb5f1f9d9'
             'a9194c3f77523185bd3ff4d15420fba99637bc8bb3dc6d3d79780e788f90633e'
             '2465d495cb275dce434eb3bfe4d293a223e301b968c14861aea42bc7c60404ef'
             '778e7b7dd63885cfdb7a3f614033eade6e54b2610f12bc8ab73da6885f0a84d0'
-            'ff454ddfce569b8648109285c0335888a78c5b7b923a5710bf5c993d9e3c4b9b'
+            '92de88998fbc3176de24badac1fb799b84c4baeeea93a89ababe8bed73a3458d'
             '41590a04de42ab3cf41ba180e63bbe66f6894b3d20b3a98fb01d62145b86172f')
 
 prepare() {
