@@ -10,11 +10,9 @@ url="https://www.archlinux.org/mirrorlist/"
 license=('GPL')
 backup=(etc/pacman.d/mirrorlist)
 source=(mirrorlist)
-md5sums=('b275439b1695e2f7db9c251554d6cd0f')
-sha256sums=('a62f64c8e6e87a55f939475a5d3fa3f73b78c15cf6e1e135c21c08eb3e5ba294')
+md5sums=('73585229c16232de3a5fae973e9062ee')
+sha256sums=('865d104efaec84a2df48869144e41ac7226afc9d63ec7855b480813eecbf7109')
 
-md5sums=('8fcd9c71e50ede93c6e79c8e2ede799f')
-sha256sums=('7df6392ad105de15a163a64877c7a9b94cf656e22616f1f7da43fee904482625')
 
 # NOTE on building this package:
 # * Run bash -c ". PKGBUILD; updatelist"
