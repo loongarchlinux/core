@@ -7,7 +7,7 @@ pkgname=(linux-firmware-whence linux-firmware amd-ucode
 )
 _tag=20240811
 pkgver=20240809.59460076
-pkgrel=1
+pkgrel=3
 pkgdesc="Firmware files for Linux"
 url="https://gitlab.com/kernel-firmware/linux-firmware"
 license=('GPL2' 'GPL3' 'custom')
@@ -15,16 +15,21 @@ arch=('any')
 makedepends=('git' 'rdfind')
 options=(!strip !debug)
 source=("git+$url.git?signed#tag=${_tag}"
-        "lg100_cp.bin::https://github.com/cl91/linux-gsgpu-archpkg/raw/master/gsgpu-firmware/lg100_cp.bin")
+        "firmware-loongson-graphics.deb::https://repos.loongson.cn/loonggpu/repos/loongnix20/firmware-loongson-graphics_1.0.1-lnd.1_loongarch64.deb")
 sha256sums=('2ff3645681d23658fa5e6ca5f9b8b383b5510c2ff46532679b8e95d693a3f0eb'
-            '5f0cea0c155ed87e655e4b69d92a11ad31582799bf21909f23f809c9b3109a44')
-noextract=('lg100_cp.bin')
+            '5b354d695e0e8a764f653e1f652791173e7af0274a25b7ac2871238e7eeefe01')
+noextract=('firmware-loongson-graphics.deb')
 validpgpkeys=('4CDE8575E547BF835FE15807A31B6BD72486CFD6') # Josh Boyer <jwboyer@fedoraproject.org>
 
 _backports=(
 )
 
 prepare() {
+  # Extract gsgpu firmware
+  echo 'Extract lg100_cp.bin'
+  ar x firmware-loongson-graphics.deb
+  tar xf data.tar.xz ./lib/firmware/loonggpu/lg100_cp.bin
+
   cd ${pkgbase}
 
   local _c
@@ -32,6 +37,7 @@ prepare() {
     git log --oneline -1 "${_c}"
     git cherry-pick -n "${_c}"
   done
+
 }
 
 pkgver() {
@@ -56,9 +62,8 @@ build() {
     bsdtar --null -cf - --format=newc @- > amd-ucode.img
 
   # Add gsgpu firmware
-  echo 'File: loongson/lg100_cp.bin' >> "${pkgbase}/WHENCE"
-  install -Dm644 "${srcdir}/lg100_cp.bin" -t "${pkgbase}/loongson"
-
+  echo 'File: loonggpu/lg100_cp.bin' >> "${pkgbase}/WHENCE"
+  install -Dm644 "${srcdir}/lib/firmware/loonggpu/lg100_cp.bin" -t "${pkgbase}/loonggpu"
 }
 
 _pick() {
