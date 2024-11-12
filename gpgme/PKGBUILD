@@ -88,8 +88,8 @@ package_gpgme() {
   make DESTDIR="${pkgdir}" install
 
   # split qgpgme
-  rm -r "${pkgdir}"/usr/lib/{cmake/QGpgmeQt6/,libqgpgmeqt6.*}
-  rm -r "${pkgdir}"/usr/lib/python*
+  rm -rf "${pkgdir}"/usr/lib/{cmake/QGpgme/,cmake/QGpgmeQt6/,libqgpgmeqt6.*,libqgpgme.so*}
+  rm -rf "${pkgdir}"/usr/lib/python*
   install -vDm 644 LICENSES "$pkgdir/usr/share/licenses/$pkgname/MIT.txt"
 }
 
