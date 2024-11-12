@@ -7,7 +7,7 @@
 # NOTE: valgrind requires rebuilt with each major glibc version
 
 pkgbase=glibc
-pkgname=(glibc lib32-glibc glibc-locales)
+pkgname=(glibc glibc-locales)
 pkgver=2.40+r16+gaa533d58ff
 _commit=aa533d58ff12e27771d9c960a727d74992a3f2a3
 pkgrel=2
@@ -50,7 +50,7 @@ build() {
       --with-bugurl=https://github.com/loongarchlinux/core/issues
       --enable-bind-now
       --enable-fortify-source
-      --enable-kernel=4.4
+      --enable-kernel=5.19
       --enable-multi-arch
       --enable-stack-protector=strong
       --enable-systemtap
