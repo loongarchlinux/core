@@ -1,0 +1,37 @@
+From 3863b1da95e7178b1a7c2a7fa70e51e7ff104c12 Mon Sep 17 00:00:00 2001
+From: Xiaotian Wu <yetist@gmail.com>
+Date: Sun, 29 Sep 2024 21:05:08 +0800
+Subject: [PATCH] auto clean db.sig file
+
+---
+ lib/libalpm/be_sync.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/lib/libalpm/be_sync.c b/lib/libalpm/be_sync.c
+index 24693976..69e5f54f 100644
+--- a/lib/libalpm/be_sync.c
++++ b/lib/libalpm/be_sync.c
+@@ -106,6 +106,20 @@ static int sync_db_validate(alpm_db_t *db)
+ 	siglevel = alpm_db_get_siglevel(db);
+ 
+ 	if(siglevel & ALPM_SIG_DATABASE) {
++		if(siglevel & ALPM_SIG_DATABASE_OPTIONAL) {
++			char* dbsigpath;
++			struct stat st;
++			size_t len = strlen(dbpath) + 5;
++
++			MALLOC(dbsigpath, len, goto valid);
++			sprintf(dbsigpath, "%s.sig", dbpath);
++			if(llstat(dbsigpath, &st) == 0) {
++				if(unlink(dbsigpath) == -1) {
++					_alpm_log(db->handle, ALPM_LOG_ERROR, _("cannot remove %s (%s)\n"), dbsigpath, strerror(errno));
++				}
++			}
++			free(dbsigpath);
++		}
+ 		int retry, ret;
+ 		do {
+ 			retry = 0;
+-- 
+2.45.0
+

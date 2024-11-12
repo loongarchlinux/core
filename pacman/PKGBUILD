@@ -32,6 +32,7 @@ source=(https://gitlab.archlinux.org/pacman/pacman/-/releases/v$pkgver/downloads
         makepkg.loong64.conf
         0001-makepkg-config-sub-for-loongarch.patch
         0002-pacman-use-loong64-as-CARCH.patch
+        0003-auto-clean-db.sig-file.patch
         )
 sha256sums=('5a60ac6e6bf995ba6140c7d038c34448df1f3daa4ae7141d2cad88eeb5f1f9d9'
             'SKIP'
@@ -42,11 +43,12 @@ sha256sums=('5a60ac6e6bf995ba6140c7d038c34448df1f3daa4ae7141d2cad88eeb5f1f9d9'
             '2bbfe40539513ff5775aaf900644c8985ef618f5df9af856b9d571e2501365b0'
             '160515b741aadc876a67f213029f5f62a51ff072ea4aaeb687bbe614035bf72f'
             '1f4e4cc54332e60c9da2bdabf9a80dc11db466535f1a0be298cbf654f0723721'
-            'a9194c3f77523185bd3ff4d15420fba99637bc8bb3dc6d3d79780e788f90633e'
+            'e4b8d738c8094dea0db27a82adc1cf29859722a1bfde5d1314b83939e4209ae6'
             '2465d495cb275dce434eb3bfe4d293a223e301b968c14861aea42bc7c60404ef'
             '54659df340460491b0dc13b1c77885b311588ddef6b84f06142114d9e77b3c4e'
             '92de88998fbc3176de24badac1fb799b84c4baeeea93a89ababe8bed73a3458d'
-            '41590a04de42ab3cf41ba180e63bbe66f6894b3d20b3a98fb01d62145b86172f')
+            '41590a04de42ab3cf41ba180e63bbe66f6894b3d20b3a98fb01d62145b86172f'
+            '86d0f299175898df072bf5eace518ded2f6d09fc34ca7a7d775bcc47d75a28f5')
 
 prepare() {
   cd "$pkgname-$pkgver"
