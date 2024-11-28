@@ -93,7 +93,7 @@ package_elfutils() {
   make DESTDIR="$pkgdir" install -C $pkgbase-$pkgver
 
   # set the default DEBUGINFOD_URLS environment variable to the distribution's debuginfod URL
-  echo "https://debuginfod.archlinux.org" > "$pkgdir/etc/debuginfod/archlinux.urls"
+  echo "http://debuginfod.loongarch.zhcn.cc:8002" > "$pkgdir/etc/debuginfod/archlinux.urls"
 
   (
     cd "$pkgdir"
